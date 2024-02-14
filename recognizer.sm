@@ -1,0 +1,16 @@
+%header recognizer.hpp
+%class Recognizer
+
+%start MainMap::Obj
+
+%map MainMap
+%%
+Default
+{
+
+}
+
+Error
+{
+}
+%%
