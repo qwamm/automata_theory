@@ -1,16 +1,87 @@
 %header recognizer.hpp
 %class Recognizer
 
-%start MainMap::Obj
+%start MainMap::A0
 
 %map MainMap
 %%
-Default
-{
+	Default
+	{
+		EOS nil {Unacceptable();}
+		Unknown Error {}
+		Default Error {}
+	}
 
-}
+	Error {}	
 
-Error
-{
-}
+	A0
+	{
+		letter(let: char) [let == 'i'] A1 {}
+		letter(let: char) [let == 's'] B1 {}
+		letter(let: char) [let == 'l'] C1 {}
+	}
+	A1
+	{
+		letter(let : char) [let == 'n'] A2 {}
+	}
+	A2
+	{
+		letter(let : char) [let == 't'] A3 {}
+	}
+	A3
+	{
+		s_push() StrS {}
+	}
+
+        B1
+        {
+                letter(let: char) [let == 'h'] B2 {}
+        }
+        B2
+        {
+                letter(let: char) [let == 'o'] B3 {}
+        }
+        B3
+        {
+                letter(let: char) [let == 'r'] B4 {}
+        }
+        B4
+        {
+                letter(let: char) [let == 't'] B5 {}
+        }
+	B5
+	{
+		s_push() StrS {}
+	}
+
+	C1
+	{
+		letter(let: char) [let == 'o'] C2 {}
+	}
+
+        C2
+        {
+                letter(let: char) [let == 'n'] C3 {}
+        }
+
+        C3
+        {
+                letter(let: char) [let == 'g'] C4 {}
+        }
+
+        C4
+        {
+                s_push() StrS {}
+        }
+
+	StrS	
+	{
+		letter(let: char) nil {NPush(let);}
+		at WhiteSpace {}
+	}
+	WhiteSpace
+	{
+		letter(let : char) nil {NPush(let);}
+	}
+	
 %%

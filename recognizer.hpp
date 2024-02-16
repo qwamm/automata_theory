@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <fstream>
+#include "recognizer_sm.h"
 
 class Recognizer
 {
