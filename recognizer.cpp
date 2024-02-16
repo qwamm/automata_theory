@@ -2,7 +2,6 @@
 
 bool Recognizer::check_string (std::string str)
 {
-	#ifdef CRTP
 	for (auto &c : str)
 	{
 		if (c >= 'A' && c <= 'Z')

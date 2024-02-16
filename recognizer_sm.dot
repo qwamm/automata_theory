@@ -1,0 +1,216 @@
+digraph recognizer {
+
+    node
+        [shape=Mrecord width=1.5];
+
+    subgraph cluster_MainMap {
+
+        label="MainMap";
+
+        //
+        // States (Nodes)
+        //
+
+        "MainMap::Error"
+            [label="{Error}"];
+
+        "MainMap::A0"
+            [label="{A0}"];
+
+        "MainMap::A1"
+            [label="{A1}"];
+
+        "MainMap::A2"
+            [label="{A2}"];
+
+        "MainMap::A3"
+            [label="{A3}"];
+
+        "MainMap::B1"
+            [label="{B1}"];
+
+        "MainMap::B2"
+            [label="{B2}"];
+
+        "MainMap::B3"
+            [label="{B3}"];
+
+        "MainMap::B4"
+            [label="{B4}"];
+
+        "MainMap::B5"
+            [label="{B5}"];
+
+        "MainMap::C1"
+            [label="{C1}"];
+
+        "MainMap::C2"
+            [label="{C2}"];
+
+        "MainMap::C3"
+            [label="{C3}"];
+
+        "MainMap::C4"
+            [label="{C4}"];
+
+        "MainMap::StrS"
+            [label="{StrS}"];
+
+        "MainMap::WhiteSpace"
+            [label="{WhiteSpace}"];
+
+        "%start"
+            [label="" shape=circle style=filled fillcolor=black width=0.25];
+
+        //
+        // Transitions (Edges)
+        //
+
+        "MainMap::Error" -> "MainMap::Error"
+            [label="Unknown/\l"];
+
+        "MainMap::Error" -> "MainMap::Error"
+            [label="Default/\l"];
+
+        "MainMap::A0" -> "MainMap::A1"
+            [label="letter/\l"];
+
+        "MainMap::A0" -> "MainMap::B1"
+            [label="letter/\l"];
+
+        "MainMap::A0" -> "MainMap::C1"
+            [label="letter/\l"];
+
+        "MainMap::A0" -> "MainMap::Error"
+            [label="Unknown/\l"];
+
+        "MainMap::A0" -> "MainMap::Error"
+            [label="Default/\l"];
+
+        "MainMap::A1" -> "MainMap::A2"
+            [label="letter/\l"];
+
+        "MainMap::A1" -> "MainMap::Error"
+            [label="Unknown/\l"];
+
+        "MainMap::A1" -> "MainMap::Error"
+            [label="Default/\l"];
+
+        "MainMap::A2" -> "MainMap::A3"
+            [label="letter/\l"];
+
+        "MainMap::A2" -> "MainMap::Error"
+            [label="Unknown/\l"];
+
+        "MainMap::A2" -> "MainMap::Error"
+            [label="Default/\l"];
+
+        "MainMap::A3" -> "MainMap::StrS"
+            [label="s_push/\l"];
+
+        "MainMap::A3" -> "MainMap::Error"
+            [label="Unknown/\l"];
+
+        "MainMap::A3" -> "MainMap::Error"
+            [label="Default/\l"];
+
+        "MainMap::B1" -> "MainMap::B2"
+            [label="letter/\l"];
+
+        "MainMap::B1" -> "MainMap::Error"
+            [label="Unknown/\l"];
+
+        "MainMap::B1" -> "MainMap::Error"
+            [label="Default/\l"];
+
+        "MainMap::B2" -> "MainMap::B3"
+            [label="letter/\l"];
+
+        "MainMap::B2" -> "MainMap::Error"
+            [label="Unknown/\l"];
+
+        "MainMap::B2" -> "MainMap::Error"
+            [label="Default/\l"];
+
+        "MainMap::B3" -> "MainMap::B4"
+            [label="letter/\l"];
+
+        "MainMap::B3" -> "MainMap::Error"
+            [label="Unknown/\l"];
+
+        "MainMap::B3" -> "MainMap::Error"
+            [label="Default/\l"];
+
+        "MainMap::B4" -> "MainMap::B5"
+            [label="letter/\l"];
+
+        "MainMap::B4" -> "MainMap::Error"
+            [label="Unknown/\l"];
+
+        "MainMap::B4" -> "MainMap::Error"
+            [label="Default/\l"];
+
+        "MainMap::B5" -> "MainMap::StrS"
+            [label="s_push/\l"];
+
+        "MainMap::B5" -> "MainMap::Error"
+            [label="Unknown/\l"];
+
+        "MainMap::B5" -> "MainMap::Error"
+            [label="Default/\l"];
+
+        "MainMap::C1" -> "MainMap::C2"
+            [label="letter/\l"];
+
+        "MainMap::C1" -> "MainMap::Error"
+            [label="Unknown/\l"];
+
+        "MainMap::C1" -> "MainMap::Error"
+            [label="Default/\l"];
+
+        "MainMap::C2" -> "MainMap::C3"
+            [label="letter/\l"];
+
+        "MainMap::C2" -> "MainMap::Error"
+            [label="Unknown/\l"];
+
+        "MainMap::C2" -> "MainMap::Error"
+            [label="Default/\l"];
+
+        "MainMap::C3" -> "MainMap::C4"
+            [label="letter/\l"];
+
+        "MainMap::C3" -> "MainMap::Error"
+            [label="Unknown/\l"];
+
+        "MainMap::C3" -> "MainMap::Error"
+            [label="Default/\l"];
+
+        "MainMap::C4" -> "MainMap::StrS"
+            [label="s_push/\l"];
+
+        "MainMap::C4" -> "MainMap::Error"
+            [label="Unknown/\l"];
+
+        "MainMap::C4" -> "MainMap::Error"
+            [label="Default/\l"];
+
+        "MainMap::StrS" -> "MainMap::WhiteSpace"
+            [label="at/\l"];
+
+        "MainMap::StrS" -> "MainMap::Error"
+            [label="Unknown/\l"];
+
+        "MainMap::StrS" -> "MainMap::Error"
+            [label="Default/\l"];
+
+        "MainMap::WhiteSpace" -> "MainMap::Error"
+            [label="Unknown/\l"];
+
+        "MainMap::WhiteSpace" -> "MainMap::Error"
+            [label="Default/\l"];
+
+        "%start" -> "MainMap::A0"
+    }
+
+}
