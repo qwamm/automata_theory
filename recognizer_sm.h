@@ -29,8 +29,8 @@ class MainMap_C1;
 class MainMap_C2;
 class MainMap_C3;
 class MainMap_C4;
-class MainMap_StrS;
 class MainMap_WhiteSpace;
+class MainMap_FunctionName;
 class MainMap_Default;
 class RecognizerState;
 class recognizerContext;
@@ -50,8 +50,9 @@ public:
 
     virtual void EOS(recognizerContext& context);
     virtual void Unknown(recognizerContext& context);
-    virtual void at(recognizerContext& context);
+    virtual void digit(recognizerContext& context, char dig);
     virtual void letter(recognizerContext& context, char let);
+    virtual void reset(recognizerContext& context);
     virtual void s_push(recognizerContext& context);
 
 protected:
@@ -77,8 +78,8 @@ public:
     static MainMap_C2 C2;
     static MainMap_C3 C3;
     static MainMap_C4 C4;
-    static MainMap_StrS StrS;
     static MainMap_WhiteSpace WhiteSpace;
+    static MainMap_FunctionName FunctionName;
 };
 
 class MainMap_Default :
@@ -90,6 +91,7 @@ public:
     : RecognizerState(name, stateId)
     {};
 
+    virtual void reset(recognizerContext& context);
     virtual void EOS(recognizerContext& context);
     virtual void Unknown(recognizerContext& context);
     virtual void Default(recognizerContext& context);
@@ -248,18 +250,6 @@ public:
     virtual void s_push(recognizerContext& context);
 };
 
-class MainMap_StrS :
-    public MainMap_Default
-{
-public:
-    MainMap_StrS(const char * const name, const int stateId)
-    : MainMap_Default(name, stateId)
-    {};
-
-    virtual void at(recognizerContext& context);
-    virtual void letter(recognizerContext& context, char let);
-};
-
 class MainMap_WhiteSpace :
     public MainMap_Default
 {
@@ -269,6 +259,20 @@ public:
     {};
 
     virtual void letter(recognizerContext& context, char let);
+};
+
+class MainMap_FunctionName :
+    public MainMap_Default
+{
+public:
+    MainMap_FunctionName(const char * const name, const int stateId)
+    : MainMap_Default(name, stateId)
+    {};
+
+    virtual void EOS(recognizerContext& context);
+    virtual void digit(recognizerContext& context, char dig);
+    virtual void letter(recognizerContext& context, char let);
+    virtual void s_push(recognizerContext& context);
 };
 
 class recognizerContext :
@@ -317,14 +321,19 @@ public:
         getState().Unknown(*this);
     };
 
-    inline void at()
+    inline void digit(char dig)
     {
-        getState().at(*this);
+        getState().digit(*this, dig);
     };
 
     inline void letter(char let)
     {
         getState().letter(*this, let);
+    };
+
+    inline void reset()
+    {
+        getState().reset(*this);
     };
 
     inline void s_push()

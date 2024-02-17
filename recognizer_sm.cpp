@@ -25,8 +25,8 @@ MainMap_C1 MainMap::C1("MainMap::C1", 10);
 MainMap_C2 MainMap::C2("MainMap::C2", 11);
 MainMap_C3 MainMap::C3("MainMap::C3", 12);
 MainMap_C4 MainMap::C4("MainMap::C4", 13);
-MainMap_StrS MainMap::StrS("MainMap::StrS", 14);
-MainMap_WhiteSpace MainMap::WhiteSpace("MainMap::WhiteSpace", 15);
+MainMap_WhiteSpace MainMap::WhiteSpace("MainMap::WhiteSpace", 14);
+MainMap_FunctionName MainMap::FunctionName("MainMap::FunctionName", 15);
 
 void RecognizerState::EOS(recognizerContext& context)
 {
@@ -38,12 +38,17 @@ void RecognizerState::Unknown(recognizerContext& context)
     Default(context);
 }
 
-void RecognizerState::at(recognizerContext& context)
+void RecognizerState::digit(recognizerContext& context, char dig)
 {
     Default(context);
 }
 
 void RecognizerState::letter(recognizerContext& context, char let)
+{
+    Default(context);
+}
+
+void RecognizerState::reset(recognizerContext& context)
 {
     Default(context);
 }
@@ -62,6 +67,16 @@ void RecognizerState::Default(recognizerContext& context)
 
 }
 
+void MainMap_Default::reset(recognizerContext& context)
+{
+
+    context.getState().Exit(context);
+    context.setState(MainMap::A0);
+    context.getState().Entry(context);
+
+
+}
+
 void MainMap_Default::EOS(recognizerContext& context)
 {
     Recognizer& ctxt = context.getOwner();
@@ -71,7 +86,7 @@ void MainMap_Default::EOS(recognizerContext& context)
     context.clearState();
     try
     {
-        ctxt.Unacceptable();
+        ctxt.Incorrect();
         context.setState(endState);
     }
     catch (...)
@@ -176,7 +191,7 @@ void MainMap_A3::s_push(recognizerContext& context)
 {
 
     context.getState().Exit(context);
-    context.setState(MainMap::StrS);
+    context.setState(MainMap::WhiteSpace);
     context.getState().Entry(context);
 
 
@@ -258,7 +273,7 @@ void MainMap_B5::s_push(recognizerContext& context)
 {
 
     context.getState().Exit(context);
-    context.setState(MainMap::StrS);
+    context.setState(MainMap::WhiteSpace);
     context.getState().Entry(context);
 
 
@@ -322,39 +337,8 @@ void MainMap_C4::s_push(recognizerContext& context)
 {
 
     context.getState().Exit(context);
-    context.setState(MainMap::StrS);
-    context.getState().Entry(context);
-
-
-}
-
-void MainMap_StrS::at(recognizerContext& context)
-{
-
-    context.getState().Exit(context);
     context.setState(MainMap::WhiteSpace);
     context.getState().Entry(context);
-
-
-}
-
-void MainMap_StrS::letter(recognizerContext& context, char let)
-{
-    Recognizer& ctxt = context.getOwner();
-
-    RecognizerState& endState = context.getState();
-
-    context.clearState();
-    try
-    {
-        ctxt.NPush(let);
-        context.setState(endState);
-    }
-    catch (...)
-    {
-        context.setState(endState);
-        throw;
-    }
 
 
 }
@@ -363,12 +347,33 @@ void MainMap_WhiteSpace::letter(recognizerContext& context, char let)
 {
     Recognizer& ctxt = context.getOwner();
 
+    context.getState().Exit(context);
+    context.clearState();
+    try
+    {
+        ctxt.NPush(let);
+        context.setState(MainMap::FunctionName);
+    }
+    catch (...)
+    {
+        context.setState(MainMap::FunctionName);
+        throw;
+    }
+    context.getState().Entry(context);
+
+
+}
+
+void MainMap_FunctionName::EOS(recognizerContext& context)
+{
+    Recognizer& ctxt = context.getOwner();
+
     RecognizerState& endState = context.getState();
 
     context.clearState();
     try
     {
-        ctxt.NPush(let);
+        ctxt.Correct();
         context.setState(endState);
     }
     catch (...)
@@ -376,6 +381,72 @@ void MainMap_WhiteSpace::letter(recognizerContext& context, char let)
         context.setState(endState);
         throw;
     }
+
+
+}
+
+void MainMap_FunctionName::digit(recognizerContext& context, char dig)
+{
+    Recognizer& ctxt = context.getOwner();
+
+    if (context.getOwner().text_len(16) && !context.getOwner().text_len(0))
+    {
+        RecognizerState& endState = context.getState();
+
+        context.clearState();
+        try
+        {
+            ctxt.NPush(dig);
+            context.setState(endState);
+        }
+        catch (...)
+        {
+            context.setState(endState);
+            throw;
+        }
+    }
+    else
+    {
+         MainMap_Default::digit(context, dig);
+    }
+
+
+}
+
+void MainMap_FunctionName::letter(recognizerContext& context, char let)
+{
+    Recognizer& ctxt = context.getOwner();
+
+    if (context.getOwner().text_len(16))
+    {
+        RecognizerState& endState = context.getState();
+
+        context.clearState();
+        try
+        {
+            ctxt.NPush(let);
+            context.setState(endState);
+        }
+        catch (...)
+        {
+            context.setState(endState);
+            throw;
+        }
+    }
+    else
+    {
+         MainMap_Default::letter(context, let);
+    }
+
+
+}
+
+void MainMap_FunctionName::s_push(recognizerContext& context)
+{
+
+    context.getState().Exit(context);
+    context.setState(MainMap::WhiteSpace);
+    context.getState().Entry(context);
 
 
 }

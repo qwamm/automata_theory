@@ -1,10 +1,17 @@
 #include "recognizer.hpp"
+#include "statemap.h"
+
+Recognizer::Recognizer() : recognizerContext(*this), isCorrect(false)
+{
+	setDebugFlag(true);
+}
 
 bool Recognizer::check_string (std::string str)
 {
+	enterStartState();
 	for (auto &c : str)
 	{
-		if (c >= 'A' && c <= 'Z')
+		if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))
 		{
 			letter(c);
 		}
@@ -14,7 +21,9 @@ bool Recognizer::check_string (std::string str)
 		}
 		if(c == ' ')
 		{
-			WhiteSpace();
+			s_push();
 		}
 	}
+	EOS();
+	return isCorrect;
 }

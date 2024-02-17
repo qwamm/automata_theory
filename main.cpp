@@ -1,10 +1,15 @@
 #include <iostream>
 #include <fstream>
 #include <compare>
+#include <string>
 #include "recognizer.hpp"
+#include "recognizer_sm.h"
+#include "statemap.h"
+
+using namespace statemap;
 
 std::string get_line(std::ifstream &in);
-bool read_line(Recognizer& rec, std::strring str);
+bool read_line(Recognizer& rec, std::string str);
 
 int main()
 {
@@ -16,7 +21,8 @@ int main()
 	{
 		std::string s =  get_line(in);
 		ret = read_line(rec, s);
-		std:: cout << str << " ret = " << ret << "\n";
+		std:: cout << s << " ret = " << ret << "\n";
+		rec.reset();
 	}
 	in.close();
 }
@@ -28,7 +34,7 @@ std::string get_line(std::ifstream &in)
 	return str;
 }
 
-bool read_line(Recognizer& rec, std::strring str)
+bool read_line(Recognizer& rec, std::string str)
 {
 	bool ret;
 	try
@@ -39,13 +45,13 @@ bool read_line(Recognizer& rec, std::strring str)
 		}
 		else
 		{
-			rec.save(str);
+			//rec.save(str);
 			ret = 0;
 		}
 	}
 	catch(const SmcException &e)
 	{
-		cout << "string " << str << "incorrect - " << e.what() << "\n";
+		std::cout << "string " << str << "incorrect - " << e.what() << "\n";
 		ret = 1;
 	}
 	return ret;

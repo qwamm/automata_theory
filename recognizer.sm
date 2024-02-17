@@ -7,7 +7,8 @@
 %%
 	Default
 	{
-		EOS nil {Unacceptable();}
+		reset() A0 {}
+		EOS nil {Incorrect();}
 		Unknown Error {}
 		Default Error {}
 	}
@@ -30,7 +31,7 @@
 	}
 	A3
 	{
-		s_push() StrS {}
+		s_push() WhiteSpace {}
 	}
 
         B1
@@ -51,7 +52,7 @@
         }
 	B5
 	{
-		s_push() StrS {}
+		s_push() WhiteSpace {}
 	}
 
 	C1
@@ -71,18 +72,20 @@
 
         C4
         {
-                s_push() StrS {}
+                s_push() WhiteSpace {}
         }
 
-	StrS	
+        WhiteSpace
+        {
+                letter(let : char) FunctionName {NPush(let);}
+        }
+
+	FunctionName
 	{
-		letter(let: char) nil {NPush(let);}
-		digit(dig: char) nil {NPush(dig);}
-		at WhiteSpace {}
-	}
-	WhiteSpace
-	{
-		letter(let : char) nil {NPush(let);}
+		letter(let: char) [context.getOwner().text_len(16)] nil {NPush(let);}
+		digit(dig: char) [context.getOwner().text_len(16) && !context.getOwner().text_len(0)] nil {NPush(dig);}
+		s_push() WhiteSpace {}
+		EOS nil {Correct();}
 	}
 	
 %%
