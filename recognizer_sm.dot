@@ -14,9 +14,6 @@ digraph recognizer {
         "MainMap::Error"
             [label="{Error}"];
 
-        "MainMap::Accept"
-            [label="{Accept}"];
-
         "MainMap::A0"
             [label="{A0}"];
 
@@ -56,11 +53,23 @@ digraph recognizer {
         "MainMap::C4"
             [label="{C4}"];
 
-        "MainMap::StrS"
-            [label="{StrS}"];
+        "MainMap::Comma"
+            [label="{Comma}"];
 
         "MainMap::WhiteSpace"
             [label="{WhiteSpace}"];
+
+        "MainMap::FunctionName"
+            [label="{FunctionName}"];
+
+        "MainMap::LeftParent"
+            [label="{LeftParent}"];
+
+        "MainMap::RightParent"
+            [label="{RightParent}"];
+
+        "MainMap::Semicolon"
+            [label="{Semicolon}"];
 
         "%start"
             [label="" shape=circle style=filled fillcolor=black width=0.25];
@@ -73,16 +82,10 @@ digraph recognizer {
             [label="reset/\l"];
 
         "MainMap::Error" -> "MainMap::Error"
-            [label="EOS/\l"];
+            [label="Unknown/\l"];
 
-        "MainMap::Accept" -> "MainMap::Accept"
-            [label="Accept/\l"];
-
-        "MainMap::Accept" -> "MainMap::A0"
-            [label="reset/\l"];
-
-        "MainMap::Accept" -> "MainMap::Error"
-            [label="EOS/\l"];
+        "MainMap::Error" -> "MainMap::Error"
+            [label="Default/\l"];
 
         "MainMap::A0" -> "MainMap::A1"
             [label="letter/\l"];
@@ -97,7 +100,10 @@ digraph recognizer {
             [label="reset/\l"];
 
         "MainMap::A0" -> "MainMap::Error"
-            [label="EOS/\l"];
+            [label="Unknown/\l"];
+
+        "MainMap::A0" -> "MainMap::Error"
+            [label="Default/\l"];
 
         "MainMap::A1" -> "MainMap::A2"
             [label="letter/\l"];
@@ -106,7 +112,10 @@ digraph recognizer {
             [label="reset/\l"];
 
         "MainMap::A1" -> "MainMap::Error"
-            [label="EOS/\l"];
+            [label="Unknown/\l"];
+
+        "MainMap::A1" -> "MainMap::Error"
+            [label="Default/\l"];
 
         "MainMap::A2" -> "MainMap::A3"
             [label="letter/\l"];
@@ -115,16 +124,25 @@ digraph recognizer {
             [label="reset/\l"];
 
         "MainMap::A2" -> "MainMap::Error"
-            [label="EOS/\l"];
+            [label="Unknown/\l"];
 
-        "MainMap::A3" -> "MainMap::StrS"
+        "MainMap::A2" -> "MainMap::Error"
+            [label="Default/\l"];
+
+        "MainMap::A3" -> "MainMap::WhiteSpace"
+            [label="s_push/\l"];
+
+        "MainMap::A3" -> "MainMap::Comma"
             [label="s_push/\l"];
 
         "MainMap::A3" -> "MainMap::A0"
             [label="reset/\l"];
 
         "MainMap::A3" -> "MainMap::Error"
-            [label="EOS/\l"];
+            [label="Unknown/\l"];
+
+        "MainMap::A3" -> "MainMap::Error"
+            [label="Default/\l"];
 
         "MainMap::B1" -> "MainMap::B2"
             [label="letter/\l"];
@@ -133,7 +151,10 @@ digraph recognizer {
             [label="reset/\l"];
 
         "MainMap::B1" -> "MainMap::Error"
-            [label="EOS/\l"];
+            [label="Unknown/\l"];
+
+        "MainMap::B1" -> "MainMap::Error"
+            [label="Default/\l"];
 
         "MainMap::B2" -> "MainMap::B3"
             [label="letter/\l"];
@@ -142,7 +163,10 @@ digraph recognizer {
             [label="reset/\l"];
 
         "MainMap::B2" -> "MainMap::Error"
-            [label="EOS/\l"];
+            [label="Unknown/\l"];
+
+        "MainMap::B2" -> "MainMap::Error"
+            [label="Default/\l"];
 
         "MainMap::B3" -> "MainMap::B4"
             [label="letter/\l"];
@@ -151,7 +175,10 @@ digraph recognizer {
             [label="reset/\l"];
 
         "MainMap::B3" -> "MainMap::Error"
-            [label="EOS/\l"];
+            [label="Unknown/\l"];
+
+        "MainMap::B3" -> "MainMap::Error"
+            [label="Default/\l"];
 
         "MainMap::B4" -> "MainMap::B5"
             [label="letter/\l"];
@@ -160,16 +187,25 @@ digraph recognizer {
             [label="reset/\l"];
 
         "MainMap::B4" -> "MainMap::Error"
-            [label="EOS/\l"];
+            [label="Unknown/\l"];
 
-        "MainMap::B5" -> "MainMap::StrS"
+        "MainMap::B4" -> "MainMap::Error"
+            [label="Default/\l"];
+
+        "MainMap::B5" -> "MainMap::WhiteSpace"
+            [label="s_push/\l"];
+
+        "MainMap::B5" -> "MainMap::Comma"
             [label="s_push/\l"];
 
         "MainMap::B5" -> "MainMap::A0"
             [label="reset/\l"];
 
         "MainMap::B5" -> "MainMap::Error"
-            [label="EOS/\l"];
+            [label="Unknown/\l"];
+
+        "MainMap::B5" -> "MainMap::Error"
+            [label="Default/\l"];
 
         "MainMap::C1" -> "MainMap::C2"
             [label="letter/\l"];
@@ -178,7 +214,10 @@ digraph recognizer {
             [label="reset/\l"];
 
         "MainMap::C1" -> "MainMap::Error"
-            [label="EOS/\l"];
+            [label="Unknown/\l"];
+
+        "MainMap::C1" -> "MainMap::Error"
+            [label="Default/\l"];
 
         "MainMap::C2" -> "MainMap::C3"
             [label="letter/\l"];
@@ -187,7 +226,10 @@ digraph recognizer {
             [label="reset/\l"];
 
         "MainMap::C2" -> "MainMap::Error"
-            [label="EOS/\l"];
+            [label="Unknown/\l"];
+
+        "MainMap::C2" -> "MainMap::Error"
+            [label="Default/\l"];
 
         "MainMap::C3" -> "MainMap::C4"
             [label="letter/\l"];
@@ -196,31 +238,118 @@ digraph recognizer {
             [label="reset/\l"];
 
         "MainMap::C3" -> "MainMap::Error"
-            [label="EOS/\l"];
+            [label="Unknown/\l"];
+
+        "MainMap::C3" -> "MainMap::Error"
+            [label="Default/\l"];
 
         "MainMap::C4" -> "MainMap::WhiteSpace"
+            [label="s_push/\l"];
+
+        "MainMap::C4" -> "MainMap::Comma"
             [label="s_push/\l"];
 
         "MainMap::C4" -> "MainMap::A0"
             [label="reset/\l"];
 
         "MainMap::C4" -> "MainMap::Error"
-            [label="EOS/\l"];
+            [label="Unknown/\l"];
 
-        "MainMap::StrS" -> "MainMap::WhiteSpace"
-            [label="at/\l"];
+        "MainMap::C4" -> "MainMap::Error"
+            [label="Default/\l"];
 
-        "MainMap::StrS" -> "MainMap::A0"
+        "MainMap::Comma" -> "MainMap::A1"
+            [label="letter/\l"];
+
+        "MainMap::Comma" -> "MainMap::B1"
+            [label="letter/\l"];
+
+        "MainMap::Comma" -> "MainMap::C1"
+            [label="letter/\l"];
+
+        "MainMap::Comma" -> "MainMap::A0"
             [label="reset/\l"];
 
-        "MainMap::StrS" -> "MainMap::Error"
-            [label="EOS/\l"];
+        "MainMap::Comma" -> "MainMap::Error"
+            [label="Unknown/\l"];
 
-        "MainMap::WhiteSpace" -> "MainMap::Accept"
-            [label="EOS/\l"];
+        "MainMap::Comma" -> "MainMap::Error"
+            [label="Default/\l"];
+
+        "MainMap::WhiteSpace" -> "MainMap::FunctionName"
+            [label="letter/\l"];
 
         "MainMap::WhiteSpace" -> "MainMap::A0"
             [label="reset/\l"];
+
+        "MainMap::WhiteSpace" -> "MainMap::Error"
+            [label="Unknown/\l"];
+
+        "MainMap::WhiteSpace" -> "MainMap::Error"
+            [label="Default/\l"];
+
+        "MainMap::FunctionName" -> "MainMap::LeftParent"
+            [label="parent/\l"];
+
+        "MainMap::FunctionName" -> "MainMap::RightParent"
+            [label="parent/\l"];
+
+        "MainMap::FunctionName" -> "MainMap::WhiteSpace"
+            [label="s_push/\l"];
+
+        "MainMap::FunctionName" -> "MainMap::Comma"
+            [label="s_push/\l"];
+
+        "MainMap::FunctionName" -> "MainMap::A0"
+            [label="reset/\l"];
+
+        "MainMap::FunctionName" -> "MainMap::Error"
+            [label="Unknown/\l"];
+
+        "MainMap::FunctionName" -> "MainMap::Error"
+            [label="Default/\l"];
+
+        "MainMap::LeftParent" -> "MainMap::A1"
+            [label="letter/\l"];
+
+        "MainMap::LeftParent" -> "MainMap::B1"
+            [label="letter/\l"];
+
+        "MainMap::LeftParent" -> "MainMap::C1"
+            [label="letter/\l"];
+
+        "MainMap::LeftParent" -> "MainMap::RightParent"
+            [label="parent/\l"];
+
+        "MainMap::LeftParent" -> "MainMap::A0"
+            [label="reset/\l"];
+
+        "MainMap::LeftParent" -> "MainMap::Error"
+            [label="Unknown/\l"];
+
+        "MainMap::LeftParent" -> "MainMap::Error"
+            [label="Default/\l"];
+
+        "MainMap::RightParent" -> "MainMap::Semicolon"
+            [label="letter/\l"];
+
+        "MainMap::RightParent" -> "MainMap::A0"
+            [label="reset/\l"];
+
+        "MainMap::RightParent" -> "MainMap::Error"
+            [label="Unknown/\l"];
+
+        "MainMap::RightParent" -> "MainMap::Error"
+            [label="Default/\l"];
+
+        "MainMap::Semicolon" -> "MainMap::A0"
+            [label="reset/\l"];
+
+        "MainMap::Semicolon" -> "MainMap::Error"
+            [label="Unknown/\l"];
+
+        "MainMap::Semicolon" -> "MainMap::Error"
+            [label="Default/\l"];
 
         "%start" -> "MainMap::A0"
     }

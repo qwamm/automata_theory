@@ -29,8 +29,12 @@ class MainMap_C1;
 class MainMap_C2;
 class MainMap_C3;
 class MainMap_C4;
+class MainMap_Comma;
 class MainMap_WhiteSpace;
 class MainMap_FunctionName;
+class MainMap_LeftParent;
+class MainMap_RightParent;
+class MainMap_Semicolon;
 class MainMap_Default;
 class RecognizerState;
 class recognizerContext;
@@ -52,8 +56,9 @@ public:
     virtual void Unknown(recognizerContext& context);
     virtual void digit(recognizerContext& context, char dig);
     virtual void letter(recognizerContext& context, char let);
+    virtual void parent(recognizerContext& context, char let);
     virtual void reset(recognizerContext& context);
-    virtual void s_push(recognizerContext& context);
+    virtual void s_push(recognizerContext& context, char let);
 
 protected:
 
@@ -78,8 +83,12 @@ public:
     static MainMap_C2 C2;
     static MainMap_C3 C3;
     static MainMap_C4 C4;
+    static MainMap_Comma Comma;
     static MainMap_WhiteSpace WhiteSpace;
     static MainMap_FunctionName FunctionName;
+    static MainMap_LeftParent LeftParent;
+    static MainMap_RightParent RightParent;
+    static MainMap_Semicolon Semicolon;
 };
 
 class MainMap_Default :
@@ -148,7 +157,7 @@ public:
     : MainMap_Default(name, stateId)
     {};
 
-    virtual void s_push(recognizerContext& context);
+    virtual void s_push(recognizerContext& context, char let);
 };
 
 class MainMap_B1 :
@@ -203,7 +212,7 @@ public:
     : MainMap_Default(name, stateId)
     {};
 
-    virtual void s_push(recognizerContext& context);
+    virtual void s_push(recognizerContext& context, char let);
 };
 
 class MainMap_C1 :
@@ -247,7 +256,18 @@ public:
     : MainMap_Default(name, stateId)
     {};
 
-    virtual void s_push(recognizerContext& context);
+    virtual void s_push(recognizerContext& context, char let);
+};
+
+class MainMap_Comma :
+    public MainMap_Default
+{
+public:
+    MainMap_Comma(const char * const name, const int stateId)
+    : MainMap_Default(name, stateId)
+    {};
+
+    virtual void letter(recognizerContext& context, char let);
 };
 
 class MainMap_WhiteSpace :
@@ -269,10 +289,44 @@ public:
     : MainMap_Default(name, stateId)
     {};
 
-    virtual void EOS(recognizerContext& context);
     virtual void digit(recognizerContext& context, char dig);
     virtual void letter(recognizerContext& context, char let);
-    virtual void s_push(recognizerContext& context);
+    virtual void parent(recognizerContext& context, char let);
+    virtual void s_push(recognizerContext& context, char let);
+};
+
+class MainMap_LeftParent :
+    public MainMap_Default
+{
+public:
+    MainMap_LeftParent(const char * const name, const int stateId)
+    : MainMap_Default(name, stateId)
+    {};
+
+    virtual void letter(recognizerContext& context, char let);
+    virtual void parent(recognizerContext& context, char let);
+};
+
+class MainMap_RightParent :
+    public MainMap_Default
+{
+public:
+    MainMap_RightParent(const char * const name, const int stateId)
+    : MainMap_Default(name, stateId)
+    {};
+
+    virtual void letter(recognizerContext& context, char let);
+};
+
+class MainMap_Semicolon :
+    public MainMap_Default
+{
+public:
+    MainMap_Semicolon(const char * const name, const int stateId)
+    : MainMap_Default(name, stateId)
+    {};
+
+    virtual void EOS(recognizerContext& context);
 };
 
 class recognizerContext :
@@ -331,14 +385,19 @@ public:
         getState().letter(*this, let);
     };
 
+    inline void parent(char let)
+    {
+        getState().parent(*this, let);
+    };
+
     inline void reset()
     {
         getState().reset(*this);
     };
 
-    inline void s_push()
+    inline void s_push(char let)
     {
-        getState().s_push(*this);
+        getState().s_push(*this, let);
     };
 
 private:

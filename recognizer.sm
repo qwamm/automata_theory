@@ -31,7 +31,8 @@
 	}
 	A3
 	{
-		s_push() WhiteSpace {}
+                s_push(let : char) [let == ' '] WhiteSpace {}
+                s_push(let : char) [let == ','] Comma {}
 	}
 
         B1
@@ -52,7 +53,8 @@
         }
 	B5
 	{
-		s_push() WhiteSpace {}
+                s_push(let : char) [let == ' '] WhiteSpace {}
+                s_push(let : char) [let == ','] Comma {}
 	}
 
 	C1
@@ -72,8 +74,16 @@
 
         C4
         {
-                s_push() WhiteSpace {}
+                s_push(let : char) [let == ' '] WhiteSpace {}
+		s_push(let : char) [let == ','] Comma {}
         }
+
+	Comma
+	{
+                letter(let : char) [let == 'i'] A1 {NPush(let);}
+                letter(let : char) [let == 's'] B1 {NPush(let);}
+                letter(let : char) [let == 'l'] C1 {NPush(let);}
+	}
 
         WhiteSpace
         {
@@ -82,10 +92,26 @@
 
 	FunctionName
 	{
-		letter(let: char) [context.getOwner().text_len(16)] nil {NPush(let);}
-		digit(dig: char) [context.getOwner().text_len(16) && !context.getOwner().text_len(0)] nil {NPush(dig);}
-		s_push() WhiteSpace {}
+		parent(let: char) [let == '('] LeftParent {NPush(let); reset_len();}
+		parent(let: char) [let == ')'] RightParent {NPush(let); reset_len();}
+		letter(let: char) [context.getOwner().text_len(16)] nil {NPush(let); inc_len();}
+		digit(dig: char) [context.getOwner().text_len(16) && !context.getOwner().text_len(0)] nil {NPush(dig); inc_len();}
+		s_push(let: char) [let == ' '] WhiteSpace {reset_len();}
+		s_push(let: char) [let == ','] Comma {reset_len();}
+	}
+	LeftParent
+	{
+		letter(let : char) [let == 'i'] A1 {NPush(let);}
+		letter(let : char) [let == 's'] B1 {NPush(let);}
+		letter(let : char) [let == 'l'] C1 {NPush(let);}
+		parent(let: char) [let == ')'] RightParent {NPush(let);}
+	}
+        RightParent
+        {
+                letter(let : char) [let == ';'] Semicolon  {NPush(let);}
+        }
+	Semicolon
+	{
 		EOS nil {Correct();}
 	}
-	
 %%

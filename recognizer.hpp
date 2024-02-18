@@ -9,6 +9,7 @@ class Recognizer : public recognizerContext
 {
 	private:
 		bool isCorrect;
+		int param_len;
 		std::vector<char> function;
 	public:
 		Recognizer();
@@ -23,9 +24,17 @@ class Recognizer : public recognizerContext
 		{
 			isCorrect = false;
 		}
+		inline void inc_len()
+		{
+			param_len++;
+		}
+		inline void reset_len()
+		{
+			param_len = 0;
+		}
 		inline bool text_len(int l) const
 		{
-			return l>=function.size();
+			return l>=param_len;
 		}
 		void save(std::ofstream &out);
 		void NPush (char l)

@@ -3,6 +3,7 @@
 
 Recognizer::Recognizer() : recognizerContext(*this), isCorrect(false)
 {
+	param_len = 0;
 	setDebugFlag(true);
 }
 
@@ -19,9 +20,17 @@ bool Recognizer::check_string (std::string str)
 		{
 			digit(c);
 		}
-		if(c == ' ')
+		if(c == ' ' || c == ',')
 		{
-			s_push();
+			s_push(c);
+		}
+		if (c == ')' || c == '(')
+		{
+			parent(c);
+		}
+		if (c == ';')
+		{
+			letter(c);
 		}
 	}
 	EOS();

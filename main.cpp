@@ -20,6 +20,8 @@ int main()
 	while (!(in.eof()))
 	{
 		std::string s =  get_line(in);
+		if (in.eof())
+			break;
 		ret = read_line(rec, s);
 		std:: cout << s << " ret = " << ret << "\n";
 		rec.reset();
