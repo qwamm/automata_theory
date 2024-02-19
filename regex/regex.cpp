@@ -1,24 +1,64 @@
 #include <iostream>
 #include <fstream>
 #include <regex>
+#include <unordered_map>
 
 std::string get_line(std::ifstream &in);
 bool check_string(std::string str);
+std::string get_fname(std::string s);
 
 int main()
 {
         bool ret;
         std::ifstream in;
         in.open("input.txt");
+	std::unordered_map<std::string, int> overloads;
         while (!(in.eof()))
         {
                 std::string s =  get_line(in);
                 if (in.eof())
                         break;
                 ret = check_string(s);
+		if (ret == 1)
+		{
+			std::string fname = get_fname(s);
+			if (overloads.contains(fname))
+			{
+				overloads[fname]++;
+			}
+			else
+			{
+				overloads[fname] = 0;
+			}
+		}
                 std:: cout << s << " ret = " << ret << "\n";
         }
+	std::cout << "OVERLOADS:\n";
+	for (auto &pair : overloads)
+	{
+		std::cout << pair.first << "\t" << pair.second << "\n";
+	}
         in.close();
+}
+
+std::string get_fname (std::string s)
+{
+	std::string fname;
+	int i;
+	for (i = 0; ;)
+	{
+		if (s[i] != ' ')
+			i++;
+		else
+			break;
+	}
+	while (s[i] == ' ')
+		i++;
+	for (int j = i; s[j] != ' ' && s[j] != '('; j++)
+	{
+		fname.push_back(s[j]);
+	}
+	return fname;
 }
 
 bool check_string(std::string str)
