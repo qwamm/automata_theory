@@ -23,7 +23,7 @@ int main()
 
 bool check_string(std::string str)
 {
-	  std::regex reg ("(\\b(?:int|long|short)\\b\\s[^0-9][A-Za-z0-9]{0,15}\\((((\\b(?:int|long|short)\\b\\s[^0-9][A-Za-z0-9]{0,16}))((\\,(?!\\)))?))*\\)\\;)",  std::regex_constants::ECMAScript);
+	  std::regex reg ("(?:int|long|short)(\\s{1,})([^0-9 ])([A-Za-z0-9]{0,15})\\(((((?:int|long|short)(\\s){1,}[^0-9 ][A-Za-z0-9]{0,16}))((\\,(?!\\))(\\s){1,})?))*\\)\\;",  std::regex_constants::ECMAScript);
 	  std::smatch m;
 	  bool r = std::regex_match(str, m, reg);
 	  std::cout << m[0] << "\n";

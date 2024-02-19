@@ -268,6 +268,7 @@ public:
     {};
 
     virtual void letter(recognizerContext& context, char let);
+    virtual void s_push(recognizerContext& context, char let);
 };
 
 class MainMap_WhiteSpace :
@@ -279,6 +280,8 @@ public:
     {};
 
     virtual void letter(recognizerContext& context, char let);
+    virtual void parent(recognizerContext& context, char let);
+    virtual void s_push(recognizerContext& context, char let);
 };
 
 class MainMap_FunctionName :

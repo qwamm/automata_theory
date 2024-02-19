@@ -83,10 +83,13 @@
                 letter(let : char) [let == 'i'] A1 {NPush(let);}
                 letter(let : char) [let == 's'] B1 {NPush(let);}
                 letter(let : char) [let == 'l'] C1 {NPush(let);}
+		s_push(let : char) [let == ' '] WhiteSpace {NPush(let);}
 	}
 
         WhiteSpace
         {
+		s_push(let : char) [let == ' '] WhiteSpace {NPush(let);}
+		parent(let: char) [let == '('] LeftParent {NPush(let);}
                 letter(let : char) FunctionName {NPush(let);}
         }
 
@@ -96,7 +99,7 @@
 		parent(let: char) [let == ')'] RightParent {NPush(let); reset_len();}
 		letter(let: char) [context.getOwner().text_len(16)] nil {NPush(let); inc_len();}
 		digit(dig: char) [context.getOwner().text_len(16) && !context.getOwner().text_len(0)] nil {NPush(dig); inc_len();}
-		s_push(let: char) [let == ' '] WhiteSpace {reset_len();}
+		s_push(let: char) [let == ' '] WhiteSpace {NPush(let); reset_len();}
 		s_push(let: char) [let == ','] Comma {reset_len();}
 	}
 	LeftParent

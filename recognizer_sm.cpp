@@ -458,6 +458,34 @@ void MainMap_Comma::letter(recognizerContext& context, char let)
 
 }
 
+void MainMap_Comma::s_push(recognizerContext& context, char let)
+{
+    Recognizer& ctxt = context.getOwner();
+
+    if (let == ' ')
+    {
+        context.getState().Exit(context);
+        context.clearState();
+        try
+        {
+            ctxt.NPush(let);
+            context.setState(MainMap::WhiteSpace);
+        }
+        catch (...)
+        {
+            context.setState(MainMap::WhiteSpace);
+            throw;
+        }
+        context.getState().Entry(context);
+    }
+    else
+    {
+         MainMap_Default::s_push(context, let);
+    }
+
+
+}
+
 void MainMap_WhiteSpace::letter(recognizerContext& context, char let)
 {
     Recognizer& ctxt = context.getOwner();
@@ -475,6 +503,62 @@ void MainMap_WhiteSpace::letter(recognizerContext& context, char let)
         throw;
     }
     context.getState().Entry(context);
+
+
+}
+
+void MainMap_WhiteSpace::parent(recognizerContext& context, char let)
+{
+    Recognizer& ctxt = context.getOwner();
+
+    if (let == '(')
+    {
+        context.getState().Exit(context);
+        context.clearState();
+        try
+        {
+            ctxt.NPush(let);
+            context.setState(MainMap::LeftParent);
+        }
+        catch (...)
+        {
+            context.setState(MainMap::LeftParent);
+            throw;
+        }
+        context.getState().Entry(context);
+    }
+    else
+    {
+         MainMap_Default::parent(context, let);
+    }
+
+
+}
+
+void MainMap_WhiteSpace::s_push(recognizerContext& context, char let)
+{
+    Recognizer& ctxt = context.getOwner();
+
+    if (let == ' ')
+    {
+        context.getState().Exit(context);
+        context.clearState();
+        try
+        {
+            ctxt.NPush(let);
+            context.setState(MainMap::WhiteSpace);
+        }
+        catch (...)
+        {
+            context.setState(MainMap::WhiteSpace);
+            throw;
+        }
+        context.getState().Entry(context);
+    }
+    else
+    {
+         MainMap_Default::s_push(context, let);
+    }
 
 
 }
@@ -593,6 +677,7 @@ void MainMap_FunctionName::s_push(recognizerContext& context, char let)
         context.clearState();
         try
         {
+            ctxt.NPush(let);
             ctxt.reset_len();
             context.setState(MainMap::WhiteSpace);
         }

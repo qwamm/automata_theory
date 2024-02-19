@@ -1,1 +1,1 @@
-long f(int z);
+long  1f(int   z, int  y);

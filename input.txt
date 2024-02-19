@@ -1,1 +1,1 @@
-int f(int x,short y,long z,int fdg,short sfgjn,long uisidhg,int isg,short osrfgjn,long dsduifhdn,int efsdf);
+int f(int xyz, int ydgh);
