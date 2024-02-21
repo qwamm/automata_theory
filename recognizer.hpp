@@ -11,10 +11,16 @@ class Recognizer : public recognizerContext
 		bool isCorrect;
 		int param_len;
 		std::vector<char> function;
+		bool Parameter;
 	public:
 		Recognizer();
 		~Recognizer() {};
 
+		void print_fname()
+		{
+			for (auto &el : function)
+				std::cout << el;
+		}
 		bool check_string (std::string str);
 		inline void Correct()
 		{
@@ -23,6 +29,18 @@ class Recognizer : public recognizerContext
 		inline void Incorrect()
 		{
 			isCorrect = false;
+		}
+		void setParameterTrue()
+		{
+			Parameter = true;
+		}
+		void setParameterFalse()
+		{
+			Parameter = false;
+		}
+		bool isParameter()
+		{
+			return Parameter;
 		}
 		inline void inc_len()
 		{

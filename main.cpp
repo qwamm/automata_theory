@@ -24,6 +24,8 @@ int main()
 			break;
 		ret = read_line(rec, s);
 		std:: cout << s << " ret = " << ret << "\n";
+		rec.print_fname();
+		std::cout << "\n";
 		rec.reset();
 	}
 	in.close();
