@@ -20,6 +20,7 @@
      * altogether.
      */
 
+
 /* First, we deal with  platform-specific or compiler-specific issues. */
 
 /* begin standard C headers. */
@@ -2695,9 +2696,15 @@ static const flex_int16_t yy_chk[6159] =
 #define YY_RESTORE_YY_MORE_OFFSET
 #line 1 "flex.l"
 #line 5 "flex.l"
+#include <iostream>
+#include <string>
+#include <unordered_map>
 #include <stdlib.h>
-#line 2701 "lex.yy.cc"
-#line 2702 "lex.yy.cc"
+std::string fname, s;
+std::unordered_map<std::string, int> overloads;
+int i,j;
+#line 2707 "lex.yy.cc"
+#line 2708 "lex.yy.cc"
 
 #define INITIAL 0
 
@@ -2829,9 +2836,9 @@ YY_DECL
 		}
 
 	{
-#line 17 "flex.l"
+#line 23 "flex.l"
 
-#line 2836 "lex.yy.cc"
+#line 2842 "lex.yy.cc"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -2891,15 +2898,15 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 18 "flex.l"
-{std::cout << "GOOD\n";} 
+#line 24 "flex.l"
+{s = yytext; return 0;} 
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 19 "flex.l"
+#line 25 "flex.l"
 ECHO;
 	YY_BREAK
-#line 2904 "lex.yy.cc"
+#line 2910 "lex.yy.cc"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -3862,7 +3869,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 19 "flex.l"
+#line 25 "flex.l"
 
 
 #include <iostream>
@@ -3871,10 +3878,39 @@ void yyfree (void * ptr )
 int main()
 {
     yyFlexLexer flp;
-    while (std::cin.good())
-	if (flp.yylex())
-		std::cout << "good\n";
-	else
-		std::cout<<"bad\n";
+    while (1)
+	{
+		flp.yylex();
+		std::string fname;
+		for (i = 0; ;)
+		{
+			if (s[i] != ' ')
+				i++;
+			else
+				break;
+		}
+		while (s[i] == ' ')
+			i++;
+		for (j = i; s[j] != ' ' && s[j] != '('; j++)
+		{
+			fname.push_back(s[j]);
+		}
+		std::cout << fname << "\n";
+		if (fname == "stop")
+			break;
+		if (overloads.contains(fname))
+		{
+			overloads[fname]++;
+		}
+		else
+		{
+			overloads[fname] = 0;
+		}
+	}
+	std::cout << "OVERLOADS:\n";
+	for (auto &pair : overloads)
+	{
+		std::cout << pair.first << "\t" << pair.second << "\n";
+	}
 }
 
