@@ -5,7 +5,7 @@ Recognizer::Recognizer() : recognizerContext(*this), isCorrect(false)
 {
 	Parameter = false;
 	param_len = 0;
-	//setDebugFlag(true);
+	setDebugFlag(true);
 }
 
 bool Recognizer::check_string (std::string str)

@@ -29,7 +29,7 @@ int main()
 		ret = read_line(rec, s);
 		t = clock() - t;
 		sum += ((float)t)/CLOCKS_PER_SEC;
-		std:: cout << s << "| ret = " << !ret << "\n";
+		std:: cout << s << "| ret = " << ret << "\n";
 		rec.reset();
 	}
 	std::cout << "TIME: " << sum << "\n";
@@ -50,12 +50,12 @@ bool read_line(Recognizer& rec, std::string str)
 	{
 		if (rec.check_string(str) == false)
 		{
-			ret = 1;
+			ret = 0;
 		}
 		else
 		{
 			//rec.save(str);
-			ret = 0;
+			ret = 1;
 		}
 	}
 	catch(const SmcException &e)

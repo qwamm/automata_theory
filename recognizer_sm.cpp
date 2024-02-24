@@ -460,6 +460,7 @@ void MainMap_WhiteSpace::letter(recognizerContext& context, char let)
         try
         {
             ctxt.NPush(let);
+            ctxt.inc_len();
             context.setState(MainMap::FunctionName);
         }
         catch (...)
@@ -473,8 +474,17 @@ void MainMap_WhiteSpace::letter(recognizerContext& context, char let)
 
     {
         context.getState().Exit(context);
-        // No actions.
-        context.setState(MainMap::ParameterName);
+        context.clearState();
+        try
+        {
+            ctxt.inc_len();
+            context.setState(MainMap::ParameterName);
+        }
+        catch (...)
+        {
+            context.setState(MainMap::ParameterName);
+            throw;
+        }
         context.getState().Entry(context);
     }    else
     {
@@ -809,12 +819,22 @@ void MainMap_LeftParent::letter(recognizerContext& context, char let)
 
 void MainMap_LeftParent::parent(recognizerContext& context, char let)
 {
+    Recognizer& ctxt = context.getOwner();
 
     if (let == ')')
     {
         context.getState().Exit(context);
-        // No actions.
-        context.setState(MainMap::RightParent);
+        context.clearState();
+        try
+        {
+            ctxt.setParameterFalse();
+            context.setState(MainMap::RightParent);
+        }
+        catch (...)
+        {
+            context.setState(MainMap::RightParent);
+            throw;
+        }
         context.getState().Entry(context);
     }
     else

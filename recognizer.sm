@@ -90,8 +90,8 @@
         {
 		s_push(let : char) [let == ' '] WhiteSpace {}
 		parent(let: char) [let == '('] LeftParent {setParameterTrue();}
-                letter(let : char) [context.getOwner().isParameter() == false] FunctionName {NPush(let);}
-		letter(let : char) [context.getOwner().isParameter() == true] ParameterName {}
+                letter(let : char) [context.getOwner().isParameter() == false] FunctionName {NPush(let); inc_len();}
+		letter(let : char) [context.getOwner().isParameter() == true] ParameterName {inc_len();}
         }
 
         ParameterName
@@ -115,7 +115,7 @@
 		letter(let : char) [let == 'i'] A1 {}
 		letter(let : char) [let == 's'] B1 {}
 		letter(let : char) [let == 'l'] C1 {}
-		parent(let: char) [let == ')'] RightParent {}
+		parent(let: char) [let == ')'] RightParent {setParameterFalse();}
 	}
         RightParent
         {
