@@ -1,3 +1,0 @@
-/home/fdfdas/automata_theory/CMakeFiles/test.dir
-/home/fdfdas/automata_theory/CMakeFiles/edit_cache.dir
-/home/fdfdas/automata_theory/CMakeFiles/rebuild_cache.dir

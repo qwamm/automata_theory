@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <regex>
+#include <time.h>
 #include <unordered_map>
 
 std::string get_line(std::ifstream &in);
@@ -9,6 +10,8 @@ std::string get_fname(std::string s);
 
 int main()
 {
+	float sum = 0;
+	clock_t t;
         bool ret;
         std::ifstream in;
         in.open("input.txt");
@@ -18,7 +21,10 @@ int main()
                 std::string s =  get_line(in);
                 if (in.eof())
                         break;
+		t = clock();
                 ret = check_string(s);
+		t = clock() - t;
+		sum += ((float)t)/CLOCKS_PER_SEC;
 		if (ret == 1)
 		{
 			std::string fname = get_fname(s);
@@ -33,6 +39,7 @@ int main()
 		}
                 std:: cout << s << " ret = " << ret << "\n";
         }
+	std::cout << "TIME: " << sum << "\n";
 	std::cout << "OVERLOADS:\n";
 	for (auto &pair : overloads)
 	{

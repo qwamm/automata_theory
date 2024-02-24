@@ -19,7 +19,7 @@
      * We will address this in a future release of flex, or omit the C++ scanner
      * altogether.
      */
-
+    
 
 /* First, we deal with  platform-specific or compiler-specific issues. */
 
@@ -2700,11 +2700,13 @@ static const flex_int16_t yy_chk[6159] =
 #include <string>
 #include <unordered_map>
 #include <stdlib.h>
+#include <time.h>
 std::string fname, s;
 std::unordered_map<std::string, int> overloads;
 int i,j;
-#line 2707 "lex.yy.cc"
-#line 2708 "lex.yy.cc"
+clock_t t;
+#line 2709 "lex.yy.cc"
+#line 2710 "lex.yy.cc"
 
 #define INITIAL 0
 
@@ -2836,9 +2838,9 @@ YY_DECL
 		}
 
 	{
-#line 23 "flex.l"
+#line 25 "flex.l"
 
-#line 2842 "lex.yy.cc"
+#line 2844 "lex.yy.cc"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -2898,17 +2900,19 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 24 "flex.l"
-{s = yytext; return 0;} 
+#line 26 "flex.l"
+{std::cout << "GOOD\n"; s = yytext; return 1;} 
+	YY_BREAK
+case YY_STATE_EOF(INITIAL):
+#line 27 "flex.l"
+{ return 2; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 25 "flex.l"
+#line 28 "flex.l"
 ECHO;
 	YY_BREAK
-#line 2910 "lex.yy.cc"
-case YY_STATE_EOF(INITIAL):
-	yyterminate();
+#line 2916 "lex.yy.cc"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -3869,7 +3873,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 25 "flex.l"
+#line 28 "flex.l"
 
 
 #include <iostream>
@@ -3877,10 +3881,19 @@ void yyfree (void * ptr )
 #include <FlexLexer.h>
 int main()
 {
-    yyFlexLexer flp;
-    while (1)
+	float sum = 0;
+	yyFlexLexer flp;
+	std::ifstream in;
+	in.open("input.txt");
+	flp.switch_streams(in, std::cout);
+        while (1)
 	{
-		flp.yylex();
+		t = clock();
+		if (flp.yylex() == 2)
+			break;
+		t = clock() - t;
+		float tm = ((float)t)/CLOCKS_PER_SEC; 
+		sum+=tm;
 		std::string fname;
 		for (i = 0; ;)
 		{
@@ -3895,9 +3908,8 @@ int main()
 		{
 			fname.push_back(s[j]);
 		}
-		std::cout << fname << "\n";
-		if (fname == "stop")
-			break;
+		//if (fname == "stop")
+		//	break;
 		if (overloads.contains(fname))
 		{
 			overloads[fname]++;
@@ -3907,6 +3919,8 @@ int main()
 			overloads[fname] = 0;
 		}
 	}
+	in.close();
+	std::cout << "TIME: " << sum << "\n";
 	std::cout << "OVERLOADS:\n";
 	for (auto &pair : overloads)
 	{

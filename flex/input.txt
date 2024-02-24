@@ -1,1 +1,5 @@
-short x();
+long  f(int   z, int  y);
+short g();
+int f(short  x);
+long g(int h);
+short w();

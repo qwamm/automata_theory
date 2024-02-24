@@ -14,6 +14,7 @@ bool read_line(Recognizer& rec, std::string str);
 
 int main()
 {
+	float sum = 0;
 	clock_t t;
 	bool ret;
 	Recognizer rec;
@@ -27,10 +28,11 @@ int main()
 		t = clock();
 		ret = read_line(rec, s);
 		t = clock() - t;
-		std::cout << "Time: " << ((float)t)/CLOCKS_PER_SEC << "\n";
+		sum += ((float)t)/CLOCKS_PER_SEC;
 		std:: cout << s << "| ret = " << !ret << "\n";
 		rec.reset();
 	}
+	std::cout << "TIME: " << sum << "\n";
 	in.close();
 }
 

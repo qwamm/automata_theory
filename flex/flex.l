@@ -6,9 +6,11 @@
 #include <string>
 #include <unordered_map>
 #include <stdlib.h>
+#include <time.h>
 std::string fname, s;
 std::unordered_map<std::string, int> overloads;
 int i,j;
+clock_t t;
 %}
 
 COMMA "," 
@@ -21,7 +23,8 @@ NAME [a-zA-Z0-9]{0,15}
 TYPE (?:int|long|short) 
  
 %% 
-{TYPE}({SPACESHIP}{1,})({FIRST_LETTER})({NAME}{0,15}){LEFT_PARENT}({TYPE}({SPACESHIP}{1,})({FIRST_LETTER})({NAME}{0,15})({COMMA}?({SPACESHIP})*))*{RIGHT_PARENT}{SEMICOLON} {s = yytext; return 0;} 
+{TYPE}({SPACESHIP}{1,})({FIRST_LETTER})({NAME}{0,15}){LEFT_PARENT}({TYPE}({SPACESHIP}{1,})({FIRST_LETTER})({NAME}{0,15})({COMMA}?({SPACESHIP})*))*{RIGHT_PARENT}{SEMICOLON} {std::cout << "GOOD\n"; s = yytext; return 1;} 
+<<EOF>>   { return 2; }
 %% 
 
 #include <iostream>
@@ -29,10 +32,19 @@ TYPE (?:int|long|short)
 #include <FlexLexer.h>
 int main()
 {
-    yyFlexLexer flp;
-    while (1)
+	float sum = 0;
+	yyFlexLexer flp;
+	std::ifstream in;
+	in.open("input.txt");
+	flp.switch_streams(in, std::cout);
+        while (1)
 	{
-		flp.yylex();
+		t = clock();
+		if (flp.yylex() == 2)
+			break;
+		t = clock() - t;
+		float tm = ((float)t)/CLOCKS_PER_SEC; 
+		sum+=tm;
 		std::string fname;
 		for (i = 0; ;)
 		{
@@ -47,9 +59,8 @@ int main()
 		{
 			fname.push_back(s[j]);
 		}
-		std::cout << fname << "\n";
-		if (fname == "stop")
-			break;
+		//if (fname == "stop")
+		//	break;
 		if (overloads.contains(fname))
 		{
 			overloads[fname]++;
@@ -59,6 +70,8 @@ int main()
 			overloads[fname] = 0;
 		}
 	}
+	in.close();
+	std::cout << "TIME: " << sum << "\n";
 	std::cout << "OVERLOADS:\n";
 	for (auto &pair : overloads)
 	{
