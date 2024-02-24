@@ -9,6 +9,7 @@ class Recognizer : public recognizerContext
 {
 	private:
 		bool isCorrect;
+		bool Parameter;
 		int param_len;
 		std::vector<char> function;
 	public:
@@ -19,6 +20,18 @@ class Recognizer : public recognizerContext
 		inline void Correct()
 		{
 			isCorrect = true;
+		}
+		inline void setParameterTrue()
+		{
+			Parameter = true;
+		}
+                inline void setParameterFalse()
+                {
+                        Parameter = false;
+                }
+		inline bool isParameter()
+		{
+			return Parameter;
 		}
 		inline void Incorrect()
 		{

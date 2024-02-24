@@ -31,6 +31,7 @@ class MainMap_C3;
 class MainMap_C4;
 class MainMap_Comma;
 class MainMap_WhiteSpace;
+class MainMap_ParameterName;
 class MainMap_FunctionName;
 class MainMap_LeftParent;
 class MainMap_RightParent;
@@ -85,6 +86,7 @@ public:
     static MainMap_C4 C4;
     static MainMap_Comma Comma;
     static MainMap_WhiteSpace WhiteSpace;
+    static MainMap_ParameterName ParameterName;
     static MainMap_FunctionName FunctionName;
     static MainMap_LeftParent LeftParent;
     static MainMap_RightParent RightParent;
@@ -279,6 +281,20 @@ public:
     : MainMap_Default(name, stateId)
     {};
 
+    virtual void letter(recognizerContext& context, char let);
+    virtual void parent(recognizerContext& context, char let);
+    virtual void s_push(recognizerContext& context, char let);
+};
+
+class MainMap_ParameterName :
+    public MainMap_Default
+{
+public:
+    MainMap_ParameterName(const char * const name, const int stateId)
+    : MainMap_Default(name, stateId)
+    {};
+
+    virtual void digit(recognizerContext& context, char dig);
     virtual void letter(recognizerContext& context, char let);
     virtual void parent(recognizerContext& context, char let);
     virtual void s_push(recognizerContext& context, char let);

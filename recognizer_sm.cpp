@@ -27,10 +27,11 @@ MainMap_C3 MainMap::C3("MainMap::C3", 12);
 MainMap_C4 MainMap::C4("MainMap::C4", 13);
 MainMap_Comma MainMap::Comma("MainMap::Comma", 14);
 MainMap_WhiteSpace MainMap::WhiteSpace("MainMap::WhiteSpace", 15);
-MainMap_FunctionName MainMap::FunctionName("MainMap::FunctionName", 16);
-MainMap_LeftParent MainMap::LeftParent("MainMap::LeftParent", 17);
-MainMap_RightParent MainMap::RightParent("MainMap::RightParent", 18);
-MainMap_Semicolon MainMap::Semicolon("MainMap::Semicolon", 19);
+MainMap_ParameterName MainMap::ParameterName("MainMap::ParameterName", 16);
+MainMap_FunctionName MainMap::FunctionName("MainMap::FunctionName", 17);
+MainMap_LeftParent MainMap::LeftParent("MainMap::LeftParent", 18);
+MainMap_RightParent MainMap::RightParent("MainMap::RightParent", 19);
+MainMap_Semicolon MainMap::Semicolon("MainMap::Semicolon", 20);
 
 void RecognizerState::EOS(recognizerContext& context)
 {
@@ -399,56 +400,28 @@ void MainMap_C4::s_push(recognizerContext& context, char let)
 
 void MainMap_Comma::letter(recognizerContext& context, char let)
 {
-    Recognizer& ctxt = context.getOwner();
 
     if (let == 'i')
     {
         context.getState().Exit(context);
-        context.clearState();
-        try
-        {
-            ctxt.NPush(let);
-            context.setState(MainMap::A1);
-        }
-        catch (...)
-        {
-            context.setState(MainMap::A1);
-            throw;
-        }
+        // No actions.
+        context.setState(MainMap::A1);
         context.getState().Entry(context);
     }
     else if (let == 's')
 
     {
         context.getState().Exit(context);
-        context.clearState();
-        try
-        {
-            ctxt.NPush(let);
-            context.setState(MainMap::B1);
-        }
-        catch (...)
-        {
-            context.setState(MainMap::B1);
-            throw;
-        }
+        // No actions.
+        context.setState(MainMap::B1);
         context.getState().Entry(context);
     }
     else if (let == 'l')
 
     {
         context.getState().Exit(context);
-        context.clearState();
-        try
-        {
-            ctxt.NPush(let);
-            context.setState(MainMap::C1);
-        }
-        catch (...)
-        {
-            context.setState(MainMap::C1);
-            throw;
-        }
+        // No actions.
+        context.setState(MainMap::C1);
         context.getState().Entry(context);
     }    else
     {
@@ -460,22 +433,12 @@ void MainMap_Comma::letter(recognizerContext& context, char let)
 
 void MainMap_Comma::s_push(recognizerContext& context, char let)
 {
-    Recognizer& ctxt = context.getOwner();
 
     if (let == ' ')
     {
         context.getState().Exit(context);
-        context.clearState();
-        try
-        {
-            ctxt.NPush(let);
-            context.setState(MainMap::WhiteSpace);
-        }
-        catch (...)
-        {
-            context.setState(MainMap::WhiteSpace);
-            throw;
-        }
+        // No actions.
+        context.setState(MainMap::WhiteSpace);
         context.getState().Entry(context);
     }
     else
@@ -490,19 +453,33 @@ void MainMap_WhiteSpace::letter(recognizerContext& context, char let)
 {
     Recognizer& ctxt = context.getOwner();
 
-    context.getState().Exit(context);
-    context.clearState();
-    try
+    if (context.getOwner().isParameter() == false)
     {
-        ctxt.NPush(let);
-        context.setState(MainMap::FunctionName);
+        context.getState().Exit(context);
+        context.clearState();
+        try
+        {
+            ctxt.NPush(let);
+            context.setState(MainMap::FunctionName);
+        }
+        catch (...)
+        {
+            context.setState(MainMap::FunctionName);
+            throw;
+        }
+        context.getState().Entry(context);
     }
-    catch (...)
+    else if (context.getOwner().isParameter() == true)
+
     {
-        context.setState(MainMap::FunctionName);
-        throw;
+        context.getState().Exit(context);
+        // No actions.
+        context.setState(MainMap::ParameterName);
+        context.getState().Entry(context);
+    }    else
+    {
+         MainMap_Default::letter(context, let);
     }
-    context.getState().Entry(context);
 
 
 }
@@ -517,7 +494,7 @@ void MainMap_WhiteSpace::parent(recognizerContext& context, char let)
         context.clearState();
         try
         {
-            ctxt.NPush(let);
+            ctxt.setParameterTrue();
             context.setState(MainMap::LeftParent);
         }
         catch (...)
@@ -537,6 +514,109 @@ void MainMap_WhiteSpace::parent(recognizerContext& context, char let)
 
 void MainMap_WhiteSpace::s_push(recognizerContext& context, char let)
 {
+
+    if (let == ' ')
+    {
+        context.getState().Exit(context);
+        // No actions.
+        context.setState(MainMap::WhiteSpace);
+        context.getState().Entry(context);
+    }
+    else
+    {
+         MainMap_Default::s_push(context, let);
+    }
+
+
+}
+
+void MainMap_ParameterName::digit(recognizerContext& context, char dig)
+{
+    Recognizer& ctxt = context.getOwner();
+
+    if (context.getOwner().text_len(16) && !context.getOwner().text_len(0))
+    {
+        RecognizerState& endState = context.getState();
+
+        context.clearState();
+        try
+        {
+            ctxt.inc_len();
+            context.setState(endState);
+        }
+        catch (...)
+        {
+            context.setState(endState);
+            throw;
+        }
+    }
+    else
+    {
+         MainMap_Default::digit(context, dig);
+    }
+
+
+}
+
+void MainMap_ParameterName::letter(recognizerContext& context, char let)
+{
+    Recognizer& ctxt = context.getOwner();
+
+    if (context.getOwner().text_len(16))
+    {
+        RecognizerState& endState = context.getState();
+
+        context.clearState();
+        try
+        {
+            ctxt.inc_len();
+            context.setState(endState);
+        }
+        catch (...)
+        {
+            context.setState(endState);
+            throw;
+        }
+    }
+    else
+    {
+         MainMap_Default::letter(context, let);
+    }
+
+
+}
+
+void MainMap_ParameterName::parent(recognizerContext& context, char let)
+{
+    Recognizer& ctxt = context.getOwner();
+
+    if (let == ')')
+    {
+        context.getState().Exit(context);
+        context.clearState();
+        try
+        {
+            ctxt.setParameterFalse();
+            ctxt.reset_len();
+            context.setState(MainMap::RightParent);
+        }
+        catch (...)
+        {
+            context.setState(MainMap::RightParent);
+            throw;
+        }
+        context.getState().Entry(context);
+    }
+    else
+    {
+         MainMap_Default::parent(context, let);
+    }
+
+
+}
+
+void MainMap_ParameterName::s_push(recognizerContext& context, char let)
+{
     Recognizer& ctxt = context.getOwner();
 
     if (let == ' ')
@@ -545,7 +625,7 @@ void MainMap_WhiteSpace::s_push(recognizerContext& context, char let)
         context.clearState();
         try
         {
-            ctxt.NPush(let);
+            ctxt.reset_len();
             context.setState(MainMap::WhiteSpace);
         }
         catch (...)
@@ -555,7 +635,23 @@ void MainMap_WhiteSpace::s_push(recognizerContext& context, char let)
         }
         context.getState().Entry(context);
     }
-    else
+    else if (let == ',')
+
+    {
+        context.getState().Exit(context);
+        context.clearState();
+        try
+        {
+            ctxt.reset_len();
+            context.setState(MainMap::Comma);
+        }
+        catch (...)
+        {
+            context.setState(MainMap::Comma);
+            throw;
+        }
+        context.getState().Entry(context);
+    }    else
     {
          MainMap_Default::s_push(context, let);
     }
@@ -631,7 +727,7 @@ void MainMap_FunctionName::parent(recognizerContext& context, char let)
         context.clearState();
         try
         {
-            ctxt.NPush(let);
+            ctxt.setParameterTrue();
             ctxt.reset_len();
             context.setState(MainMap::LeftParent);
         }
@@ -642,24 +738,7 @@ void MainMap_FunctionName::parent(recognizerContext& context, char let)
         }
         context.getState().Entry(context);
     }
-    else if (let == ')')
-
-    {
-        context.getState().Exit(context);
-        context.clearState();
-        try
-        {
-            ctxt.NPush(let);
-            ctxt.reset_len();
-            context.setState(MainMap::RightParent);
-        }
-        catch (...)
-        {
-            context.setState(MainMap::RightParent);
-            throw;
-        }
-        context.getState().Entry(context);
-    }    else
+    else
     {
          MainMap_Default::parent(context, let);
     }
@@ -677,7 +756,6 @@ void MainMap_FunctionName::s_push(recognizerContext& context, char let)
         context.clearState();
         try
         {
-            ctxt.NPush(let);
             ctxt.reset_len();
             context.setState(MainMap::WhiteSpace);
         }
@@ -688,23 +766,7 @@ void MainMap_FunctionName::s_push(recognizerContext& context, char let)
         }
         context.getState().Entry(context);
     }
-    else if (let == ',')
-
-    {
-        context.getState().Exit(context);
-        context.clearState();
-        try
-        {
-            ctxt.reset_len();
-            context.setState(MainMap::Comma);
-        }
-        catch (...)
-        {
-            context.setState(MainMap::Comma);
-            throw;
-        }
-        context.getState().Entry(context);
-    }    else
+    else
     {
          MainMap_Default::s_push(context, let);
     }
@@ -714,56 +776,28 @@ void MainMap_FunctionName::s_push(recognizerContext& context, char let)
 
 void MainMap_LeftParent::letter(recognizerContext& context, char let)
 {
-    Recognizer& ctxt = context.getOwner();
 
     if (let == 'i')
     {
         context.getState().Exit(context);
-        context.clearState();
-        try
-        {
-            ctxt.NPush(let);
-            context.setState(MainMap::A1);
-        }
-        catch (...)
-        {
-            context.setState(MainMap::A1);
-            throw;
-        }
+        // No actions.
+        context.setState(MainMap::A1);
         context.getState().Entry(context);
     }
     else if (let == 's')
 
     {
         context.getState().Exit(context);
-        context.clearState();
-        try
-        {
-            ctxt.NPush(let);
-            context.setState(MainMap::B1);
-        }
-        catch (...)
-        {
-            context.setState(MainMap::B1);
-            throw;
-        }
+        // No actions.
+        context.setState(MainMap::B1);
         context.getState().Entry(context);
     }
     else if (let == 'l')
 
     {
         context.getState().Exit(context);
-        context.clearState();
-        try
-        {
-            ctxt.NPush(let);
-            context.setState(MainMap::C1);
-        }
-        catch (...)
-        {
-            context.setState(MainMap::C1);
-            throw;
-        }
+        // No actions.
+        context.setState(MainMap::C1);
         context.getState().Entry(context);
     }    else
     {
@@ -775,22 +809,12 @@ void MainMap_LeftParent::letter(recognizerContext& context, char let)
 
 void MainMap_LeftParent::parent(recognizerContext& context, char let)
 {
-    Recognizer& ctxt = context.getOwner();
 
     if (let == ')')
     {
         context.getState().Exit(context);
-        context.clearState();
-        try
-        {
-            ctxt.NPush(let);
-            context.setState(MainMap::RightParent);
-        }
-        catch (...)
-        {
-            context.setState(MainMap::RightParent);
-            throw;
-        }
+        // No actions.
+        context.setState(MainMap::RightParent);
         context.getState().Entry(context);
     }
     else
@@ -803,22 +827,12 @@ void MainMap_LeftParent::parent(recognizerContext& context, char let)
 
 void MainMap_RightParent::letter(recognizerContext& context, char let)
 {
-    Recognizer& ctxt = context.getOwner();
 
     if (let == ';')
     {
         context.getState().Exit(context);
-        context.clearState();
-        try
-        {
-            ctxt.NPush(let);
-            context.setState(MainMap::Semicolon);
-        }
-        catch (...)
-        {
-            context.setState(MainMap::Semicolon);
-            throw;
-        }
+        // No actions.
+        context.setState(MainMap::Semicolon);
         context.getState().Entry(context);
     }
     else

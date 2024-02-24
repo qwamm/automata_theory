@@ -80,38 +80,46 @@
 
 	Comma
 	{
-                letter(let : char) [let == 'i'] A1 {NPush(let);}
-                letter(let : char) [let == 's'] B1 {NPush(let);}
-                letter(let : char) [let == 'l'] C1 {NPush(let);}
-		s_push(let : char) [let == ' '] WhiteSpace {NPush(let);}
+                letter(let : char) [let == 'i'] A1 {}
+                letter(let : char) [let == 's'] B1 {}
+                letter(let : char) [let == 'l'] C1 {}
+		s_push(let : char) [let == ' '] WhiteSpace {}
 	}
 
         WhiteSpace
         {
-		s_push(let : char) [let == ' '] WhiteSpace {NPush(let);}
-		parent(let: char) [let == '('] LeftParent {NPush(let);}
-                letter(let : char) FunctionName {NPush(let);}
+		s_push(let : char) [let == ' '] WhiteSpace {}
+		parent(let: char) [let == '('] LeftParent {setParameterTrue();}
+                letter(let : char) [context.getOwner().isParameter() == false] FunctionName {NPush(let);}
+		letter(let : char) [context.getOwner().isParameter() == true] ParameterName {}
+        }
+
+        ParameterName
+        {
+                parent(let: char) [let == ')'] RightParent {setParameterFalse(); reset_len();}
+                letter(let: char) [context.getOwner().text_len(16)] nil {inc_len();}
+                digit(dig: char) [context.getOwner().text_len(16) && !context.getOwner().text_len(0)] nil {inc_len();}
+                s_push(let: char) [let == ' '] WhiteSpace {reset_len();}
+                s_push(let: char) [let == ','] Comma {reset_len();}
         }
 
 	FunctionName
 	{
-		parent(let: char) [let == '('] LeftParent {NPush(let); reset_len();}
-		parent(let: char) [let == ')'] RightParent {NPush(let); reset_len();}
+		parent(let: char) [let == '('] LeftParent {setParameterTrue(); reset_len();}
 		letter(let: char) [context.getOwner().text_len(16)] nil {NPush(let); inc_len();}
 		digit(dig: char) [context.getOwner().text_len(16) && !context.getOwner().text_len(0)] nil {NPush(dig); inc_len();}
-		s_push(let: char) [let == ' '] WhiteSpace {NPush(let); reset_len();}
-		s_push(let: char) [let == ','] Comma {reset_len();}
+		s_push(let: char) [let == ' '] WhiteSpace {reset_len();}
 	}
 	LeftParent
 	{
-		letter(let : char) [let == 'i'] A1 {NPush(let);}
-		letter(let : char) [let == 's'] B1 {NPush(let);}
-		letter(let : char) [let == 'l'] C1 {NPush(let);}
-		parent(let: char) [let == ')'] RightParent {NPush(let);}
+		letter(let : char) [let == 'i'] A1 {}
+		letter(let : char) [let == 's'] B1 {}
+		letter(let : char) [let == 'l'] C1 {}
+		parent(let: char) [let == ')'] RightParent {}
 	}
         RightParent
         {
-                letter(let : char) [let == ';'] Semicolon  {NPush(let);}
+                letter(let : char) [let == ';'] Semicolon  {}
         }
 	Semicolon
 	{

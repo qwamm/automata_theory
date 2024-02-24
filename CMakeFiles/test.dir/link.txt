@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/test.dir/recognizer.cpp.o CMakeFiles/test.dir/main.cpp.o CMakeFiles/test.dir/recognizer_sm.cpp.o -o test 

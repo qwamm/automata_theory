@@ -2,6 +2,7 @@
 #include <fstream>
 #include <compare>
 #include <string>
+#include "time.h"
 #include "recognizer.hpp"
 #include "recognizer_sm.h"
 #include "statemap.h"
@@ -13,6 +14,7 @@ bool read_line(Recognizer& rec, std::string str);
 
 int main()
 {
+	clock_t t;
 	bool ret;
 	Recognizer rec;
 	std::ifstream in;
@@ -22,8 +24,11 @@ int main()
 		std::string s =  get_line(in);
 		if (in.eof())
 			break;
+		t = clock();
 		ret = read_line(rec, s);
-		std:: cout << s << " ret = " << ret << "\n";
+		t = clock() - t;
+		std::cout << "Time: " << ((float)t)/CLOCKS_PER_SEC << "\n";
+		std:: cout << s << "| ret = " << !ret << "\n";
 		rec.reset();
 	}
 	in.close();
