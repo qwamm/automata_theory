@@ -119,7 +119,7 @@
 	}
         RightParent
         {
-                letter(let : char) [let == ';'] Semicolon  {}
+                letter(let : char) [let == ';'] Semicolon  {setParameterFalse();}
         }
 	Semicolon
 	{

@@ -31,6 +31,7 @@ int main()
 		sum += ((float)t)/CLOCKS_PER_SEC;
 		std:: cout << s << "| ret = " << ret << "\n";
 		rec.reset();
+		rec.setParameterFalse();
 	}
 	std::cout << "TIME: " << sum << "\n";
 	in.close();

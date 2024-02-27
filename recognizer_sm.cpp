@@ -847,12 +847,22 @@ void MainMap_LeftParent::parent(recognizerContext& context, char let)
 
 void MainMap_RightParent::letter(recognizerContext& context, char let)
 {
+    Recognizer& ctxt = context.getOwner();
 
     if (let == ';')
     {
         context.getState().Exit(context);
-        // No actions.
-        context.setState(MainMap::Semicolon);
+        context.clearState();
+        try
+        {
+            ctxt.setParameterFalse();
+            context.setState(MainMap::Semicolon);
+        }
+        catch (...)
+        {
+            context.setState(MainMap::Semicolon);
+            throw;
+        }
         context.getState().Entry(context);
     }
     else
