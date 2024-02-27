@@ -23,7 +23,7 @@ NAME [a-zA-Z0-9]{0,15}
 TYPE (?:int|long|short) 
  
 %% 
-{TYPE}({SPACESHIP}{1,})({FIRST_LETTER})({NAME}{0,15}){LEFT_PARENT}({TYPE}({SPACESHIP}{1,})({FIRST_LETTER})({NAME}{0,15})({COMMA}?({SPACESHIP})*))*{RIGHT_PARENT}{SEMICOLON} {std::cout << "GOOD\n"; s = yytext; return 1;} 
+{TYPE}({SPACESHIP}{1,})({FIRST_LETTER})({NAME}{0,15}){LEFT_PARENT}({TYPE}({SPACESHIP}{1,})({FIRST_LETTER})({NAME}{0,15})(({SPACESHIP})*{COMMA}?({SPACESHIP})*)*)*{RIGHT_PARENT}{SEMICOLON} {std::cout << "GOOD\n"; s = yytext; return 1;} 
 <<EOF>>   { return 2; }
 %% 
 
@@ -43,6 +43,7 @@ int main()
 		if (flp.yylex() == 2)
 			break;
 		t = clock() - t;
+		std::cout << s << "\n";
 		float tm = ((float)t)/CLOCKS_PER_SEC; 
 		sum+=tm;
 		std::string fname;
