@@ -18,22 +18,20 @@ int main()
 	clock_t t;
 	bool ret;
 	Recognizer rec;
-	std::ifstream in;
-	in.open("input.txt");
-	while (!(in.eof()))
+	std::string s;
+	while (std::getline(std::cin, s))
 	{
-		std::string s =  get_line(in);
-		if (in.eof()) break;
+		//std::string s;
+		//std::cin >> s;
 		t = clock();
 		ret = read_line(rec, s);
 		t = clock() - t;
 		sum += ((float)t)/CLOCKS_PER_SEC;
-		std:: cout << s << "| ret = " << ret << "\n";
+		std:: cout << s << " | ret = " << ret << "\n";
 		rec.reset();
 		rec.setParameterFalse();
 	}
 	std::cout << "TIME: " << sum << "\n";
-	in.close();
 }
 
 std::string get_line(std::ifstream &in)

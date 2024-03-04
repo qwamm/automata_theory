@@ -40,13 +40,17 @@ SEMICOLON {std::cout << "7" << "\n";}
 int main()
 {
 	yyFlexLexer flp;
-	std::ifstream in;
-	in.open("input.txt");
-	flp.switch_streams(in, std::cout);
+	flp.switch_streams(std::cin, std::cout);
         while (1)
 	{
 		if (flp.yylex() == 2)
 			break;
+	}
+	std::cout << "TIME: " << sum << "\n";
+	std::cout << "OVERLOADS:\n";
+	for (auto &pair : overloads)
+	{
+		std::cout << pair.first << "\t" << pair.second << "\n";
 	}
 	in.close();
 }

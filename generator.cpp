@@ -10,13 +10,13 @@ std::string gen_parameter();
 int main()
 {
 	srand(time(NULL));
-	std::ofstream of;
-	of.open("input.txt");
+	//std::ofstream of;
+	//of.open("input.txt");
 	for (int i = 0; i < 10; i++)
 	{
-		of << gen_type() + gen_spaces() + gen_str() + "(" + gen_parameter() + ")" + ";" << "\n";
+		std::cout << gen_type() + gen_spaces() + gen_str() + "(" + gen_parameter() + ")" + ";" << "\n";
 	}
-	of.close();
+	//of.close();
 }
 
 std::string gen_parameter()
@@ -26,7 +26,7 @@ std::string gen_parameter()
 	for (int i = 0; i < q; i++)
 	{
 		if (i < q-1)
-			res += (gen_type() + gen_spaces() + gen_str() + "," + " ");
+			res += (gen_type() + gen_spaces() + gen_str() + ",");
 		else
 			res += (gen_type() + gen_spaces() + gen_str());
 	}
@@ -59,7 +59,7 @@ std::string gen_str()
 	const char alphanum[] =
         "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 	std::string str;
-	int len = rand()%25 + 1;
+	int len = rand()%15 + 1;
 	for (int i = 0; i < len; i++)
 	{
 		str += alphanum[rand() % (sizeof(alphanum) -1)];

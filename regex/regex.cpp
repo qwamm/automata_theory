@@ -13,14 +13,10 @@ int main()
 	float sum = 0;
 	clock_t t;
         bool ret;
-        std::ifstream in;
-        in.open("input.txt");
 	std::unordered_map<std::string, int> overloads;
-        while (!(in.eof()))
+	std::string s;
+        while (std::getline(std::cin, s))
         {
-                std::string s =  get_line(in);
-                if (in.eof())
-                        break;
 		t = clock();
                 ret = check_string(s);
 		t = clock() - t;
@@ -45,7 +41,6 @@ int main()
 	{
 		std::cout << pair.first << "\t" << pair.second << "\n";
 	}
-        in.close();
 }
 
 std::string get_fname (std::string s)
