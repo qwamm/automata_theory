@@ -23,8 +23,7 @@ int main()
 	while (!(in.eof()))
 	{
 		std::string s =  get_line(in);
-		if (in.eof())
-			break;
+		if (in.eof()) break;
 		t = clock();
 		ret = read_line(rec, s);
 		t = clock() - t;
@@ -46,23 +45,13 @@ std::string get_line(std::ifstream &in)
 
 bool read_line(Recognizer& rec, std::string str)
 {
-	bool ret;
 	try
 	{
-		if (rec.check_string(str) == false)
-		{
-			ret = 0;
-		}
-		else
-		{
-			//rec.save(str);
-			ret = 1;
-		}
+		return rec.check_string(str);
 	}
 	catch(const SmcException &e)
 	{
 		std::cout << "string " << str << "incorrect - " << e.what() << "\n";
-		ret = 1;
+		return 0;
 	}
-	return ret;
 }

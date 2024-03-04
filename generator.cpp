@@ -59,7 +59,7 @@ std::string gen_str()
 	const char alphanum[] =
         "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 	std::string str;
-	int len = rand()%16 + 1;
+	int len = rand()%25 + 1;
 	for (int i = 0; i < len; i++)
 	{
 		str += alphanum[rand() % (sizeof(alphanum) -1)];

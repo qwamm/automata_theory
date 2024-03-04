@@ -207,14 +207,7 @@ void MainMap_A3::s_push(recognizerContext& context, char let)
         context.setState(MainMap::WhiteSpace);
         context.getState().Entry(context);
     }
-    else if (let == ',')
-
-    {
-        context.getState().Exit(context);
-        // No actions.
-        context.setState(MainMap::Comma);
-        context.getState().Entry(context);
-    }    else
+    else
     {
          MainMap_Default::s_push(context, let);
     }
@@ -304,14 +297,7 @@ void MainMap_B5::s_push(recognizerContext& context, char let)
         context.setState(MainMap::WhiteSpace);
         context.getState().Entry(context);
     }
-    else if (let == ',')
-
-    {
-        context.getState().Exit(context);
-        // No actions.
-        context.setState(MainMap::Comma);
-        context.getState().Entry(context);
-    }    else
+    else
     {
          MainMap_Default::s_push(context, let);
     }
@@ -383,14 +369,7 @@ void MainMap_C4::s_push(recognizerContext& context, char let)
         context.setState(MainMap::WhiteSpace);
         context.getState().Entry(context);
     }
-    else if (let == ',')
-
-    {
-        context.getState().Exit(context);
-        // No actions.
-        context.setState(MainMap::Comma);
-        context.getState().Entry(context);
-    }    else
+    else
     {
          MainMap_Default::s_push(context, let);
     }
@@ -525,14 +504,21 @@ void MainMap_WhiteSpace::parent(recognizerContext& context, char let)
 void MainMap_WhiteSpace::s_push(recognizerContext& context, char let)
 {
 
-    if (let == ' ')
+    if (let == '\t')
     {
         context.getState().Exit(context);
         // No actions.
         context.setState(MainMap::WhiteSpace);
         context.getState().Entry(context);
     }
-    else
+    else if (let == ' ')
+
+    {
+        context.getState().Exit(context);
+        // No actions.
+        context.setState(MainMap::WhiteSpace);
+        context.getState().Entry(context);
+    }    else
     {
          MainMap_Default::s_push(context, let);
     }

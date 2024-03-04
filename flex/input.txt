@@ -1,1 +1,1 @@
-short x(int x, short y);
+short z(int x, short y);

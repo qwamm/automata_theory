@@ -32,7 +32,6 @@
 	A3
 	{
                 s_push(let : char) [let == ' '] WhiteSpace {}
-                s_push(let : char) [let == ','] Comma {}
 	}
 
         B1
@@ -54,7 +53,7 @@
 	B5
 	{
                 s_push(let : char) [let == ' '] WhiteSpace {}
-                s_push(let : char) [let == ','] Comma {}
+            
 	}
 
 	C1
@@ -75,7 +74,6 @@
         C4
         {
                 s_push(let : char) [let == ' '] WhiteSpace {}
-		s_push(let : char) [let == ','] Comma {}
         }
 
 	Comma
@@ -88,6 +86,7 @@
 
         WhiteSpace
         {
+		s_push(let : char) [let == '\t'] WhiteSpace {}
 		s_push(let : char) [let == ' '] WhiteSpace {}
 		parent(let: char) [let == '('] LeftParent {setParameterTrue();}
                 letter(let : char) [context.getOwner().isParameter() == false] FunctionName {NPush(let); inc_len();}
