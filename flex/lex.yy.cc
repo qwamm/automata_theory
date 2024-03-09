@@ -19,7 +19,7 @@
      * We will address this in a future release of flex, or omit the C++ scanner
      * altogether.
      */
-    
+    //#define yyFlexLexer yyFlexLexer
 
 /* First, we deal with  platform-specific or compiler-specific issues. */
 
@@ -1641,10 +1641,10 @@ int main()
 		auto start = std::chrono::system_clock::now();
 		if (flp.yylex() == 2)
 			break;
-		std::cout << c << "\n";
 		auto end = std::chrono::system_clock::now();
 		sum += (float)(std::chrono::duration_cast<std::chrono::microseconds>(end - start).count());
 	}
+	std::cout << s << "\n";
 	std::cout << "TIME: " << sum << "\n";
 	std::cout << "OVERLOADS:\n";
 	for (auto &pair : overloads)
