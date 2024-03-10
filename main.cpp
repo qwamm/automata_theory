@@ -1,54 +1,63 @@
 #include <iostream>
-#include <fstream>
-#include <compare>
-#include <string>
 #include <chrono>
-#include <ctime>
-#include "recognizer.hpp"
-#include "recognizer_sm.h"
-#include "statemap.h"
+#include <unordered_map>
+#include <FlexLexer.h>
+#ifndef REC_HPP
+#define REC_HPP
+#include "rec.hpp"
+#endif
+#include "SMC_Recognizer.hpp"
+#include "flex/flex_rec.hpp"
 
-using namespace statemap;
-
-std::string get_line(std::ifstream &in);
-bool read_line(Recognizer& rec, std::string str);
+void func(Recognizer &rec);
 
 int main()
 {
-	float sum = 0;
-	//std::time_t t;
+        std::cout << "Choose option:\n";
+        int x;
+        std::cin >> x;
+        if (x == 1)
+        {
+                  SMC_Recognizer rec;
+                  func(rec);      
+        }
+        else if (x == 2)
+        {
+                 Flex_Recognizer rec;
+                 func(rec);
+        }
+}
+
+void func(Recognizer &rec)
+{
+        std::string fname, s;
+        std::unordered_map<std::string, int> overloads;
+        int i,j;
+        float sum = 0;
 	bool ret;
-	Recognizer rec;
-	std::string s;
-	while (std::getline(std::cin, s))
-	{
-		auto start = std::chrono::system_clock::now();
-		ret = read_line(rec, s);
-		auto end = std::chrono::system_clock::now();
-		sum += (float)(std::chrono::duration_cast<std::chrono::microseconds>(end - start).count());
-		std:: cout << s << " | ret = " << ret << "\n";
-		rec.reset();
-		rec.setParameterFalse();
-	}
-	std::cout << "TIME: " << sum << "\n";
-}
-
-std::string get_line(std::ifstream &in)
-{
-	std::string str;
-	std::getline(in, str);
-	return str;
-}
-
-bool read_line(Recognizer& rec, std::string str)
-{
-	try
-	{
-		return rec.check_string(str);
-	}
-	catch(const SmcException &e)
-	{
-		std::cout << "string " << str << "incorrect - " << e.what() << "\n";
-		return 0;
-	}
+        while (std::getline(std::cin, s))
+        {
+                auto start = std::chrono::system_clock::now();
+                ret = rec.check_string(s, &fname);
+                auto end = std::chrono::system_clock::now();
+                sum += (float)(std::chrono::duration_cast<std::chrono::microseconds>(end - start).count());
+                if (ret == 1)
+                {
+                        if (overloads.contains(fname))
+                        {
+                                overloads[fname]++;
+                        }
+                        else
+                        {
+                                overloads[fname] = 0;
+                        }
+                }
+                std:: cout << s << " | ret = " << ret << "\n";
+        }
+        std::cout << "TIME: " << sum << "\n";
+        std::cout << "OVERLOADS:\n";
+        for (auto &pair : overloads)
+        {
+                std::cout << pair.first << "\t" << pair.second << "\n";
+        }
 }

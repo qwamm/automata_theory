@@ -1,17 +1,18 @@
-#include "recognizer.hpp"
+#include "SMC_Recognizer.hpp"
 #include "statemap.h"
+//#include "rec.hpp"
 
-Recognizer::Recognizer() : recognizerContext(*this), isCorrect(false)
+SMC_Recognizer::SMC_Recognizer() : recognizerContext(*this), isCorrect(false)
 {
 	Parameter = false;
 	param_len = 0;
 	setDebugFlag(true);
 }
 
-bool Recognizer::check_string (std::string str)
+bool SMC_Recognizer::check_string (std::string s, std::string *fname) override
 {
 	enterStartState();
-	for (auto &c : str)
+	for (auto &c : s)
 	{
 		if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))
 		{
@@ -35,5 +36,7 @@ bool Recognizer::check_string (std::string str)
 		}
 	}
 	EOS();
+	for (auto &c : this->function)
+		(*fname).push_back(c);
 	return isCorrect;
 }

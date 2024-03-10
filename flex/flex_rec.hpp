@@ -1,19 +1,26 @@
 #include <iostream>
-
+#include <chrono>
+#include <unordered_map>
+#include <FlexLexer.h>
+#ifndef REC_HPP
+#define REC_HPP
+#include "../rec.hpp"
+#endif
 enum State {DEFAULT, TYPE, SPACESHIP, FUNC_NAME, LEFT_PARENT, PARAM_NAME, COMMA, RIGHT_PARENT, SEMICOLON, ERROR};
 
-class Recognizer
+class Flex_Recognizer : public Recognizer
 {
 	private:
 		State Current_State;
 	public:
 		bool is_parameter;
-		Recognizer()
+		Flex_Recognizer()
 		{
 			Current_State = State::DEFAULT;
 			is_parameter = false;
 		}
-		~Recognizer() = default;
+		~Flex_Recognizer() = default;
+		bool check_string(std::string s, std::string *fname) override;
 		void setState(State s)
 		{
 			Current_State = s;

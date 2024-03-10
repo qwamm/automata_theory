@@ -37,16 +37,16 @@ class MainMap_LeftParent;
 class MainMap_RightParent;
 class MainMap_Semicolon;
 class MainMap_Default;
-class RecognizerState;
+class SMC_RecognizerState;
 class recognizerContext;
-class Recognizer;
+class SMC_Recognizer;
 
-class RecognizerState :
+class SMC_RecognizerState :
     public statemap::State
 {
 public:
 
-    RecognizerState(const char * const name, const int stateId)
+    SMC_RecognizerState(const char * const name, const int stateId)
     : statemap::State(name, stateId)
     {};
 
@@ -94,12 +94,12 @@ public:
 };
 
 class MainMap_Default :
-    public RecognizerState
+    public SMC_RecognizerState
 {
 public:
 
     MainMap_Default(const char * const name, const int stateId)
-    : RecognizerState(name, stateId)
+    : SMC_RecognizerState(name, stateId)
     {};
 
     virtual void reset(recognizerContext& context);
@@ -353,12 +353,12 @@ class recognizerContext :
 {
 public:
 
-    explicit recognizerContext(Recognizer& owner)
+    explicit recognizerContext(SMC_Recognizer& owner)
     : FSMContext(MainMap::A0),
       _owner(owner)
     {};
 
-    recognizerContext(Recognizer& owner, const statemap::State& state)
+    recognizerContext(SMC_Recognizer& owner, const statemap::State& state)
     : FSMContext(state),
       _owner(owner)
     {};
@@ -369,19 +369,19 @@ public:
         return;
     }
 
-    inline Recognizer& getOwner()
+    inline SMC_Recognizer& getOwner()
     {
         return (_owner);
     };
 
-    inline RecognizerState& getState()
+    inline SMC_RecognizerState& getState()
     {
         if (_state == NULL)
         {
             throw statemap::StateUndefinedException();
         }
 
-        return dynamic_cast<RecognizerState&>(*_state);
+        return dynamic_cast<SMC_RecognizerState&>(*_state);
     };
 
     inline void EOS()
@@ -420,7 +420,7 @@ public:
     };
 
 private:
-    Recognizer& _owner;
+    SMC_Recognizer& _owner;
 };
 
 

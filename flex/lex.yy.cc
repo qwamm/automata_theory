@@ -19,7 +19,7 @@
      * We will address this in a future release of flex, or omit the C++ scanner
      * altogether.
      */
-    //#define yyFlexLexer yyFlexLexer
+//    #define yyFlexLexer yyFlexLexer
 
 /* First, we deal with  platform-specific or compiler-specific issues. */
 
@@ -422,10 +422,10 @@ static const flex_int16_t yy_chk[65] =
 #include <iostream>
 #include <string>
 #include <unordered_map>
-#include "rec.hpp"
+#include "flex_rec.hpp"
 #include <stdlib.h>
 #include <chrono>
-Recognizer rec;
+Flex_Recognizer rec;
 std::string fname, s;
 std::unordered_map<std::string, int> overloads;
 int i,j;
@@ -1645,50 +1645,30 @@ void yyfree (void * ptr )
 #line 46 "flex.l"
 
 
-#include <iostream>
-#include <fstream>
-#include <chrono>
-#include <FlexLexer.h>
-int main()
+bool Flex_Recognizer::check_string(std::string s, std::string *fname)
 {
-        float sum = 0;
-        yyFlexLexer flp;
-        flp.switch_streams(std::cin, std::cout);
-        while (1)
-        {
-                auto start = std::chrono::system_clock::now();
-		if (flp.yylex() == 2)
-			break;  
-                auto end = std::chrono::system_clock::now();
-		if (rec.getState() == State::SEMICOLON)
-		{
-			std::cout << "OK\n";
-        		if (overloads.contains(s))
-        		{
-                		overloads[s]++;
-        		}
-        		else
-        		{
-                		overloads[s] = 0;
-        		}
-		}
-		else if (rec.getState() == State::ERROR)
-		{
-			std::cout << "ERROR\n";
-		}
-		else
-		{
-			std::cout << "MACHINE ERROR\n";
-		}
-		c = 0;
-		rec.setState(State::DEFAULT);
-                sum += (float)(std::chrono::duration_cast<std::chrono::microseconds>(end - start).count());
-        }
-        std::cout << "TIME: " << sum << "\n";
-        std::cout << "OVERLOADS:\n";
-        for (auto &pair : overloads)
-        {
-                std::cout << pair.first << "\t" << pair.second << "\n";
-        }
+            yyFlexLexer flp;
+            flp.switch_streams(std::cin, std::cout);
+            //while (1)
+            //{
+	    bool ret = false;
+            flp.yylex();
+            if (rec.getState() == State::SEMICOLON)
+            {
+                    std::cout << "OK\n";
+		    ret = true;
+            }
+            else if (rec.getState() == State::ERROR)
+            {
+                    std::cout << "ERROR\n";
+            }
+            else
+            {
+                    std::cout << "MACHINE ERROR\n";
+            }
+            c = 0;
+            this->setState(State::DEFAULT);
+            //}
+	    return ret;
 }
 

@@ -4,8 +4,12 @@
 #include <vector>
 #include <fstream>
 #include "recognizer_sm.h"
+#ifndef REC_HPP
+#define REC_HPP
+#include "rec.hpp"
+#endif
 
-class Recognizer : public recognizerContext
+class SMC_Recognizer : public recognizerContext, public Recognizer
 {
 	private:
 		bool isCorrect;
@@ -13,10 +17,47 @@ class Recognizer : public recognizerContext
 		int param_len;
 		std::vector<char> function;
 	public:
-		Recognizer();
-		~Recognizer() {};
+		SMC_Recognizer() : recognizerContext(*this), isCorrect(false)
+		{
+			Parameter = false;
+			param_len = 0;
+			setDebugFlag(true);
+		}
+		
+		~SMC_Recognizer() {};
 
-		bool check_string (std::string str);
+		bool check_string (std::string s, std::string *fname) override
+		{
+			enterStartState();
+			for (auto &c : s)
+			{
+				if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))
+				{
+					letter(c);
+				}
+				if (c >= '0' && c <= '9')
+				{
+					digit(c);
+				}
+				if(c == ' ' || c == ',')
+				{
+					s_push(c);
+				}
+				if (c == ')' || c == '(')
+				{
+					parent(c);
+				}
+				if (c == ';')
+				{
+					letter(c);
+				}
+			}
+			EOS();
+			for (auto &c : this->function)
+				(*fname).push_back(c);
+			return isCorrect;
+		}
+
 		inline void Correct()
 		{
 			isCorrect = true;

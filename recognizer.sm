@@ -1,5 +1,5 @@
-%header recognizer.hpp
-%class Recognizer
+%header SMC_Recognizer.hpp
+%class SMC_Recognizer
 
 %start MainMap::A0
 

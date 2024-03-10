@@ -5,7 +5,7 @@
 // from file : recognizer.sm
 //
 
-#include "recognizer.hpp"
+#include "SMC_Recognizer.hpp"
 #include "recognizer_sm.h"
 
 using namespace statemap;
@@ -33,42 +33,42 @@ MainMap_LeftParent MainMap::LeftParent("MainMap::LeftParent", 18);
 MainMap_RightParent MainMap::RightParent("MainMap::RightParent", 19);
 MainMap_Semicolon MainMap::Semicolon("MainMap::Semicolon", 20);
 
-void RecognizerState::EOS(recognizerContext& context)
+void SMC_RecognizerState::EOS(recognizerContext& context)
 {
     Default(context);
 }
 
-void RecognizerState::Unknown(recognizerContext& context)
+void SMC_RecognizerState::Unknown(recognizerContext& context)
 {
     Default(context);
 }
 
-void RecognizerState::digit(recognizerContext& context, char dig)
+void SMC_RecognizerState::digit(recognizerContext& context, char dig)
 {
     Default(context);
 }
 
-void RecognizerState::letter(recognizerContext& context, char let)
+void SMC_RecognizerState::letter(recognizerContext& context, char let)
 {
     Default(context);
 }
 
-void RecognizerState::parent(recognizerContext& context, char let)
+void SMC_RecognizerState::parent(recognizerContext& context, char let)
 {
     Default(context);
 }
 
-void RecognizerState::reset(recognizerContext& context)
+void SMC_RecognizerState::reset(recognizerContext& context)
 {
     Default(context);
 }
 
-void RecognizerState::s_push(recognizerContext& context, char let)
+void SMC_RecognizerState::s_push(recognizerContext& context, char let)
 {
     Default(context);
 }
 
-void RecognizerState::Default(recognizerContext& context)
+void SMC_RecognizerState::Default(recognizerContext& context)
 {
     throw (
         TransitionUndefinedException(
@@ -89,9 +89,9 @@ void MainMap_Default::reset(recognizerContext& context)
 
 void MainMap_Default::EOS(recognizerContext& context)
 {
-    Recognizer& ctxt = context.getOwner();
+    SMC_Recognizer& ctxt = context.getOwner();
 
-    RecognizerState& endState = context.getState();
+    SMC_RecognizerState& endState = context.getState();
 
     context.clearState();
     try
@@ -430,7 +430,7 @@ void MainMap_Comma::s_push(recognizerContext& context, char let)
 
 void MainMap_WhiteSpace::letter(recognizerContext& context, char let)
 {
-    Recognizer& ctxt = context.getOwner();
+    SMC_Recognizer& ctxt = context.getOwner();
 
     if (context.getOwner().isParameter() == false)
     {
@@ -475,7 +475,7 @@ void MainMap_WhiteSpace::letter(recognizerContext& context, char let)
 
 void MainMap_WhiteSpace::parent(recognizerContext& context, char let)
 {
-    Recognizer& ctxt = context.getOwner();
+    SMC_Recognizer& ctxt = context.getOwner();
 
     if (let == '(')
     {
@@ -528,11 +528,11 @@ void MainMap_WhiteSpace::s_push(recognizerContext& context, char let)
 
 void MainMap_ParameterName::digit(recognizerContext& context, char dig)
 {
-    Recognizer& ctxt = context.getOwner();
+    SMC_Recognizer& ctxt = context.getOwner();
 
     if (context.getOwner().text_len(16) && !context.getOwner().text_len(0))
     {
-        RecognizerState& endState = context.getState();
+        SMC_RecognizerState& endState = context.getState();
 
         context.clearState();
         try
@@ -556,11 +556,11 @@ void MainMap_ParameterName::digit(recognizerContext& context, char dig)
 
 void MainMap_ParameterName::letter(recognizerContext& context, char let)
 {
-    Recognizer& ctxt = context.getOwner();
+    SMC_Recognizer& ctxt = context.getOwner();
 
     if (context.getOwner().text_len(16))
     {
-        RecognizerState& endState = context.getState();
+        SMC_RecognizerState& endState = context.getState();
 
         context.clearState();
         try
@@ -584,7 +584,7 @@ void MainMap_ParameterName::letter(recognizerContext& context, char let)
 
 void MainMap_ParameterName::parent(recognizerContext& context, char let)
 {
-    Recognizer& ctxt = context.getOwner();
+    SMC_Recognizer& ctxt = context.getOwner();
 
     if (let == ')')
     {
@@ -613,7 +613,7 @@ void MainMap_ParameterName::parent(recognizerContext& context, char let)
 
 void MainMap_ParameterName::s_push(recognizerContext& context, char let)
 {
-    Recognizer& ctxt = context.getOwner();
+    SMC_Recognizer& ctxt = context.getOwner();
 
     if (let == ' ')
     {
@@ -657,11 +657,11 @@ void MainMap_ParameterName::s_push(recognizerContext& context, char let)
 
 void MainMap_FunctionName::digit(recognizerContext& context, char dig)
 {
-    Recognizer& ctxt = context.getOwner();
+    SMC_Recognizer& ctxt = context.getOwner();
 
     if (context.getOwner().text_len(16) && !context.getOwner().text_len(0))
     {
-        RecognizerState& endState = context.getState();
+        SMC_RecognizerState& endState = context.getState();
 
         context.clearState();
         try
@@ -686,11 +686,11 @@ void MainMap_FunctionName::digit(recognizerContext& context, char dig)
 
 void MainMap_FunctionName::letter(recognizerContext& context, char let)
 {
-    Recognizer& ctxt = context.getOwner();
+    SMC_Recognizer& ctxt = context.getOwner();
 
     if (context.getOwner().text_len(16))
     {
-        RecognizerState& endState = context.getState();
+        SMC_RecognizerState& endState = context.getState();
 
         context.clearState();
         try
@@ -715,7 +715,7 @@ void MainMap_FunctionName::letter(recognizerContext& context, char let)
 
 void MainMap_FunctionName::parent(recognizerContext& context, char let)
 {
-    Recognizer& ctxt = context.getOwner();
+    SMC_Recognizer& ctxt = context.getOwner();
 
     if (let == '(')
     {
@@ -744,7 +744,7 @@ void MainMap_FunctionName::parent(recognizerContext& context, char let)
 
 void MainMap_FunctionName::s_push(recognizerContext& context, char let)
 {
-    Recognizer& ctxt = context.getOwner();
+    SMC_Recognizer& ctxt = context.getOwner();
 
     if (let == ' ')
     {
@@ -805,7 +805,7 @@ void MainMap_LeftParent::letter(recognizerContext& context, char let)
 
 void MainMap_LeftParent::parent(recognizerContext& context, char let)
 {
-    Recognizer& ctxt = context.getOwner();
+    SMC_Recognizer& ctxt = context.getOwner();
 
     if (let == ')')
     {
@@ -833,7 +833,7 @@ void MainMap_LeftParent::parent(recognizerContext& context, char let)
 
 void MainMap_RightParent::letter(recognizerContext& context, char let)
 {
-    Recognizer& ctxt = context.getOwner();
+    SMC_Recognizer& ctxt = context.getOwner();
 
     if (let == ';')
     {
@@ -861,9 +861,9 @@ void MainMap_RightParent::letter(recognizerContext& context, char let)
 
 void MainMap_Semicolon::EOS(recognizerContext& context)
 {
-    Recognizer& ctxt = context.getOwner();
+    SMC_Recognizer& ctxt = context.getOwner();
 
-    RecognizerState& endState = context.getState();
+    SMC_RecognizerState& endState = context.getState();
 
     context.clearState();
     try
