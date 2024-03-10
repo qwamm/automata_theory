@@ -5,8 +5,8 @@
 #include <unordered_map>
 
 std::string get_line(std::ifstream &in);
-bool check_string(std::string str);
-std::string get_fname(std::string s);
+bool check_string(std::string str, std::string *fname);
+//std::string get_fname(std::string s);
 
 int main()
 {
@@ -16,13 +16,13 @@ int main()
 	std::string s;
         while (std::getline(std::cin, s))
         {
+		std::string fname;
 		auto start = std::chrono::system_clock::now();
-                ret = check_string(s);
+                ret = check_string(s, &fname);
 		auto end = std::chrono::system_clock::now();
 		sum += (float)(std::chrono::duration_cast<std::chrono::microseconds>(end - start).count());
 		if (ret == 1)
 		{
-			std::string fname = get_fname(s);
 			if (overloads.contains(fname))
 			{
 				overloads[fname]++;
@@ -42,7 +42,7 @@ int main()
 	}
 }
 
-std::string get_fname (std::string s)
+/*std::string get_fname(std::string s)
 {
 	std::string fname;
 	int i;
@@ -60,14 +60,16 @@ std::string get_fname (std::string s)
 		fname.push_back(s[j]);
 	}
 	return fname;
-}
+}*/
 
-bool check_string(std::string str)
+bool check_string(std::string str, std::string *fname)
 {
-	  std::regex reg ("(?:int|long|short)(\\s{1,})([^0-9 ])([A-Za-z0-9]{0,15})\\(((((?:int|long|short)(\\s){1,}[^0-9 ][A-Za-z0-9]{0,16}))((\\,(?!\\))(\\s){1,})?))*\\)\\;",  std::regex_constants::ECMAScript);
+	  std::regex reg ("(?:int|long|short)(\\s{1,})(([^0-9 ])([A-Za-z0-9]{0,15}))\\(((((?:int|long|short)(\\s){1,}[^0-9 ][A-Za-z0-9]{0,16}))((\\,(?!\\))(\\s){0,})?))*\\)\\;",  std::regex_constants::ECMAScript | std::regex::optimize);
 	  std::smatch m;
 	  bool r = std::regex_match(str, m, reg);
 	  std::cout << m[0] << "\n";
+	  std::cout << m[2] << "\n";
+	  *fname = m[2];
 	  return r;
 }
 
