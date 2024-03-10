@@ -2,7 +2,8 @@
 #include <fstream>
 #include <compare>
 #include <string>
-#include "time.h"
+#include <chrono>
+#include <ctime>
 #include "recognizer.hpp"
 #include "recognizer_sm.h"
 #include "statemap.h"
@@ -15,18 +16,16 @@ bool read_line(Recognizer& rec, std::string str);
 int main()
 {
 	float sum = 0;
-	clock_t t;
+	//std::time_t t;
 	bool ret;
 	Recognizer rec;
 	std::string s;
 	while (std::getline(std::cin, s))
 	{
-		//std::string s;
-		//std::cin >> s;
-		t = clock();
+		auto start = std::chrono::system_clock::now();
 		ret = read_line(rec, s);
-		t = clock() - t;
-		sum += ((float)t)/CLOCKS_PER_SEC;
+		auto end = std::chrono::system_clock::now();
+		sum += (float)(std::chrono::duration_cast<std::chrono::microseconds>(end - start).count());
 		std:: cout << s << " | ret = " << ret << "\n";
 		rec.reset();
 		rec.setParameterFalse();

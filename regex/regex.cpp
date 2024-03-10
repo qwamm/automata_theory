@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <regex>
-#include <time.h>
+#include <chrono>
 #include <unordered_map>
 
 std::string get_line(std::ifstream &in);
@@ -11,16 +11,15 @@ std::string get_fname(std::string s);
 int main()
 {
 	float sum = 0;
-	clock_t t;
         bool ret;
 	std::unordered_map<std::string, int> overloads;
 	std::string s;
         while (std::getline(std::cin, s))
         {
-		t = clock();
+		auto start = std::chrono::system_clock::now();
                 ret = check_string(s);
-		t = clock() - t;
-		sum += ((float)t)/CLOCKS_PER_SEC;
+		auto end = std::chrono::system_clock::now();
+		sum += (float)(std::chrono::duration_cast<std::chrono::microseconds>(end - start).count());
 		if (ret == 1)
 		{
 			std::string fname = get_fname(s);
