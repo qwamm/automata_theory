@@ -1,39 +1,45 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <random>
+#include <functional>
 
-std::string gen_str();
-std::string gen_spaces();
-std::string gen_type();
-std::string gen_parameter();
+std::string gen_str(std::default_random_engine &generator, std::uniform_int_distribution<int> &distribution);
+std::string gen_spaces(std::default_random_engine &generator, std::uniform_int_distribution<int> &distribution);
+std::string gen_type(std::default_random_engine &generator, std::uniform_int_distribution<int> &distribution);
+std::string gen_parameter(std::default_random_engine &generator, std::uniform_int_distribution<int> &distribution);
 
 int main()
 {
-	srand(time(NULL));
-	//std::ofstream of;
-	//of.open("input.txt");
-	for (int i = 0; i < 10; i++)
+	//std::seed_seq seed1 (str.begin(),str.end());
+	std::default_random_engine generator(time(0));
+	std::uniform_int_distribution<int> distribution (1,1000000);
+	//srand(time(NULL));
+	for (int i = 0; i < 10000; i++)
 	{
-		std::cout << gen_type() + gen_spaces() + gen_str() + "(" + gen_parameter() + ")" + ";" << "\n";
+		std::cout << gen_type(generator, distribution) + gen_spaces(generator, distribution) +
+		 gen_str(generator, distribution) + "(" + gen_parameter(generator, distribution) + ")" + ";" << "\n";
 	}
-	//of.close();
 }
 
-std::string gen_parameter()
+std::string gen_parameter(std::default_random_engine &generator, std::uniform_int_distribution<int> &distribution)
 {
+	//std::default_random_engine generator(seed1);
+	//std::uniform_int_distribution<int> distribution (1,1000);
 	std::string res = "";
-	int q = rand()%11;
+	//auto dice = std::bind( distribution, generator );
+	int q = distribution(generator)%5;
 	for (int i = 0; i < q; i++)
 	{
 		if (i < q-1)
-			res += (gen_type() + gen_spaces() + gen_str() + ",");
+			res += (gen_type(generator, distribution) + gen_spaces(generator, distribution) + gen_str(generator, distribution) + ",");
 		else
-			res += (gen_type() + gen_spaces() + gen_str());
+			res += (gen_type(generator, distribution) + gen_spaces(generator, distribution) + gen_str(generator, distribution));
 	}
 	return res;
 }
 
-std::string gen_type()
+std::string gen_type(std::default_random_engine &generator, std::uniform_int_distribution<int> &distribution)
 {
 	std::vector<std::string> v;
 	//v.push_back("float");
@@ -41,25 +47,25 @@ std::string gen_type()
 	v.push_back("short");
 	//v.push_back("double");
 	v.push_back("long");
-	int ind = rand()%3;
+	int ind = distribution(generator)%2;
 	return v[ind];
 }
 
-std::string gen_spaces()
+std::string gen_spaces(std::default_random_engine &generator, std::uniform_int_distribution<int> &distribution)
 {
 	std::string res;
-	int len = rand()%4 + 1;
+	int len = distribution(generator)%4 + 1;
 	for (int i = 0; i < len; i++)
 		res.push_back(' ');
 	return res;
 }
 
-std::string gen_str()
+std::string gen_str(std::default_random_engine &generator, std::uniform_int_distribution<int> &distribution)
 {
 	const char alphanum[] =
         "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 	std::string str;
-	int len = rand()%15 + 1;
+	int len = distribution(generator)%15 + 1;
 	for (int i = 0; i < len; i++)
 	{
 		str += alphanum[rand() % (sizeof(alphanum) -1)];

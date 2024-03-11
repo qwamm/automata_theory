@@ -11,6 +11,8 @@ SMC_Recognizer::SMC_Recognizer() : recognizerContext(*this), isCorrect(false)
 
 bool SMC_Recognizer::check_string (std::string s, std::string *fname) override
 {
+	this->reset();
+	fname.clear();
 	enterStartState();
 	for (auto &c : s)
 	{
@@ -36,7 +38,5 @@ bool SMC_Recognizer::check_string (std::string s, std::string *fname) override
 		}
 	}
 	EOS();
-	for (auto &c : this->function)
-		(*fname).push_back(c);
 	return isCorrect;
 }

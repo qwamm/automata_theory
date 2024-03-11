@@ -8,24 +8,36 @@
 #endif
 #include "SMC_Recognizer.hpp"
 #include "flex/flex_rec.hpp"
+#include "regex/regex_rec.hpp"
 
 void func(Recognizer &rec);
 
-int main()
+int main(int argc, char *argv[])
 {
         std::cout << "Choose option:\n";
         int x;
-        std::cin >> x;
-        if (x == 1)
+        //std::cin >> x;
+	if (argc < 2)
+	{
+		std::cout << "No option chose\n";
+		return -1;
+	}
+	std::cout << argv[1][0] << "\n";
+        if (argv[1][0] == '1')
         {
                   SMC_Recognizer rec;
-                  func(rec);      
+                  func(rec);
         }
-        else if (x == 2)
+        else if (argv[1][0] == '2')
         {
                  Flex_Recognizer rec;
                  func(rec);
         }
+	else if (argv[1][0] == '3')
+	{
+		Regex_Recognizer rec;
+		func(rec);
+	}
 }
 
 void func(Recognizer &rec)
@@ -41,11 +53,12 @@ void func(Recognizer &rec)
 		{
 		std::string fname;
                 auto start = std::chrono::system_clock::now();
-                ret = rec.check_string(s, &fname);
+                ret = rec.check_string(s);
                 auto end = std::chrono::system_clock::now();
                 sum += (float)(std::chrono::duration_cast<std::chrono::microseconds>(end - start).count());
                 if (ret == 1)
                 {
+			fname = rec.get_fname();
                         if (overloads.contains(fname))
                         {
                                 overloads[fname]++;

@@ -20,7 +20,7 @@ class Flex_Recognizer : public Recognizer
 			is_parameter = false;
 		}
 		~Flex_Recognizer() = default;
-		bool check_string(std::string s, std::string *fname) override;
+		bool check_string(std::string s) override;
 		void setState(State s)
 		{
 			Current_State = s;
@@ -31,8 +31,9 @@ class Flex_Recognizer : public Recognizer
 		}
 		void Spaceship()
 		{
-			if (Current_State == TYPE)
+			if (Current_State == TYPE || Current_State == SPACESHIP)
 			{
+				std::cout << "STATE: SPACESHIP\n";
 				Current_State = State::SPACESHIP;
 			}
 			else
@@ -44,6 +45,7 @@ class Flex_Recognizer : public Recognizer
 		{
 			if (Current_State == State::SPACESHIP)
 			{
+				 std::cout << "STATE: FUNCTION_NAME\n";
 				Current_State = State::FUNC_NAME;
 			}
                         else
@@ -55,6 +57,7 @@ class Flex_Recognizer : public Recognizer
 		{
                         if (Current_State == State::FUNC_NAME)
                         {
+				 std::cout << "STATE: LEFT_PARENT\n";
                                 Current_State = State::LEFT_PARENT;
 				is_parameter = true;
                         }
@@ -67,6 +70,7 @@ class Flex_Recognizer : public Recognizer
 		{
                         if (Current_State == State::DEFAULT || Current_State == State::LEFT_PARENT || Current_State == State::COMMA)
                         {
+				 std::cout << "STATE: TYPE\n";
                                 Current_State = State::TYPE;
                         }
                         else
@@ -78,6 +82,7 @@ class Flex_Recognizer : public Recognizer
 		{
 			if (Current_State == State::SPACESHIP)
 			{
+				 std::cout << "STATE: PARAMETER_NAME\n";
 				Current_State = State::PARAM_NAME;
 			}
                         else
@@ -89,6 +94,7 @@ class Flex_Recognizer : public Recognizer
 		{
                         if (Current_State == State::PARAM_NAME)
                         {
+				 std::cout << "STATE: COMMA\n";
                                 Current_State = State::COMMA;
                         }
                         else
@@ -100,6 +106,7 @@ class Flex_Recognizer : public Recognizer
 		{
                         if (Current_State == State::PARAM_NAME || Current_State == State::LEFT_PARENT)
                         {
+				 std::cout << "STATE: RIGHT_PARENT\n";
                                 Current_State = State::RIGHT_PARENT;
 				is_parameter = false;
                         }
@@ -112,6 +119,7 @@ class Flex_Recognizer : public Recognizer
 		{
 			if (Current_State == State::RIGHT_PARENT)
 			{
+				 std::cout << "STATE: SEMICOLON\n";
 				Current_State = State::SEMICOLON;
 			}
 			else

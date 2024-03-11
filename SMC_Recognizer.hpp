@@ -15,7 +15,6 @@ class SMC_Recognizer : public recognizerContext, public Recognizer
 		bool isCorrect;
 		bool Parameter;
 		int param_len;
-		std::string function;
 	public:
 		SMC_Recognizer() : recognizerContext(*this), isCorrect(false)
 		{
@@ -26,8 +25,12 @@ class SMC_Recognizer : public recognizerContext, public Recognizer
 
 		~SMC_Recognizer() {};
 
-		bool check_string (std::string s, std::string *fname) override
+		bool check_string (std::string s) override
 		{
+			this->reset();
+			fname.clear();
+			param_len = 0;
+			Parameter = false;
 			enterStartState();
 			for (auto &c : s)
 			{
@@ -53,11 +56,6 @@ class SMC_Recognizer : public recognizerContext, public Recognizer
 				}
 			}
 			EOS();
-			for (auto &c : this->function)
-				(*fname).push_back(c);
-			this->reset();
-			param_len = 0;
-			function.clear();
 			return isCorrect;
 		}
 
@@ -96,11 +94,7 @@ class SMC_Recognizer : public recognizerContext, public Recognizer
 		void save(std::ofstream &out);
 		void NPush (char l)
 		{
-			if (param_len == 0)
-				function.clear();
-                        for (auto &c : this->function)
-                                std::cout << c << "\n";
-			function.push_back(l);
+			fname.push_back(l);
 		}
 };
 

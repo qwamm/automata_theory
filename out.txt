@@ -1,0 +1,17 @@
+Choose option:
+1
+long   hkPIV0K2Ez2(int  HHiQHAjb,int  97XAM40,long  4Bjt1UG67kNMS,long  UDk5OuAt2Wx3i,long  JidKCtQHbld4XF,long    N5mFFgGkd,long    GC4y); | ret = 0
+long 68(long    aK7o2i5URLgTJU,short    XoT1no11l1,long  4dP9RRqXuHsY,short    YXB6Kd); | ret = 0
+int    bOcERjdYpme(long   CoqZvH1lmt1dRml); | ret = 1
+int f8TdEXGW7n(short  pOG4,long  G1SfnD55ThS6vrn,long  J,int    qV3Ej5Zju,short  SVXY,int    z78qufEVwFdC36,int    JoXD,int    4j7cI8pFDx66,short  ZX,short Jxo7GddUEt2Gc9); | ret = 0
+short PK(long  bVPhl0KDDB); | ret = 1
+short p1vR(long    4azcoUjcW1,long    cUHMVbZimn9YATA); | ret = 0
+short   dgebzn(short  t9Xyk8Q1St,short    NmjtwA4hZ,int    swPF5n6EI2yQ,long KbquwadqVlu,long    fukcHx,long    tM4qlXoZqNPkJy,long 41bPrHJZrYWW,int  xdDg8z); | ret = 0
+int  UkiTMz(long    TeqlBh,long   uEbrrmXxmmu6Pa,long   WyeHa5tQ,long    8jJ2xurmhOk,long V); | ret = 0
+short Kuq(long EwXMfrMbjDNOb5p,long   EsViaDBvCCL4cZ,int byGCiUY,int    ulJBx9ggjtpc,int 7cT3jNegbp,int    S7yMqHXoQDS84,short    FeEp,long    UuF,long   723E0O2Gtoe5,int    WVHl7VbEl8g); | ret = 0
+long  A(long  J,short rDI6zR,int LXCulv0PYL9); | ret = 1
+TIME: 12462
+OVERLOADS:
+A	0
+PK	0
+bOcERjdYpme	0

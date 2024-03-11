@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <chrono>
 Flex_Recognizer rec;
-std::string fname, s;
+std::string buf;
 std::unordered_map<std::string, int> overloads;
 int i,j;
 int c = 0;
@@ -21,13 +21,16 @@ RIGHT_PARENT ")"
 LEFT_PARENT "(" 
 SPACESHIP [ \t]
 FIRST_LETTER [a-zA-Z] 
+DIGIT [0-9]
 NAME ([a-zA-Z0-9])
 TYPE (?:int|long|short) 
 LINE_BREAK "\n"
 %% 
 {TYPE} {std::cout << "1" << "\n"; rec.Type();} 
 {SPACESHIP}+ {std::cout << "2" << "\n"; rec.Spaceship();}
+[0-9]({NAME}{0,15}) {rec.setState(State::ERROR);}
 {FIRST_LETTER}({NAME}{0,15}) {std::cout << "4" << "\n";
+ //std::cout << yytext << "\n";
  if(rec.is_parameter == true)
  {
 	rec.ParameterName();
@@ -36,26 +39,31 @@ LINE_BREAK "\n"
  {
 	rec.FunctionName();
  }
- if (c == 0) {s = yytext; c++;}}
+ if (c == 0) {buf = yytext; c++;}}
 {LEFT_PARENT} {std::cout << "5" << "\n"; rec.LeftParent();}
 {COMMA} {std::cout << "8" << "\n"; rec.Comma();}
 {RIGHT_PARENT} {std::cout << "6" << "\n"; rec.RightParent();}
 {SEMICOLON} {std::cout << "7" << "\n"; rec.Semicolon(); }
-{LINE_BREAK} {return 0;}
+`{LINE_BREAK} {return 0;}
 <<EOF>>   { return 2; }
 %% 
 
-bool Flex_Recognizer::check_string(std::string s, std::string *fname)
+#include <sstream>
+
+bool Flex_Recognizer::check_string(std::string s)
 {
+	    rec.is_parameter = false;
             yyFlexLexer flp;
-            flp.switch_streams(std::cin, std::cout);
-            //while (1)
-            //{
+	    std::stringstream ss;
+	    ss << s;
+            flp.switch_streams(ss, std::cout);
 	    bool ret = false;
+	    std::cout << "STATE: " <<  (int)rec.getState() << "\n";
             flp.yylex();
             if (rec.getState() == State::SEMICOLON)
             {
                     std::cout << "OK\n";
+		    fname = buf;
 		    ret = true;
             }
             else if (rec.getState() == State::ERROR)
@@ -67,7 +75,6 @@ bool Flex_Recognizer::check_string(std::string s, std::string *fname)
                     std::cout << "MACHINE ERROR\n";
             }
             c = 0;
-            this->setState(State::DEFAULT);
-            //}
+            rec.setState(State::DEFAULT);
 	    return ret;
 }
