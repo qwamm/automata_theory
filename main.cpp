@@ -30,13 +30,16 @@ int main()
 
 void func(Recognizer &rec)
 {
-        std::string fname, s;
+        std::string s;
         std::unordered_map<std::string, int> overloads;
         int i,j;
         float sum = 0;
 	bool ret;
         while (std::getline(std::cin, s))
         {
+		if (s.size() > 0)
+		{
+		std::string fname;
                 auto start = std::chrono::system_clock::now();
                 ret = rec.check_string(s, &fname);
                 auto end = std::chrono::system_clock::now();
@@ -53,6 +56,7 @@ void func(Recognizer &rec)
                         }
                 }
                 std:: cout << s << " | ret = " << ret << "\n";
+		}
         }
         std::cout << "TIME: " << sum << "\n";
         std::cout << "OVERLOADS:\n";
