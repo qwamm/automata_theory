@@ -1,55 +1,76 @@
 #include <iostream>
+#include <stack>
+#include "ast.hpp"
 
 class Syntax_Node
 {
 	public:
-                char data;
-                Syntax_Tree *left;
-                Syntax_Tree *right;
-		Syntax_Node(char c)
+               	Expression *data;
+                Syntax_Node *left;
+                Syntax_Node *right;
+		Syntax_Node(Expression *_data)
 		{
-			data = c;
+			data = _data;
+			left = nullptr;
+			right = nullptr;
 		}
 };
 
 class Syntax_Tree
 {
-	private:
-		Syntax_Node *root
 	public:
-		Syntax_Tree() = default;
-		Syntax_Tree(char c)
+		Syntax_Node *root;
+		std::vector <Syntax_Node*> nodes;
+		Syntax_Tree() {root = nullptr;};
+		~Syntax_Tree() {}
+		void set_root(Syntax_Node *node)
 		{
-			data = c;
+			Syntax_Node *buf = root;
+			root = node;
+			root->left = buf;
 		}
-		~Syntax_Tree() {m.clear();}
-		void parse_string(const std::string &s, int first, int last, Syntax_Node *cur)
+		void parse_string(std::string &s, int first, int last, Syntax_Node **cur)
 		{
-                        for (int i = first; i < last; i++)
-                        {
-                                if (s[i] == '(')
-                                {
-                                        std::string s_2 = s.substr(i+1);
-                                        int j = s_2.find_first_of(')');
-                                }
-                                if (s[i] != '#' && s[i] != '.' && s[i] != '^' && s[i] != '|' && s[i] != '+')
-                                {
-                                        Syntax_Node *a_node = new Syntax_Tree('.');
-                                        a_node->left = new Syntax_Node(s[i]);
-                                        if (cur == nullptr)
-                                        {
-                                                cur = a_node;
-                                        }
-                                        else
-                                        {
-                                                cur->right = a_ndoe;
-                                                cur = cur->right;
-                                        }
-                                }
-                        }
+			int f,l;
+			f = s.find_first_of('(');
+			if (f == std::string::npos)
+			{
+				//std::cout << "MARKER\n";
+                        	for (int i = first; i < last; i++)
+                        	{
+						Syntax_Node *a_node = new Syntax_Node(new Symbol(std::string(1, s[i])));
+						nodes.push_nack(a_node);
+                        	}
+				for (int i = 0; i < nodes.size(); i++)
+				{
+						if (i > 0 && i < nodes.size() -1 && nodes[i]->data->value() == "|")
+						{
+							nodes[i]->data = new Disjunction(nodes[i-1]->data, nodes[i+1]->data);
+							nodes.erase(i+1);
+							nodes.erase(i-1);
+							
+						}
+				}
+			}
+			//return cur;
 		}
-		void create_ast(const std::string &s)
+
+	void putTree(Syntax_Node *ptr, int level)
+	{
+		int i = level;
+		if (ptr)
 		{
-			parse_string(s, 0, s.size()-1, root);
+			putTree(ptr->right, level + 1);
+			while (i-- > 0)
+				std::cout << "  ";
+			std::cout << ptr->data->value() << "\n";
+			putTree(ptr->left, level + 1);
+		}
+	}
+
+
+		void create_ast(std::string &s)
+		{
+			parse_string(s, 0, s.size(), &root);
 		}
 };
