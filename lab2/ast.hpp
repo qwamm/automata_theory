@@ -25,7 +25,7 @@ class Disjunction : public Expression
 		}
 		Expression *clone() override
 		{
-			return new Concatenate(*this);
+			return new Disjunction(*this);
 		}
 		std::string value() override
 		{
