@@ -15,7 +15,7 @@ int main()
 		reg.match(s);
 	}*/
 	Syntax_Tree *t = new Syntax_Tree();
-	std::string s = "DE|CF";
+	std::string s = "((AB)|D)CEF|GI";
 	//std::cout << t->root->data->value() << "\n";
 	t->create_ast(s);
 	//t->putTree(t->root, 0);
