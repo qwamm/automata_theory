@@ -61,18 +61,18 @@ class Syntax_Tree
 										{
 											q_1++;
 										}
-								else if (s[j] == ')')
-								{
-									q_2++;
-								}
-								j++;
-							}
-							l = j - 1;
+										else if (s[j] == ')')
+										{
+											q_2++;
+										}
+										j++;
+									}
+									l = j - 1;
 							//std::cout << s.substr(f + 1, l-f-1) << "\n";
-                                			Syntax_Node *p_node = nullptr;
-                                			std::string buf = s.substr(f + 1, l-f-1);
-							std::cout << buf << "\n";
-                                			parse_string(buf, &p_node);
+                                	Syntax_Node *p_node = nullptr;
+                                	std::string buf = s.substr(f + 1, l-f-1);
+									std::cout << buf << "\n";
+                                	parse_string(buf, &p_node);
 							//std::cout << p
                                 			if ((*cur) == nullptr)
                                 			{
@@ -100,6 +100,7 @@ class Syntax_Tree
 							if (s[i-1] == ')')
 							{
 									set_root(a_node, r);
+									cur = &(*r);
 							}
 							else if((*cur)->data->value() != "|")
 							{
@@ -113,7 +114,7 @@ class Syntax_Tree
 								//std::cout << "HERE:" << (*cur)->data->value() << "\n";
 							}
 						}
-					    else
+					    else if(s[i] != ')')
 						{
 
                                                           	Syntax_Node *a_node = new Syntax_Node(new Symbol(std::string(1, s[i])));
@@ -121,11 +122,17 @@ class Syntax_Tree
 																			{
 																				*cur = a_node;
 																			}
-																			else
+																			else if((*cur)->data->value() == "." || (*cur)->data->value() == "|")
 																			{
-																				//std::cout << "SYMBOL: " << s[i] << "\n";
+																				std::cout << "SYMBOL: " << s[i] << "\n";
 																				(*cur)->right = a_node;
 																				cur = &((*cur)->right);
+																			}
+																			else
+																			{
+																				(*r)->right = a_node;
+																				cur = &(*r);
+																				//r = &((*r)->right);
 																			}
 							}
 							std::cout << i+1 << " ITERATION:\n";
