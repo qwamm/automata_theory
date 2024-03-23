@@ -15,7 +15,7 @@ int main()
 		reg.match(s);
 	}*/
 	Syntax_Tree *t = new Syntax_Tree();
-	std::string s = "((DM)(FK(H(J))))";
+	std::string s = "(((((((L(NI)|(HA))B)C)D)EUJDFHN)F)G)";
 	//std::cout << t->root->data->value() << "\n";
 	t->create_ast(s);
 	//t->putTree(t->root, 0);

@@ -52,7 +52,6 @@ class Syntax_Tree
 								if (s[i] == '(')
 								{
 									f = i;
-									//std::string b = s.substr(f);
                                		int j = i+1;
 									int q_1 = 1, q_2 = 0;
 									while (q_1 != q_2)
@@ -68,12 +67,10 @@ class Syntax_Tree
 										j++;
 									}
 									l = j - 1;
-							//std::cout << s.substr(f + 1, l-f-1) << "\n";
                                 	Syntax_Node *p_node = nullptr;
                                 	std::string buf = s.substr(f + 1, l-f-1);
 									std::cout << buf << "\n";
                                 	parse_string(buf, &p_node);
-							//std::cout << p
                                 			if ((*cur) == nullptr)
                                 			{
                                         			*cur = p_node;
@@ -83,7 +80,6 @@ class Syntax_Tree
                                                                 (*cur)->right = p_node;
                                                                 cur = &((*cur)->right);
                                 			}
-                                			//s = s.substr(l+1);
 							i = l;
 						}
 						else if (s[i] == '|')
@@ -99,8 +95,16 @@ class Syntax_Tree
 							Syntax_Node *a_node = new Syntax_Node(new Symbol(std::string(1, s[i])));
 							if (s[i-1] == ')')
 							{
-									set_root(a_node, r);
-									cur = &(*r);
+									if ((*cur)->data->value() == ".")
+									{
+										set_root(a_node, cur);
+										//cur = &(*r);
+									}
+									else
+									{
+										set_root(a_node, r);
+										cur = &(*r);
+									}
 							}
 							else if((*cur)->data->value() != "|")
 							{
