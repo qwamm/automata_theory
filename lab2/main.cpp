@@ -16,7 +16,8 @@ int main()
 	}*/
 	Syntax_Tree *t = new Syntax_Tree();
 	std::string s = "(a+b)abb";
-	//std::cout << t->root->data->value() << "\n";
 	t->create_ast(s);
+	delete t;
+	//std::cout << t->root->data->value() << "\n";
 	//t->putTree(t->root, 0);
 }

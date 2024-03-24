@@ -3,6 +3,17 @@
 #include <vector>
 #include "ast.hpp"
 
+struct Vertex
+{
+	int n;
+	std::string s;
+	Vertex (int _n, std::string _s)
+	{
+		n = _n;
+		s = _s;
+	}
+};
+
 class Syntax_Node
 {
 	public:
@@ -10,12 +21,18 @@ class Syntax_Node
         Syntax_Node *left;
         Syntax_Node *right;
 		bool is_nullable;
-		std::vector<int> f;
-		std::vector<int> l;
+		std::vector<Vertex> f;
+		std::vector<Vertex> l;
 		Syntax_Node(Expression *_data)
 		{
 			is_nullable = false;
 			data = _data;
+			left = nullptr;
+			right = nullptr;
+		}
+		~Syntax_Node()
+		{
+			delete data;
 			left = nullptr;
 			right = nullptr;
 		}
@@ -25,9 +42,23 @@ class Syntax_Tree
 {
 	public:
 		Syntax_Node *root;
-		std::vector<std::vector<int>> follow_pos;
+		std::vector<std::vector<Vertex>> follow_pos;
 		Syntax_Tree() {root = nullptr;}
-		~Syntax_Tree() {}
+
+		void del_tree(Syntax_Node *root)
+		{
+		 	if (root)
+		 	{
+		 		if (root->left) del_tree(root->left);
+		 		if (root->right) del_tree(root->right);
+		 		delete root;
+		 	}
+		}
+
+		~Syntax_Tree()
+		 {
+		 	del_tree(root);
+		 }
 
 		void set_root(Syntax_Node *node, Syntax_Node **r)
 		{
@@ -228,7 +259,7 @@ class Syntax_Tree
     		{
     				for (int j = 0; j < (*ptr)->right->f.size(); j++)
     				{
-    						follow_pos[(*ptr)->left->l[i] - 1].push_back((*ptr)->right->f[j]);
+    						follow_pos[(*ptr)->left->l[i].n - 1].push_back((*ptr)->right->f[j]);
     				}
     		}
        	}
@@ -254,7 +285,7 @@ class Syntax_Tree
     		{
     				for (int j = 0; j < (*ptr)->left->f.size(); j++)
     				{
-    						follow_pos[(*ptr)->left->l[i] - 1].push_back((*ptr)->left->f[j]);
+    						follow_pos[(*ptr)->left->l[i].n - 1].push_back((*ptr)->left->f[j]);
     				}
     		}    		
     	}
@@ -264,30 +295,31 @@ class Syntax_Tree
     	}
     	else
     	{
-    		(*ptr)->f.push_back(ind);
-    		(*ptr)->l.push_back(ind);
+    		(*ptr)->f.push_back(Vertex(ind, (*ptr)->data->value()));
+    		(*ptr)->l.push_back(Vertex(ind, (*ptr)->data->value()));
     	}
     }
 
-    void create_sets(Syntax_Node **ptr, int *ind)
+    void create_sets(Syntax_Node **ptr, int *ind, std::vector<Vertex>& states)
     {
     	if (*ptr)
     	{
-    		create_sets(&((*ptr)->left), ind);
-    		create_sets(&((*ptr)->right), ind);
+    		create_sets(&((*ptr)->left), ind, states);
+    		create_sets(&((*ptr)->right), ind, states);
     		if ((*ptr)->data->value() != "|" && (*ptr)->data->value() != "+" && (*ptr)->data->value() != ".")
     		{
     			(*ind)++;
-    			follow_pos.push_back(std::vector<int>());
+    			follow_pos.push_back(std::vector<Vertex>());
+    			states.push_back(Vertex(*ind, (*ptr)->data->value()));
     		}
     		set_node(ptr, *ind);
     		std::cout << (*ptr)->data->value() << " " << "N set: " << (*ptr)->is_nullable << " " <<
     		"F set: ";
     		for (auto &c : (*ptr)->f)
-    			std::cout << c << " ";
+    			std::cout << c.n << " " << c.s << " ";
     		std::cout << "L set: ";
     		for (auto &c : (*ptr)->l)
-    			std::cout << c << " ";
+    			std::cout << c.n << " " << c.s << " ";
     		std::cout << "\n";    		 
     	}
     }
@@ -311,16 +343,22 @@ class Syntax_Tree
 			s.push_back('$');
 			int ind = 0; //index of each a_node in ast
 			parse_string(s, &root);
-			create_sets(&root, &ind);
+			std::vector<Vertex> states;
+			create_sets(&root, &ind, states);
 			std::cout << "FP-set:\n";
 			for (int i = 0; i < follow_pos.size(); i++)
 			{
 				std::cout << i + 1 << " NODE: ";
 				for (int j = 0; j < follow_pos[i].size(); j++)
 				{
-					std::cout << follow_pos[i][j] << " ";
+					std::cout << follow_pos[i][j].n << " " << follow_pos[i][j].s << " ";
 				}
 				std::cout << "\n";
+			}
+			std::cout << "STATES:\n";
+			for (int i =0; i < states.size(); i++)
+			{
+				std::cout << states[i].n << " " << states[i].s << "\n";
 			}
 	}
 };
