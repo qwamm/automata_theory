@@ -1,6 +1,5 @@
 #include <iostream>
-//#include "regex_lib.hpp"
-#include "syntax_tree.hpp"
+#include "dfa.hpp"
 int main()
 {
 	/*std::string regex;
@@ -14,10 +13,10 @@ int main()
 		std::cin >> s;
 		reg.match(s);
 	}*/
-	Syntax_Tree *t = new Syntax_Tree();
-	std::string s = "(a+b)abb";
-	t->create_ast(s);
-	delete t;
+	DFA *t = new DFA();
+	std::string s = "ABF(G|H)";
+	t->create(s);
+	//delete t;
 	//std::cout << t->root->data->value() << "\n";
 	//t->putTree(t->root, 0);
 }

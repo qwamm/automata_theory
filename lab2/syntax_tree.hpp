@@ -338,7 +338,7 @@ class Syntax_Tree
 	}
 
 
-	void create_ast(std::string &s)
+	std::vector<Vertex> create_ast(std::string &s)
 	{
 			s.push_back('$');
 			int ind = 0; //index of each a_node in ast
@@ -360,5 +360,6 @@ class Syntax_Tree
 			{
 				std::cout << states[i].n << " " << states[i].s << "\n";
 			}
+			return states;
 	}
 };
