@@ -3,6 +3,7 @@
 class Expression
 {
 	public:
+		bool is_metasymbol;
 		virtual ~Expression() {}
 		virtual Expression *clone() = 0;
 		virtual std::string value () = 0;
@@ -15,6 +16,7 @@ class Disjunction : public Expression
 	public:
 		Disjunction (Expression *left, Expression *right): m_left (left), m_right (right) {}
 		Disjunction (const Disjunction &other) {
+					is_metasymbol = false;
     				m_left = other.m_left->clone ();
     				m_right = other.m_right->clone ();
   		}
@@ -38,7 +40,7 @@ class Symbol : public Expression
 	private:
 		std::string m_val;
 	public:
-		Symbol (std::string val): m_val (val) {}
+		Symbol (std::string val): m_val (val) {is_metasymbol = false;}
 		Symbol (const Symbol &other) { m_val = other.m_val; }
 		Expression *clone() override {return new Symbol(*this);}
 		std::string value() override {return m_val;}

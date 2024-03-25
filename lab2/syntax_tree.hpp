@@ -71,21 +71,22 @@ class Syntax_Tree
 		{
 			for (int i = 0; i < s.size() - 1; i++)
 			{
-				if(s[i] != '|' && s[i+1] != '|'  && s[i+1] != '+'  && s[i] != '.' && s[i+1] != '.' && s[i] != '(' && s[i+1] != ')')
+				if((s[i] != '|' || (s[i-1] == '#' && s[i] == '|')) && s[i] != '#' && s[i+1] != '|'  && s[i+1] != '+'  && (s[i] != '.' || (s[i-1] == '#' && s[i] == '.')) && s[i+1] != '.' &&
+				 (s[i] != '(' || (s[i-1] == '#' && s[i] == '(')) && (s[i+1] != ')'))
 				{
 					s.insert(i+1, ".");
 				}
 			}
 		}
 
-		void parse_string(std::string &s, Syntax_Node **cur)
+		bool parse_string(std::string &s, Syntax_Node **cur)
 		{
-			int f,l;
-			Syntax_Node **r = cur;
-			concat_str(s);
-			std::cout << s << "\n";
-                        	for (int i = 0; i < s.size(); i++)
-                        	{
+						int f,l;
+						Syntax_Node **r = cur;
+						concat_str(s);
+						std::cout << s << "\n";
+                        for (int i = 0; i < s.size(); i++)
+                        {
 								if (s[i] == '(')
 								{
 									f = i;
@@ -108,83 +109,92 @@ class Syntax_Tree
                                 	std::string buf = s.substr(f + 1, l-f-1);
 									std::cout << buf << "\n";
                                 	parse_string(buf, &p_node);
-                                			if ((*cur) == nullptr)
-                                			{
-                                        			*cur = p_node;
-                                			}
-                                			else
-                                			{
-                                                                (*cur)->right = p_node;
-                                                                cur = &((*cur)->right);
-                                			}
-							i = l;
-						}
-						else if (s[i] == '|')
-						{
-							//std::cout << "SYMBOL: " << s[i] << "\n";
-							Syntax_Node *or_node = new Syntax_Node(new Symbol(std::string(1, s[i])));
-							set_root(or_node, r);
-							cur = &(*r);
-						}
-						else if (s[i] == '.')
-						{
-							//std::cout << "SYMBOL: " << s[i] << "\n";
-							Syntax_Node *c_node = new Syntax_Node(new Symbol(std::string(1, s[i])));
-							if (s[i-1] == ')')
-							{
-									if ((*cur)->data->value() == ".")
+                                	if ((*cur) == nullptr)
+                                	{
+                                        	*cur = p_node;
+                                	}
+                                	else
+                                	{
+                                            (*cur)->right = p_node;
+                                            cur = &((*cur)->right);
+                                	}
+									i = l;
+								}
+								else if (s[i] == '|')
+								{
+									//std::cout << "SYMBOL: " << s[i] << "\n";
+									Syntax_Node *or_node = new Syntax_Node(new Symbol(std::string(1, s[i])));
+									or_node->data->is_metasymbol = true;
+									set_root(or_node, r);
+									cur = &(*r);
+								}
+								else if (s[i] == '.')
+								{
+									//std::cout << "SYMBOL: " << s[i] << "\n";
+									Syntax_Node *c_node = new Syntax_Node(new Symbol(std::string(1, s[i])));
+									c_node->data->is_metasymbol = true;
+									if (s[i-1] == ')' && s[i-2] != '#')
+									{
+										if ((*cur)->data->value() == "." && (*cur)->data->is_metasymbol)
+										{
+											set_root(c_node, cur);
+											//cur = &(*r);
+										}
+										else
+										{
+											set_root(c_node, r);
+											cur = &(*r);
+										}
+									}
+									else if((*cur)->data->value() != "|" || !(*cur)->data->is_metasymbol)
 									{
 										set_root(c_node, cur);
 										//cur = &(*r);
 									}
 									else
 									{
-										set_root(c_node, r);
-										cur = &(*r);
+										(*cur)->right = c_node;
+										cur = &((*cur)->right);
+										//std::cout << "HERE:" << (*cur)->data->value() << "\n";
 									}
-							}
-							else if((*cur)->data->value() != "|")
+								}
+								else if (s[i] == '+')
+								{
+									Syntax_Node *p_node = new Syntax_Node(new Symbol(std::string(1, s[i])));
+									p_node->data->is_metasymbol = true;
+									set_root(p_node, cur);
+								}
+					    	else if(s[i] != ')')
 							{
-								set_root(c_node, cur);
-								//cur = &(*r);
+								if (s[i] == '#')
+								{
+									if (i < s.size() - 1)
+										i++;
+									else
+										return false;
+								}
+                              	Syntax_Node *a_node = new Syntax_Node(new Symbol(std::string(1, s[i])));
+								if (*cur == nullptr)
+								{
+									*cur = a_node;
+								}
+								else if(((*cur)->data->value() == "." || (*cur)->data->value() == "|" || (*cur)->data->value() == "+") && (*cur)->data->is_metasymbol)
+								{
+									std::cout << "SYMBOL: " << s[i] << "\n";
+									(*cur)->right = a_node;
+									cur = &((*cur)->right);
+								}
+								else
+								{
+									(*r)->right = a_node;
+									cur = &(*r);
+									//r = &((*r)->right);
+								}
 							}
-							else
-							{
-								(*cur)->right = c_node;
-								cur = &((*cur)->right);
-								//std::cout << "HERE:" << (*cur)->data->value() << "\n";
-							}
-						}
-						else if (s[i] == '+')
-						{
-							Syntax_Node *p_node = new Syntax_Node(new Symbol(std::string(1, s[i])));
-							set_root(p_node, cur);
-						}
-					    else if(s[i] != ')')
-						{
-
-                                                          	Syntax_Node *a_node = new Syntax_Node(new Symbol(std::string(1, s[i])));
-																			if (*cur == nullptr)
-																			{
-																				*cur = a_node;
-																			}
-																			else if((*cur)->data->value() == "." || (*cur)->data->value() == "|" || (*cur)->data->value() == "+")
-																			{
-																				std::cout << "SYMBOL: " << s[i] << "\n";
-																				(*cur)->right = a_node;
-																				cur = &((*cur)->right);
-																			}
-																			else
-																			{
-																				(*r)->right = a_node;
-																				cur = &(*r);
-																				//r = &((*r)->right);
-																			}
-							}
-							std::cout << i+1 << " ITERATION:\n";
-							putTree(*r, 0);
-						}
-
+						std::cout << i+1 << " ITERATION:\n";
+						putTree(*r, 0);
+					}
+					return true;
     }
 
     void copy_f_vectors(Syntax_Node **ptr, Syntax_Node **left, Syntax_Node **right)
@@ -214,7 +224,7 @@ class Syntax_Tree
     void set_node(Syntax_Node **ptr, int ind)
     {
     	std::string s = (*ptr)->data->value();
-    	if (s == "|")
+    	if (s == "|" && (*ptr)->data->is_metasymbol)
     	{
     		if ((*ptr)->left->is_nullable || (*ptr)->right->is_nullable)
     		{
@@ -223,7 +233,7 @@ class Syntax_Tree
     		copy_f_vectors(ptr, &((*ptr)->left), &((*ptr)->right));
     		copy_l_vectors(ptr, &((*ptr)->left), &((*ptr)->right));
     	}
-    	else if (s == ".")
+    	else if (s == "." && (*ptr)->data->is_metasymbol)
     	{
     		//N - set
     		if ((*ptr)->left->is_nullable && (*ptr)->right->is_nullable)
@@ -263,7 +273,7 @@ class Syntax_Tree
     				}
     		}
        	}
-    	else if (s == "+")
+    	else if (s == "+" && (*ptr)->data->is_metasymbol)
     	{
     		//N - set
     		if ((*ptr)->left->is_nullable)
@@ -306,7 +316,8 @@ class Syntax_Tree
     	{
     		create_sets(&((*ptr)->left), ind, states);
     		create_sets(&((*ptr)->right), ind, states);
-    		if ((*ptr)->data->value() != "|" && (*ptr)->data->value() != "+" && (*ptr)->data->value() != ".")
+    		if (((*ptr)->data->value() != "|" && (*ptr)->data->value() != "+" && (*ptr)->data->value() != ".") ||
+    		 (*ptr)->data->is_metasymbol == false)
     		{
     			(*ind)++;
     			follow_pos.push_back(std::vector<Vertex>());

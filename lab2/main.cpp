@@ -1,5 +1,5 @@
 #include <iostream>
-#include "dfa.hpp"
+#include "regex_lib.hpp"
 int main()
 {
 	/*std::string regex;
@@ -13,9 +13,9 @@ int main()
 		std::cin >> s;
 		reg.match(s);
 	}*/
-	DFA *t = new DFA();
-	std::string s = "ABF(G|H)";
-	t->create(s);
+	SRegex *reg = new SRegex("(A|B)D+H");
+	std::cout << reg->match("BDODDH") << "\n";
+	delete reg;
 	//delete t;
 	//std::cout << t->root->data->value() << "\n";
 	//t->putTree(t->root, 0);

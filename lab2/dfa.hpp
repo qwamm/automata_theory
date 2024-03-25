@@ -18,8 +18,15 @@ class DFA
 	private:
 		std::vector<State*> DStates; 
 	public:
+		std::vector <State*> StartStates;
 		DFA() = default;
-		~DFA() {}
+		~DFA()
+		{
+			for (int i = 0 ; i < DStates.size(); i++)
+			{
+				delete DStates[i];
+			}
+		}
 		void create(std::string &s)
 		{
 			//creating of abstract syntax tree
@@ -30,7 +37,15 @@ class DFA
 			//copying vector of states
 			for (int i = 0; i < v.size(); i++)
 			{
-				DStates.push_back(new State(v[i].s, v[i].n));
+				State *cur_state = new State(v[i].s, v[i].n);
+				for (int j = 0; j < t->root->f.size(); j++)
+				{
+					if (t->root->f[j].n == v[i].n && t->root->f[j].s == v[i].s)
+					{
+							StartStates.push_back(cur_state);
+					}
+				}
+				DStates.push_back(cur_state);
 			}
 
 			//transition definition
@@ -52,5 +67,6 @@ class DFA
 				}
 				std::cout << "\n";
 			}
+			delete t;
 		}
 };
