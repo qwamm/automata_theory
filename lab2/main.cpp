@@ -13,8 +13,9 @@ int main()
 		std::cin >> s;
 		reg.match(s);
 	}*/
-	SRegex *reg = new SRegex("(A|B)D+H");
-	std::cout << reg->match("BDODDH") << "\n";
+	SRegex *reg = new SRegex("a+a+");
+	std::string s = "aaaa";
+	std::cout << reg->match(s) << "\n";
 	delete reg;
 	//delete t;
 	//std::cout << t->root->data->value() << "\n";

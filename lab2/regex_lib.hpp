@@ -15,15 +15,16 @@ class SRegex
 		~SRegex()
 		{
 			delete d;
-			
 		}
-		bool match(const std::string &s)
+		bool match(std::string &s)
 		{
+			s.push_back('$');
+			//std::cout << s << "\n";
 			State *cur_state;
 			bool f = false;
+			std::string b = std::string(1,s[0]);
 			for(int i = 0; i < d->StartStates.size(); i++)
 			{
-				std::string b = std::string(1,s[0]);
 				if (b == d->StartStates[i]->s)
 				{
 					cur_state = d->StartStates[i];
@@ -39,7 +40,7 @@ class SRegex
 					break;
 				for (int j = 0; j < cur_state->to.size(); j++)
 				{
-					std::string b = std::string(1,s[i]);
+					b = std::string(1,s[i]);
 					if (b == cur_state->to[j]->s)
 					{
 						cur_state = cur_state->to[j];
