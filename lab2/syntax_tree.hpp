@@ -82,6 +82,28 @@ class Syntax_Tree
 			}
 		}
 
+		void copy_tree(Syntax_Node *node, Syntax_Node *new_node)
+		{
+			if (node)
+			{
+				//new_node->data->value() = node->data->value();
+				if (node->right)
+				{
+					new_node->right = new Syntax_Node(new Symbol(node->right->data->value()));
+					if (node->right->data->is_metasymbol)
+						new_node->right->data->is_metasymbol = true;
+				}
+				if (node->left)
+				{
+					new_node->left = new Syntax_Node(new Symbol(node->left->data->value()));
+					if (node->left->data->is_metasymbol)
+						new_node->left->data->is_metasymbol = true;
+				}
+				copy_tree(node->left, new_node->left);
+				copy_tree(node->right, new_node->right);
+			}
+		}
+
 		bool parse_string(std::string &s, Syntax_Node **cur)
 		{
 						int f,l;
@@ -191,19 +213,19 @@ class Syntax_Tree
 									for (int i = 1; i < n; i++)
 									{
 										Syntax_Node *сp_node = new Syntax_Node(new Symbol(std::string(1, '.')));
-										сp_node->data->is_metasymbol = true;
 										Syntax_Node *tp_node = new Syntax_Node(new Symbol(t_node->data->value()));
-										tp_node->right = t_node->right;
-										tp_node->left = t_node->left;
+										if (t_node->data->is_metasymbol)
+											tp_node->data->is_metasymbol = true;
+										copy_tree(t_node, tp_node);
+										сp_node->data->is_metasymbol = true;
 										if (i + 1 > m)
 										{
 											tp_node->is_nullable = true;
 										}
 										set_root(сp_node, cur);
 										(*cur)->right = tp_node;
-										//std::cout << cur->data->value() << "\n";
 									}
-									i += 5;
+									i += 4;
 								}
 					    	else if(s[i] != ')')
 							{
@@ -224,8 +246,8 @@ class Syntax_Tree
 								else if(((*cur)->data->value() == "." || (*cur)->data->value() == "|" || (*cur)->data->value() == "+") && (*cur)->data->is_metasymbol)
 								{
 									std::cout << "SYMBOL: " << s[i] << "\n";
-									(*cur)->right = a_node;
-									cur = &((*cur)->right);
+										(*cur)->right = a_node;
+										cur = &((*cur)->right);
 								}
 								else
 								{
@@ -351,32 +373,6 @@ class Syntax_Tree
     	else if (s == "^")
     	{
     		(*ptr)->is_nullable = true;
-    	}
-    	else if (s[0] == '{' && s[s.size() - 1] == '}')
-    	{
-    		//N - set
-    		if ((*ptr)->left->is_nullable == true || s[1] == '0')
-    		{
-    			(*ptr)->is_nullable = true;
-    		}
-    		//F - set
-    		for (int i = 0; i < (*ptr)->left->f.size(); i++)
-    		{
-    			(*ptr)->f.push_back((*ptr)->left->f[i]);
-    		}
-    		//L - set
-    		for (int i = 0; i < (*ptr)->left->l.size(); i++)
-    		{
-    			(*ptr)->l.push_back((*ptr)->left->l[i]);
-    		}
-    		//FP - set
-    		for (int i = 0; i < (*ptr)->left->l.size(); i++)
-    		{
-    				for (int j = 0; j < (*ptr)->left->f.size(); j++)
-    				{
-    						follow_pos[(*ptr)->left->l[i].n - 1].push_back((*ptr)->left->f[j]);
-    				}
-    		}    		
     	}
     	else
     	{
