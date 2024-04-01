@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <vector>
 #include "ast.hpp"
@@ -71,7 +70,11 @@ class Syntax_Tree
 		{
 			for (int i = 0; i < s.size() - 1; i++)
 			{
-				if((s[i] != '|' || (s[i-1] == '#' && s[i] == '|')) && s[i] != '#' && s[i+1] != '|'  && s[i+1] != '+'  && (s[i] != '.' || (s[i-1] == '#' && s[i] == '.')) && s[i+1] != '.' &&
+				if (s[i] == '{' && s[i+4] == '}')
+				{
+						i +=4;
+				}
+				else if((s[i] != '|' || (s[i-1] == '#' && s[i] == '|')) && s[i+1] != '{' &&  s[i] != '#' && s[i+1] != '|'  && s[i+1] != '+'  && (s[i] != '.' || (s[i-1] == '#' && s[i] == '.')) && s[i+1] != '.' &&
 				 (s[i] != '(' || (s[i-1] == '#' && s[i] == '(')) && (s[i+1] != ')'))
 				{
 					s.insert(i+1, ".");
@@ -94,11 +97,11 @@ class Syntax_Tree
 									int q_1 = 1, q_2 = 0;
 									while (q_1 != q_2)
 									{
-										if (s[j] == '(')
+										if (s[j] == '(' && s[j-1] != '#')
 										{
 											q_1++;
 										}
-										else if (s[j] == ')')
+										else if (s[j] == ')' && s[j-1] != '#')
 										{
 											q_2++;
 										}
@@ -109,10 +112,16 @@ class Syntax_Tree
                                 	std::string buf = s.substr(f + 1, l-f-1);
 									std::cout << buf << "\n";
                                 	parse_string(buf, &p_node);
+                                	//std::cout << l +1 << "\n";
                                 	if ((*cur) == nullptr)
                                 	{
                                         	*cur = p_node;
                                 	}
+                                	/*else if (l + 1 < s.size() && s[l + 1] == '*')
+                                	{
+                                		(*r)->right = p_node;
+                                        cur = &((*r)->right);
+                                	}*/
                                 	else
                                 	{
                                             (*cur)->right = p_node;
@@ -122,7 +131,6 @@ class Syntax_Tree
 								}
 								else if (s[i] == '|')
 								{
-									//std::cout << "SYMBOL: " << s[i] << "\n";
 									Syntax_Node *or_node = new Syntax_Node(new Symbol(std::string(1, s[i])));
 									or_node->data->is_metasymbol = true;
 									set_root(or_node, r);
@@ -130,7 +138,6 @@ class Syntax_Tree
 								}
 								else if (s[i] == '.')
 								{
-									//std::cout << "SYMBOL: " << s[i] << "\n";
 									Syntax_Node *c_node = new Syntax_Node(new Symbol(std::string(1, s[i])));
 									c_node->data->is_metasymbol = true;
 									if (s[i-1] == ')' && s[i-2] != '#')
@@ -138,7 +145,6 @@ class Syntax_Tree
 										if ((*cur)->data->value() == "." && (*cur)->data->is_metasymbol)
 										{
 											set_root(c_node, cur);
-											//cur = &(*r);
 										}
 										else
 										{
@@ -164,16 +170,36 @@ class Syntax_Tree
 									p_node->data->is_metasymbol = true;
 									set_root(p_node, cur);
 								}
+								else if (s[i] == '{')
+								{
+									std::string token;	
+									//std::cout << s[i+1] << "\n";													
+									if ((s[i+1] >= 48 && s[i+1] <= 57) && s[i+2] == ',' && (s[i+1] >= 48 && s[i+1] <= 57) && s[i+3] > s[i+1] && s[i+4] == '}')
+									{
+										token += s.substr(i, 5);
+										//std::cout << token << "\n";
+									}
+									else
+									{
+										throw std::runtime_error("wrong regex");
+									}
+									Syntax_Node *r_node = new Syntax_Node(new Symbol(token));
+									r_node->data->is_metasymbol = true;
+									set_root(r_node, cur);
+									i += 5;
+								}
 					    	else if(s[i] != ')')
 							{
+								std::string token;
 								if (s[i] == '#')
 								{
 									if (i < s.size() - 1)
 										i++;
 									else
-										return false;
+										throw std::runtime_error("wrong regex");
 								}
-                              	Syntax_Node *a_node = new Syntax_Node(new Symbol(std::string(1, s[i])));
+								token.push_back(s[i]);
+                              	Syntax_Node *a_node = new Syntax_Node(new Symbol(token));
 								if (*cur == nullptr)
 								{
 									*cur = a_node;
@@ -197,6 +223,7 @@ class Syntax_Tree
 					return true;
     }
 
+    //NEED TO FIX
     void copy_f_vectors(Syntax_Node **ptr, Syntax_Node **left, Syntax_Node **right)
     {
     	for (int i = 0; i < (*left)->f.size(); i++)
@@ -209,6 +236,7 @@ class Syntax_Tree
     	}
     }
 
+    //NEED TO FIX
     void copy_l_vectors(Syntax_Node **ptr, Syntax_Node **left, Syntax_Node **right)
     {
     	for (int i = 0; i < (*left)->l.size(); i++)
@@ -221,16 +249,20 @@ class Syntax_Tree
     	}
     }
 
+    //NEED TO USE UNOREDERED_SET
     void set_node(Syntax_Node **ptr, int ind)
     {
     	std::string s = (*ptr)->data->value();
     	if (s == "|" && (*ptr)->data->is_metasymbol)
     	{
+    		//N - set
     		if ((*ptr)->left->is_nullable || (*ptr)->right->is_nullable)
     		{
     			(*ptr)->is_nullable = true;
     		}
+    		//F - set
     		copy_f_vectors(ptr, &((*ptr)->left), &((*ptr)->right));
+    		//L - set
     		copy_l_vectors(ptr, &((*ptr)->left), &((*ptr)->right));
     	}
     	else if (s == "." && (*ptr)->data->is_metasymbol)
@@ -303,6 +335,46 @@ class Syntax_Tree
     	{
     		(*ptr)->is_nullable = true;
     	}
+    	else if (s[0] == '{' && s[s.size() - 1] == '}')
+    	{
+    		//N - set
+    		if ((*ptr)->left->is_nullable == true)
+    		{
+    			(*ptr)->is_nullable = true;
+    		}
+    		//F - set
+    		if (s[i+1] > 0)
+    		{
+    			for (int i = 0; i < (*ptr)->left->f.size(); i++)
+    			{
+    						(*ptr)->f.push_back((*ptr)->left->f[i]);
+    			}
+    		}
+    		else if (s[i+1] == 0)
+    		{
+    			copy_f_vectors(ptr, &((*ptr)->left), &((*ptr)->right));
+    		}
+    		//L - set
+    		if (s[i+1] > 0)
+    		{
+    			for (int i = 0; i < (*ptr)->left->l.size(); i++)
+    			{
+    				(*ptr)->l.push_back((*ptr)->left->l[i]);
+    			}
+    		}
+    		else if (s[i+1] == 0)
+    		{
+    			copy_l_vectors(ptr, &((*ptr)->left), &((*ptr)->right));
+    		}
+    		//FP - set
+    		for (int i = 0; i < (*ptr)->left->l.size(); i++)
+    		{
+    				for (int j = 0; j < (*ptr)->left->f.size(); j++)
+    				{
+    						follow_pos[(*ptr)->left->l[i].n - 1].push_back((*ptr)->left->f[j]);
+    				}
+    		}    		
+    	}
     	else
     	{
     		(*ptr)->f.push_back(Vertex(ind, (*ptr)->data->value()));
@@ -320,7 +392,7 @@ class Syntax_Tree
     		 (*ptr)->data->is_metasymbol == false)
     		{
     			(*ind)++;
-    			follow_pos.push_back(std::vector<Vertex>());
+    			follow_pos.emplace_back();
     			states.push_back(Vertex(*ind, (*ptr)->data->value()));
     		}
     		set_node(ptr, *ind);

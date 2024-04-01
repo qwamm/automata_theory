@@ -27,6 +27,7 @@ class DFA
 				delete DStates[i];
 			}
 		}
+		//Передавать константные ссылки на строки
 		void create(std::string &s)
 		{
 			//creating of abstract syntax tree
