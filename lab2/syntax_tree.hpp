@@ -72,7 +72,7 @@ class Syntax_Tree
 			{
 				if (s[i] == '{' && s[i+4] == '}')
 				{
-						i +=4;
+						i += 3;
 				}
 				else if((s[i] != '|' || (s[i-1] == '#' && s[i] == '|')) && s[i+1] != '{' &&  s[i] != '#' && s[i+1] != '|'  && s[i+1] != '+'  && (s[i] != '.' || (s[i-1] == '#' && s[i] == '.')) && s[i+1] != '.' &&
 				 (s[i] != '(' || (s[i-1] == '#' && s[i] == '(')) && (s[i+1] != ')'))
@@ -177,15 +177,32 @@ class Syntax_Tree
 									if ((s[i+1] >= 48 && s[i+1] <= 57) && s[i+2] == ',' && (s[i+1] >= 48 && s[i+1] <= 57) && s[i+3] > s[i+1] && s[i+4] == '}')
 									{
 										token += s.substr(i, 5);
-										//std::cout << token << "\n";
 									}
 									else
 									{
 										throw std::runtime_error("wrong regex");
 									}
-									Syntax_Node *r_node = new Syntax_Node(new Symbol(token));
-									r_node->data->is_metasymbol = true;
-									set_root(r_node, cur);
+									int m = s[i+1] - 48, n = s[i+3] - 48;
+									Syntax_Node *t_node = *cur;
+									if (s[i+1] == '0')
+									{
+										(*cur)->is_nullable = true;
+									}
+									for (int i = 1; i < n; i++)
+									{
+										Syntax_Node *сp_node = new Syntax_Node(new Symbol(std::string(1, '.')));
+										сp_node->data->is_metasymbol = true;
+										Syntax_Node *tp_node = new Syntax_Node(new Symbol(t_node->data->value()));
+										tp_node->right = t_node->right;
+										tp_node->left = t_node->left;
+										if (i + 1 > m)
+										{
+											tp_node->is_nullable = true;
+										}
+										set_root(сp_node, cur);
+										(*cur)->right = tp_node;
+										//std::cout << cur->data->value() << "\n";
+									}
 									i += 5;
 								}
 					    	else if(s[i] != ')')
@@ -338,33 +355,19 @@ class Syntax_Tree
     	else if (s[0] == '{' && s[s.size() - 1] == '}')
     	{
     		//N - set
-    		if ((*ptr)->left->is_nullable == true)
+    		if ((*ptr)->left->is_nullable == true || s[1] == '0')
     		{
     			(*ptr)->is_nullable = true;
     		}
     		//F - set
-    		if (s[i+1] > 0)
+    		for (int i = 0; i < (*ptr)->left->f.size(); i++)
     		{
-    			for (int i = 0; i < (*ptr)->left->f.size(); i++)
-    			{
-    						(*ptr)->f.push_back((*ptr)->left->f[i]);
-    			}
-    		}
-    		else if (s[i+1] == 0)
-    		{
-    			copy_f_vectors(ptr, &((*ptr)->left), &((*ptr)->right));
+    			(*ptr)->f.push_back((*ptr)->left->f[i]);
     		}
     		//L - set
-    		if (s[i+1] > 0)
+    		for (int i = 0; i < (*ptr)->left->l.size(); i++)
     		{
-    			for (int i = 0; i < (*ptr)->left->l.size(); i++)
-    			{
-    				(*ptr)->l.push_back((*ptr)->left->l[i]);
-    			}
-    		}
-    		else if (s[i+1] == 0)
-    		{
-    			copy_l_vectors(ptr, &((*ptr)->left), &((*ptr)->right));
+    			(*ptr)->l.push_back((*ptr)->left->l[i]);
     		}
     		//FP - set
     		for (int i = 0; i < (*ptr)->left->l.size(); i++)
