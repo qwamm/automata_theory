@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <unordered_map>
 #include "ast.hpp"
 
 struct Vertex
@@ -43,6 +44,7 @@ class Syntax_Tree
 		Syntax_Node *root;
 		std::vector<std::vector<Vertex>> follow_pos;
 		Syntax_Tree() {root = nullptr;}
+		std::unordered_map <int, std::string> capture_groups;
 
 		void del_tree(Syntax_Node *root)
 		{
@@ -74,6 +76,18 @@ class Syntax_Tree
 				{
 						i += 3;
 				}
+				else if (s[i-1] == '(' && s[i] >= 48 && s[i] <= 57)
+				{
+						int j = i;
+						while(s[i] >= 48 && s[i] <= 57)
+						{
+							i++;
+						}
+						if (s[i] != ':')
+						{
+							i = j - 1;
+						}
+				}
 				else if((s[i] != '|' || (s[i-1] == '#' && s[i] == '|')) && s[i+1] != '{' &&  s[i] != '#' && s[i+1] != '|'  && s[i+1] != '+'  && (s[i] != '.' || (s[i-1] == '#' && s[i] == '.')) && s[i+1] != '.' &&
 				 (s[i] != '(' || (s[i-1] == '#' && s[i] == '(')) && (s[i+1] != ')'))
 				{
@@ -104,6 +118,23 @@ class Syntax_Tree
 			}
 		}
 
+		std::string group_capture(const std::string &s)
+		{
+			int i = 0;
+			std::string group = s, num = "";
+			while (s[i] >= 48 && s[i] <= 57)
+			{
+				num.push_back(s[i]);
+				i++;
+			}
+			if (s[i] == ':' && num.size() > 0)
+			{
+				group = s.substr(i+1);
+				capture_groups[std::stoi(num)] = group;
+			}
+			return group;
+		}
+
 		bool parse_string(std::string &s, Syntax_Node **cur)
 		{
 						int f,l;
@@ -132,18 +163,14 @@ class Syntax_Tree
 									l = j - 1;
                                 	Syntax_Node *p_node = nullptr;
                                 	std::string buf = s.substr(f + 1, l-f-1);
-									std::cout << buf << "\n";
+                                	std::cout << buf << "\n";
+                                	buf = group_capture(buf);
                                 	parse_string(buf, &p_node);
-                                	//std::cout << l +1 << "\n";
+					
                                 	if ((*cur) == nullptr)
                                 	{
                                         	*cur = p_node;
                                 	}
-                                	/*else if (l + 1 < s.size() && s[l + 1] == '*')
-                                	{
-                                		(*r)->right = p_node;
-                                        cur = &((*r)->right);
-                                	}*/
                                 	else
                                 	{
                                             (*cur)->right = p_node;
@@ -158,6 +185,16 @@ class Syntax_Tree
 									set_root(or_node, r);
 									cur = &(*r);
 								}
+                                                		/*else if (s[i] == '.' && s[i+1] == '$')
+                                                		{
+                                                        		std::string token;
+                                                        		token.push_back(s[i]);
+                                                        		Syntax_Node *c_node = new Syntax_Node(new Symbol(token));
+									Syntax_Node *d_node = new Syntax_Node(new Symbol(std::string(1, s[i+1])));
+									set_root(c_node, r);
+									(*r)->right = d_node;
+									i++;
+                                                		}*/
 								else if (s[i] == '.')
 								{
 									Syntax_Node *c_node = new Syntax_Node(new Symbol(std::string(1, s[i])));

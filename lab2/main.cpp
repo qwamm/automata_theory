@@ -2,8 +2,10 @@
 #include "regex_lib.hpp"
 int main()
 {
-	SRegex *reg = new SRegex("(abc){4,6}");
-	std::string s = "abcabcabcabcabc";
+	SRegex *reg = new SRegex("(ab)|(cef)|(o|g|h)");
+	std::string s = "ab";
 	std::cout << reg->match(s) << "\n";
+	reg->print_capture_groups();
+	std::cout << reg->restore_regex() << "\n";
 	delete reg;
 }
