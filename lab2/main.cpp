@@ -2,10 +2,12 @@
 #include "regex_lib.hpp"
 int main()
 {
-	SRegex *reg = new SRegex("(ab)|(cef)|(o|g|h)");
-	std::string s = "ab";
+	SRegex *reg = new SRegex("abc");
+	std::string s = "ab", s_1 = "ab";
 	std::cout << reg->match(s) << "\n";
-	reg->print_capture_groups();
-	std::cout << reg->restore_regex() << "\n";
+	//reg->regex_traversal(s_1);
+	reg->language_addition();
+	//reg->print_capture_groups();
+	//std::cout << reg->restore_regex() << "\n";
 	delete reg;
 }

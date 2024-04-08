@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <unordered_map>
 #include "syntax_tree.hpp"
@@ -35,17 +36,75 @@ class DFA
 		{
                         std::vector <State*> DStates_1 = d_1->getDStates(), DStates_2 = d_2->getDStates(), DStates_3;
 			int num = 1;
-			if (DStates_1.size() > DStates_2.size())
-			{
-                        	for (int i = 0; i < DStates_1.size(); i++)
-                        	{
-					for (int j = 0; j < DStates_2.size(); j++)
+			//states definition
+                        for (int i = 0; i < DStates_1.size(); i++)
+                        {
+				for (int j = 0; j < DStates_2.size(); j++)
+				{
+					DStates_3.push_back(new State(DStates_1[i]->s + DStates_2[j]->s,
+					num++));
+				}
+                        }
+
+			//transition definition
+                        for (int i = 0; i < DStates_1.size(); i++)
+                        {
+                                for (int j = 0; j < DStates_2.size(); j++)
+                                {
+                                         if(DStates_1[i]->to.size() == 0)
+                                         {
+						for (int t = 0; t < DStates_2[j]->to.size(); t++)
+						{
+                                                    for (int h = 0; h < DStates_3.size(); h++)
+                                                    {
+                                                                if (DStates_3[h]->s[1] == DStates_2[j]->to[t]->s[0])
+                                                                {
+                                                                        DStates_3[j + DStates_2.size()*i]->to.push_back(DStates_3[h]);
+                                                                }
+                                                    }
+						}
+                                         }
+                                        for (int k = 0; k < DStates_1[i]->to.size(); k++)
 					{
-						DStates_3.push_back(new State(DStates_1[i]->s + DStates_2[j]->s,
-						num++));
+						if(DStates_2[j]->to.size() == 0)
+						{
+							for (int h = 0; h < DStates_3.size(); h++)
+                                                        {
+                                                                if (DStates_3[h]->s[0] == DStates_1[i]->to[k]->s[0])
+                                                                {
+                                                                        DStates_3[j + DStates_2.size()*i]->to.push_back(DStates_3[h]);
+                                                                }
+                                                        }
+						}
+						for (int t = 0; t < DStates_2[j]->to.size(); t++)
+						{
+							for (int h = 0; h < DStates_3.size(); h++)
+							{
+								if (DStates_3[h]->s == DStates_1[i]->to[k]->s + DStates_2[j]->to[t]->s)
+								{
+									DStates_3[j + DStates_2.size()*i]->to.push_back(DStates_3[h]);
+								}
+							}
+						}
 					}
-                        	}
+                                }
+                        }
+			for (int i = 0; i < DStates_3.size(); i++)
+			{
+				std::cout << i+1 << ": " << DStates_3[i]->s << "\n";
 			}
+			//printing dfa states
+                        for (int i = 0; i < DStates_3.size(); i++)
+                        {
+                                std::cout << i+1 << " TRAVERSAL_DFA STATE: ";
+                                for (int j = 0; j < DStates_3[i]->to.size(); j++)
+                                {
+                                        std::cout << DStates_3[i]->to[j]->s_num << " " << DStates_3[i]->to[j]->s;
+                                        if (j < DStates_3[i]->to.size())
+                                                std::cout << ", ";
+                                }
+                                std::cout << "\n";
+                        }
 		}
 
 		std::vector<State*> getDStates()

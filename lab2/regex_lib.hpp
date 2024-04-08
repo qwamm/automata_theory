@@ -9,6 +9,7 @@ class SRegex
 	public:
 		SRegex(std::string reg)
 		{
+			regex = reg;
 			d = new DFA();
 			d->create(reg);
 		}
@@ -23,6 +24,40 @@ class SRegex
 			for (auto &c : capture_groups)
 			{
 				std::cout << c.first << "\t" << c.second << "\n";
+			}
+		}
+
+		void language_addition()
+		{
+			std::vector<std::string> v;
+			for (auto &c : regex)
+				v.push_back(std::string(1,c));
+			std::vector<std::string> buf;
+			for (auto &c : v)
+				buf.push_back(c);
+			int count = buf.size();
+			for (int z = 0; z < regex.size() - 1; z++)
+			{
+				//std::cout << "MARKER\n";
+				std::vector<std::string> tmp; //stores all combinations of length z
+				for (int i = 0; i < regex.size(); i++)
+				{
+					for (int k = 0; k < buf.size(); k++)
+					{
+						if(v[i] != buf[k])
+						{
+							tmp.push_back(buf[k] + regex[i]);
+							count++;
+						}
+					}
+				}
+				for (int i = 0; i < tmp.size(); i++)
+					std::cout << tmp[i] << " ";
+				std::cout << "\n";
+				buf.clear();
+				for (auto &c : tmp)
+					buf.push_back(c);
+				//buf = tmp;
 			}
 		}
 
@@ -62,7 +97,6 @@ class SRegex
                                 		for (int k = 0; k < cur_state->to.size(); k++)
                                 		{
                                         		b = std::string(1,s[j]);
-							//std::cout << b << "\n";
                                         		if (b == cur_state->to[k]->s)
                                         		{
                                                 		cur_state = cur_state->to[k];
