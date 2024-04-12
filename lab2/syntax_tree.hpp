@@ -214,7 +214,6 @@ class Syntax_Tree
 									else if((*cur)->data->value() != "|" || !(*cur)->data->is_metasymbol)
 									{
 										set_root(c_node, cur);
-										//cur = &(*r);
 									}
 									else
 									{

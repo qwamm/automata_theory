@@ -38,7 +38,6 @@ class SRegex
 			int count = buf.size();
 			for (int z = 0; z < regex.size() - 1; z++)
 			{
-				//std::cout << "MARKER\n";
 				std::vector<std::string> tmp; //stores all combinations of length z
 				for (int i = 0; i < regex.size(); i++)
 				{
@@ -135,6 +134,8 @@ class SRegex
 				State *current_state;
 				for (int i = 0; i < d->StartStates.size(); i++)
 				{
+					int ind = 0;
+					int p_num = 0;
 					buf = "";
 					current_state = d->StartStates[i];
 					do
@@ -142,14 +143,24 @@ class SRegex
 						buf += current_state->s;
 						std::cout << buf << "\t" << i << "\t" << k << "\n";
 						flag = false;
-						for (int j = 0; j < current_state->to.size(); j++)
+						for (int j = ind; j < current_state->to.size(); j++)
 						{
-							if (current_state->to[j]->s_num <= k || current_state->to[j]->to.size() == 0)
+							if ((current_state->to[j]->s_num <= k || p_num == 0 || current_state->to[j]->to.size() == 0)
+							&& current_state->to[j] != current_state)
 							{
-								//std::cout << k << "\t" << current_state->to[j]->s_num << "\n";
+								//std::cout << k << "\t" << current_state->to[j]->s << "\n";
 								flag = true;
 								current_state = current_state->to[j];
+								p_num++;
 								break;
+							}
+							else if ((current_state->to[j]->s_num <= k || p_num == 0 || current_state->to[j]->to.size() == 0)
+                                                        && current_state->to[j] == current_state)
+							{
+								buf += '+';
+								flag = true;
+								ind = j+1;
+								//break;
 							}
 						}
 						if (current_state->to.size() == 0)
