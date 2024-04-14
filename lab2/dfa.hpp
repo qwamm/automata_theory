@@ -120,7 +120,7 @@ class DFA
 			std::vector<State*> R1, R2;
 			for (int i = 0; i < R.size(); i++)
 			{
-				bool flag;
+				bool flag = false;
 				for (int j = 0; j < R[i]->to.size(); j++)
 				{
 					flag = true;
@@ -253,21 +253,38 @@ class DFA
 			{
 				for (int j = 0; j < min_DStates[i]->s.size(); j++)
 				{
-					for (int k = 0; k < DStates[min_DStates[i]->s_num + j]->to.size(); k++)
+					//std::cout << min_DStates[i]->s_num + j << "\n";
+					bool flag = false;
+					for (int k = 0; k < DStates[min_DStates[i]->s_num + j - 1]->to.size(); k++)
 					{
 						for (int t = 0; t < min_DStates.size(); t++)
 						{
-							if (DStates[min_DStates[i]->s_num + j]->to[k]->s_num
+							if (DStates[min_DStates[i]->s_num + j - 1]->to[k]->s_num
 							== min_DStates[t]->s_num)
 							{
+								flag = true;
 								min_DStates[i]->to.push_back(min_DStates[t]);
 								break;
 							}
 						}
+						if (flag)
+							break;
 					}
+						if (flag)
+							break;
 				}
 			}
-
+                        for (int i = 0; i < min_DStates.size(); i++)
+                        {
+                                std::cout << i+1 << "MIN DFA STATE \"" << min_DStates[i]->s << "\": ";
+                                for (int j = 0; j < min_DStates[i]->to.size(); j++)
+                                {
+                                        std::cout << min_DStates[i]->to[j]->s_num << " " << min_DStates[i]->to[j]->s;
+                                        if (j < min_DStates[i]->to.size())
+                                                std::cout << ", ";
+                                }
+                                std::cout << "\n";
+                        }
 		}
 
 		//Передавать константные ссылки на строки

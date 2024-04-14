@@ -7,9 +7,9 @@ int main()
 	std::cin >> in;
 	SRegex *reg = new SRegex(in);
 	std::string s = "aabbcc", s_1 = "ab";
-	std::vector<std::vector<State*>> min_states = reg->d->minimize();
+	reg->d->minimize_DFA();
 	//std::cout << "MIN_STATES SIZE: " << min_states.size() << "\n";
-	for (int i = 0; i < min_states.size(); i++)
+	/*for (int i = 0; i < min_states.size(); i++)
 	{
 		std::cout << i + 1 << " STATE SIZE: " << "\t";
 		for (int j = 0; j < min_states[i].size(); j++)
@@ -17,7 +17,7 @@ int main()
 			std::cout << min_states[i][j]->s << " ";
 		}
 		std::cout << "\n";
-	}
+	}*.
 	/*if (reg->match(s))
 		std::cout << "MATCHED\n";
 	else
