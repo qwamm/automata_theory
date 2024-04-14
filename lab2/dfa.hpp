@@ -1,5 +1,7 @@
-
 #include <iostream>
+#include <utility>
+#include <vector>
+#include <queue>
 #include <unordered_map>
 #include "syntax_tree.hpp"
 
@@ -110,6 +112,162 @@ class DFA
 		std::vector<State*> getDStates()
 		{
 			return DStates;
+		}
+
+		std::pair<std::vector<State*>, std::vector<State*>> split(std::vector<State*> &R,
+		 std::string c, std::vector<State*> &splitter)
+		{
+			std::vector<State*> R1, R2;
+			for (int i = 0; i < R.size(); i++)
+			{
+				bool flag;
+				for (int j = 0; j < R[i]->to.size(); j++)
+				{
+					flag = true;
+					for (int k = 0; k < splitter.size(); k++)
+					{
+						if (R[i]->to[j]->s == c && R[i]->to[j] != splitter[k])
+						{
+							flag = false;
+							break;
+						}
+					}
+					if (!flag)
+						break;
+				}
+				if(flag)
+					R1.push_back(R[i]);
+				else
+					R2.push_back(R[i]);
+			}
+			return std::make_pair(R1, R2);
+		}
+
+		//Минимизация ДКА
+		std::vector<std::vector<State*>> minimize()
+		{
+			std::vector<std::vector<State*>> classes;
+			std::vector<State*> terminal_states, not_terminal_states;
+			std::queue< std::pair < std::string , std::vector<State*> > > S;
+			for (int i = 0; i < EndStates.size(); i++)
+			{
+				terminal_states.push_back(EndStates[i]);
+			}
+			for (int i = 0; i < DStates.size(); i++)
+			{
+				if (DStates[i]->to.size() > 0)
+					not_terminal_states.push_back(DStates[i]);
+			}
+			classes.push_back(terminal_states);
+			classes.push_back(not_terminal_states);
+			for (int i = 0; i < DStates.size(); i++)
+                        {
+				std::string s = DStates[i]->s;
+                                S.push(std::make_pair(s, terminal_states));
+				S.push(std::make_pair(s, not_terminal_states));
+                        }
+			while (!S.empty())
+			{
+				std::pair <std::string , std::vector<State*>> splitter = S.front();
+				S.pop();
+				for (int i = 0; i < classes.size(); i++)
+				{
+					std::vector<State*> R = classes[i];
+					std::pair<std::vector<State*>, std::vector<State*>> R_sets =
+					split( R, splitter.first, splitter.second);
+					std::vector<State*> R1 = R_sets.first, R2 = R_sets.second;
+					if (R1.size() > 0 && R2.size() > 0)
+					{
+						classes.erase(classes.begin() + i);
+						classes.push_back(R1);
+						classes.push_back(R2);
+						for (int i = 0; i < DStates.size(); i++)
+						{
+							S.push(std::make_pair(DStates[i]->s, R1));
+							S.push(std::make_pair(DStates[i]->s, R2));
+						}
+					}
+				}
+			}
+			return classes;
+		}
+
+		void minimize_DFA()
+		{
+			std::vector<std::vector<State*>> min_states = minimize();
+			std::vector<State*> min_StartStates, min_EndStates, min_DStates;
+			State *min_state;
+			std::string min_s;
+			for (int i = 0 ; i < min_states.size(); i++)
+			{
+				min_s = "";
+				for (int j = 0; j < min_states[i].size(); j++)
+				{
+					min_s += min_states[i][j]->s;
+				}
+				min_state = new State(min_s, min_states[i][0]->s_num);
+				min_DStates.push_back(min_state);
+			}
+
+			//min DFA start states definition
+			for (int i = 0; i < min_DStates.size(); i++)
+			{
+				for (int j = 0; j < min_DStates[i]->s.size(); j++)
+				{
+					bool flag = false;
+					for (int k = 0; k < StartStates.size(); k++)
+					{
+						if (min_DStates[i]->s[j] == StartStates[k]->s[0])
+						{
+							flag = true;
+							min_StartStates.push_back(min_DStates[i]);
+							break;
+						}
+					}
+					if (flag)
+						break;
+				}
+			}
+			//min DFA endstates definition
+                        for (int i = 0; i < min_DStates.size(); i++)
+                        {
+                                for (int j = 0; j < min_DStates[i]->s.size(); j++)
+                                {
+                                        bool flag = false;
+                                        for (int k = 0; k < EndStates.size(); k++)
+                                        {
+                                                if (min_DStates[i]->s[j] == EndStates[k]->s[0])
+                                                {
+                                                        flag = true;
+                                                        min_EndStates.push_back(min_DStates[i]);
+                                                        break;
+                                                }
+                                        }
+                                        if (flag)
+                                                break;
+                                }
+                        }
+
+			//min DFA transition definition
+			for (int i = 0; i < min_DStates.size(); i++)
+			{
+				for (int j = 0; j < min_DStates[i]->s.size(); j++)
+				{
+					for (int k = 0; k < DStates[min_DStates[i]->s_num + j]->to.size(); k++)
+					{
+						for (int t = 0; t < min_DStates.size(); t++)
+						{
+							if (DStates[min_DStates[i]->s_num + j]->to[k]->s_num
+							== min_DStates[t]->s_num)
+							{
+								min_DStates[i]->to.push_back(min_DStates[t]);
+								break;
+							}
+						}
+					}
+				}
+			}
+
 		}
 
 		//Передавать константные ссылки на строки

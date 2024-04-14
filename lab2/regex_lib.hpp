@@ -4,9 +4,9 @@
 class SRegex
 {
 	private:
-		std::string regex;
-		DFA *d;
+		std::string regex; //не нужно хранить regex
 	public:
+		DFA *d;
 		SRegex(std::string reg)
 		{
 			regex = reg;
@@ -27,7 +27,7 @@ class SRegex
 			}
 		}
 
-		void language_addition()
+		void language_addition() //переделать (возвращает объект рв, который не мэтчит все строки, которые мэтчит исходная строка
 		{
 			std::vector<std::string> v;
 			for (auto &c : regex)
@@ -76,14 +76,8 @@ class SRegex
                        			for (int j = 1; j < s.size(); j++)
                         		{
 						f = false;
-                                		/*if (cur_state->to.size() == 0 && j == s.size() - 1)
-						{
-							f = true;
-                                        		break;
-						}*/
 						if (j == s.size() - 1)
 						{
-							std::cout << "MARKER\n";
 							for (int t = 0; t < d->EndStates.size(); t++)
 							{
 								if (cur_state == d->EndStates[t])
@@ -121,63 +115,70 @@ class SRegex
 			return d_3;
 		}
 
+		void path_passing(State *current_state, int k, bool &flag, std::string &buf, std::string &res, int p_num, int ind, int i)
+		{
+						if(current_state->s != "$")
+                                                	buf += current_state->s;
+						std::string prev = buf;
+                                                std::cout << buf << "\t" << i << "\t" << k << "\n";
+                                                flag = false;
+                                                for (int j = ind; j < current_state->to.size(); j++)
+                                                {
+                                                        if ((current_state->to[j]->s_num <= k || p_num == 0 || current_state->to[j]->to.size() == 0 || (current_state->to[j]->to.size() == 1 && current_state->to[j]->to[0]->s == "$"))
+                                                        && current_state->to[j] != current_state)
+                                                        {
+                                                                //std::cout << k << "\t" << current_state->to[j]->s << "\n";
+                                                                p_num++;
+                                                                ind = 0;
+								path_passing(current_state->to[j], k, flag, buf, res, p_num, ind, i);
+								if (j < current_state->to.size() - 1)
+									buf = prev;
+								flag = true;
+                                                        }
+                                                        else if ((current_state->to[j]->s_num <= k || p_num == 0 || current_state->to[j]->to.size() == 0)
+                                                        && current_state->to[j] == current_state)
+                                                        {
+                                                                buf += '+';
+                                                                flag = true;
+                                                                ind = j + 1;
+                                                        }
+                                                }
+                                                if (current_state->to.size() == 0)
+                                                        flag = true;
+                                                // if (current_state->to.size() == 0 && current_state->s != "$" &&  current_state != d->StartStates[i])
+                                                // {
+                                                //          buf += current_state->s;
+                                                // }
+                                        if ((flag && current_state->to.size() == 0) || (flag && current_state->to.size() == 1 && current_state->to[0] ==
+                                        	current_state))
+                                        {
+                                                res += buf;
+                                                res.push_back('|');
+                                        }
+		}
+
 		std::string restore_regex() //K-path algorithm
 		{
 			std::string res = "", buf = "";
 			int k = 1;
 			std::vector<State*> DStates = d->getDStates();
-			bool flag; //condition means that path doesn't include vertices with number > k
-			//std::cout << d->StartStates.size() << "\n";
+			bool flag = false; //condition means that path doesn't include vertices with number > k
 			while (k < DStates.size())
 			{
-				buf = "";
 				State *current_state;
 				for (int i = 0; i < d->StartStates.size(); i++)
 				{
-					int ind = 0;
-					int p_num = 0;
-					buf = "";
+					 buf = "";
 					current_state = d->StartStates[i];
-					do
-					{
-						buf += current_state->s;
-						std::cout << buf << "\t" << i << "\t" << k << "\n";
-						flag = false;
-						for (int j = ind; j < current_state->to.size(); j++)
-						{
-							if ((current_state->to[j]->s_num <= k || p_num == 0 || current_state->to[j]->to.size() == 0)
-							&& current_state->to[j] != current_state)
-							{
-								//std::cout << k << "\t" << current_state->to[j]->s << "\n";
-								flag = true;
-								current_state = current_state->to[j];
-								p_num++;
-								break;
-							}
-							else if ((current_state->to[j]->s_num <= k || p_num == 0 || current_state->to[j]->to.size() == 0)
-                                                        && current_state->to[j] == current_state)
-							{
-								buf += '+';
-								flag = true;
-								ind = j+1;
-								//break;
-							}
-						}
-						if (current_state->to.size() == 0)
-							flag = true;
-						if (current_state->to.size() == 0 && current_state->s != "$" &&  current_state != d->StartStates[i])
-						{
-							 buf += current_state->s;
-							 break;
-						}
-					}  while (current_state->to.size() > 0 && flag);
-					if (flag)
+					std::cout << "START SATTE: " << current_state->s << "\n";
+					path_passing(current_state, k ,flag, buf, res, 0, 0, i);
+					/*if (flag)
 					{
 						res += buf;
 						res.push_back('|');
-					}
+					}*/
 				}
-                                if (k < DStates.size() - 1 && buf.size() > 0 && flag)
+                                /*if (k < DStates.size() - 1 && buf.size() > 0 && flag)
                                 {
                                         res += buf;
                                         res.push_back('|');
@@ -185,9 +186,11 @@ class SRegex
                                 else if (flag)
                                 {
                                         res += buf;
-                                }
+                                }*/
 				k++;
 			}
+			if (res[res.size()-1] == '|')
+				res = res.substr(0, res.size() - 1);
 			return res;
 		}
 };
