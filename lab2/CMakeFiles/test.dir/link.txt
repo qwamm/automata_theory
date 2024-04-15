@@ -1,0 +1,1 @@
+/usr/bin/c++  -Wall -Wextra CMakeFiles/test.dir/tests/catch2.cpp.o -o test  liblib1.a /usr/lib/libCatch2WithMain.a 

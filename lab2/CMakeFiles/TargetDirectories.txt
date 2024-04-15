@@ -1,0 +1,5 @@
+/home/qurst/automata_theory/lab2/CMakeFiles/lib1.dir
+/home/qurst/automata_theory/lab2/CMakeFiles/test_lab2.dir
+/home/qurst/automata_theory/lab2/CMakeFiles/test.dir
+/home/qurst/automata_theory/lab2/CMakeFiles/edit_cache.dir
+/home/qurst/automata_theory/lab2/CMakeFiles/rebuild_cache.dir

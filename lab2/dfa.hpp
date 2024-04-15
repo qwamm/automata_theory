@@ -120,10 +120,11 @@ class DFA
 			std::vector<State*> R1, R2;
 			for (int i = 0; i < R.size(); i++)
 			{
-				bool flag = false;
+				bool flag = false, flag2 = false;
 				for (int j = 0; j < R[i]->to.size(); j++)
 				{
 					flag = true;
+					//flag2 = false;
 					for (int k = 0; k < splitter.size(); k++)
 					{
 						if (R[i]->to[j]->s == c && R[i]->to[j] != splitter[k])
@@ -131,6 +132,8 @@ class DFA
 							flag = false;
 							break;
 						}
+						//if (R[i]->to[j]->s == c)
+						//	flag2 = true;
 					}
 					if (!flag)
 						break;
@@ -296,6 +299,7 @@ class DFA
 			capture_groups = t->capture_groups;
 			DStates.reserve(t->follow_pos.size());
 
+			State *dollar_state;
 			//copying vector of states
 			for (int i = 0; i < v.size(); i++)
 			{
@@ -309,9 +313,10 @@ class DFA
 				}
                                 for (int j = 0; j < t->root->l.size(); j++)
                                 {
-                                        if (t->root->l[j].n == v[i].n && t->root->l[j].s == v[i].s)
+                                        if (t->root->l[j].n == v[i].n && t->root->l[j].s == v[i].s && v[i].s == "$")
                                         {
                                                         EndStates.push_back(cur_state);
+							dollar_state = cur_state;
                                         }
                                 }
 				DStates.push_back(cur_state);
@@ -320,9 +325,16 @@ class DFA
 			//transition definition
 			for (int i = 0; i < DStates.size(); i++)
 			{
+				if (t->follow_pos[i].size() == 0 && DStates[i]->s != "$")
+				{
+					DStates[i]->to.push_back(dollar_state);
+				}
+				else
+				{
 				for (int j = 0; j < t->follow_pos[i].size(); j++)
 				{
 					DStates[i]->to.push_back(DStates[t->follow_pos[i][j].n - 1]);
+				}
 				}
 			}
 			for (int i = 0; i < DStates.size(); i++)

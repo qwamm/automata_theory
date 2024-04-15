@@ -6,6 +6,7 @@ class SRegex
 	private:
 		std::string regex; //не нужно хранить regex
 	public:
+		std::unordered_map<int, std::string> m;
 		DFA *d;
 		SRegex(std::string reg)
 		{
@@ -18,13 +19,9 @@ class SRegex
 			delete d;
 		}
 
-		void print_capture_groups()
+		void set_capture_groups()
 		{
-			std::unordered_map<int, std::string> capture_groups = d->capture_groups;
-			for (auto &c : capture_groups)
-			{
-				std::cout << c.first << "\t" << c.second << "\n";
-			}
+			m = d->capture_groups;
 		}
 
 		void language_addition() //переделать (возвращает объект рв, который не мэтчит все строки, которые мэтчит исходная строка
