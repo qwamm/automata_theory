@@ -24,37 +24,11 @@ class SRegex
 			m = d->capture_groups;
 		}
 
-		void language_addition() //переделать (возвращает объект рв, который не мэтчит все строки, которые мэтчит исходная строка
+		bool language_addition(std::string &s) //переделать (возвращает объект рв, который не мэтчит все строки, которые мэтчит исходная регулярка
 		{
-			std::vector<std::string> v;
-			for (auto &c : regex)
-				v.push_back(std::string(1,c));
-			std::vector<std::string> buf;
-			for (auto &c : v)
-				buf.push_back(c);
-			int count = buf.size();
-			for (int z = 0; z < regex.size() - 1; z++)
-			{
-				std::vector<std::string> tmp; //stores all combinations of length z
-				for (int i = 0; i < regex.size(); i++)
-				{
-					for (int k = 0; k < buf.size(); k++)
-					{
-						if(v[i] != buf[k])
-						{
-							tmp.push_back(buf[k] + regex[i]);
-							count++;
-						}
-					}
-				}
-				for (int i = 0; i < tmp.size(); i++)
-					std::cout << tmp[i] << " ";
-				std::cout << "\n";
-				buf.clear();
-				for (auto &c : tmp)
-					buf.push_back(c);
-				//buf = tmp;
-			}
+			if (match(s) == false)
+				return true;
+			return false;
 		}
 
 		bool match(std::string &s)
@@ -104,12 +78,11 @@ class SRegex
 			return false;
 		}
 
-		DFA* regex_traversal (std::string regex_2)
+		bool regex_traversal (std::string regex_2, std::string str)
 		{
 			DFA *d_2 = new DFA(), *d_3 = new DFA();
 			d_2->create(regex_2);
-			d_3->automata_product(d, d_2);
-			return d_3;
+			return d_3->automata_product(d, d_2, str);
 		}
 
 		void path_passing(State *current_state, int k, bool &flag, std::string &buf, std::string &res, int p_num, int ind, int i)

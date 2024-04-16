@@ -1,6 +1,6 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
-#include "/home/qurst/automata_theory/lab2/regex_lib.hpp"
+#include "/home/fdfdas/automata_theory/lab2/regex_lib.hpp"
 
 TEST_CASE("strings")
 {
@@ -60,5 +60,44 @@ TEST_CASE("strings")
 		m = "kakaya to hren";
 		REQUIRE(reg.match(m) == false);
 		reg.set_capture_groups();
+		REQUIRE(reg.m[1] == "b.w.j.e.r.g");
+                REQUIRE(reg.m[2] == "d.k.j.g.b");
+                REQUIRE(reg.m[3] == "o.g.o.,. .i.t.'.s. .o.v.e.r");
 	}
+
+	SECTION("void substrings")
+	{
+		std::string in = "ab^c", m = "abc";
+		SRegex reg(in);
+		REQUIRE(reg.match(m) == true);
+		in = "^fg^";
+		m = "fg";
+		SRegex reg2(in);
+		REQUIRE(reg2.match(m) == true);
+	}
+}
+
+TEST_CASE("K-path")
+{
+	std::string in = "a(b|c)(d|m)", m = "acd";
+	SRegex reg(in);
+	REQUIRE(reg.match(m) == true);
+	SRegex restore_reg(reg.restore_regex());
+	REQUIRE(restore_reg.match(m) == true);
+}
+
+TEST_CASE("addition to language")
+{
+	 std::string in = "(a|b)c", m = "bc";
+	 SRegex reg(in);
+	 REQUIRE(reg.language_addition(m) == false);
+}
+
+TEST_CASE("traversial of languages")
+{
+	std::string r1 = "(a|b|c)(e|f)", r2 = "(c|h|m)(q|e)" ,m = "ae";
+	SRegex reg(r1);
+	REQUIRE(reg.regex_traversal (r2, m) == false);
+	m = "ce";
+	REQUIRE(reg.regex_traversal (r2, m) == true);
 }

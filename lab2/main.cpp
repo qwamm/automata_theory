@@ -6,7 +6,7 @@ int main()
 	std::string in;
 	std::cin >> in;
 	SRegex *reg = new SRegex(in);
-	std::string s = "aabbcc", s_1 = "ab";
+	std::string s = "aabbcc", s_1 = "cd";
 	reg->d->minimize_DFA();
 	//std::cout << "MIN_STATES SIZE: " << min_states.size() << "\n";
 	/*for (int i = 0; i < min_states.size(); i++)
@@ -22,7 +22,7 @@ int main()
 		std::cout << "MATCHED\n";
 	else
 		std::cout << "UNMATCHED\n";*/
-	//reg->regex_traversal(s_1);
+	//reg->regex_traversal(s_1, in);
 	//reg->language_addition();
 	//reg->print_capture_groups();
 	//std::cout << reg->restore_regex() << "\n";

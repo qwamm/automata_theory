@@ -34,17 +34,115 @@ class DFA
 			}
 		}
 
-		void automata_product(DFA *d_1, DFA *d_2)
+		/*void reverse_dfa()
 		{
-                        std::vector <State*> DStates_1 = d_1->getDStates(), DStates_2 = d_2->getDStates(), DStates_3;
+			std::vector<State*> NStartStates;
+			State *dollar_state = nullptr;
+			for (int i = 0; i < DStates.size(); i++)
+			{
+				for (int j = 0; j < DStates[i]->to.size(); j++)
+				{
+					if (DStates[i]->to[j]->s == "$" && DStates[i]->to[j]->to.size() == 0)
+					{
+						NStartStates.push_back(DStates[i]);
+						DStates[i]->to.erase(DStates[i]->to.begin() + j);
+						dollar_state = DStates[i]->to[j];
+						break;
+					}
+				}
+			}
+			for (int i = 0; i < StartStates.size(); i++)
+			{
+				StartStates[i]->to.push_back(dollar_state);
+			}
+			StartStates.clear();
+			for (int i = 0; i < NStartStates.size(); i++)
+			{
+				StartStates.push_back(NStartStates[i]);
+			}
+
+			for (int i = 0; i < DStates.size(); i++)
+			{
+				for (int j = 0; j < DStates[i]->to.size(); j++)
+				{
+					if (DStates[i]->to[j]->s == "c")
+						std::cout << i+1 << "\n";
+					if (DStates[i]->to[j]->s_num > i+1 && (DStates[i]->to[j]->s != "$" || DStates[i]->to[j]->to.size() != 0))
+					{
+						DStates[i]->to[j]->to.push_back(DStates[i]);
+						DStates[i]->to.erase(DStates[i]->to.begin() + j);
+					}
+				}
+			}
+                        for (int i = 0; i < DStates.size(); i++)
+                        {
+                                std::cout << i+1 << "REVERSE DFA STATE \"" << DStates[i]->s << "\": ";
+                                for (int j = 0; j < DStates[i]->to.size(); j++)
+                                {
+                                        std::cout << DStates[i]->to[j]->s_num << " " << DStates[i]->to[j]->s;
+                                        if (j < DStates[i]->to.size())
+                                                std::cout << ", ";
+                                }
+                                std::cout << "\n";
+                        }
+		}*/
+
+		bool automata_product(DFA *d_1, DFA *d_2, std::string& s)
+		{
+                        std::vector <State*> DStates_1 = d_1->getDStates(), DStates_2 = d_2->getDStates(), DStates_3, StartStates_3, EndStates_3;
 			int num = 1;
 			//states definition
+			bool flag1, flag2, flag3, flag4;
                         for (int i = 0; i < DStates_1.size(); i++)
                         {
 				for (int j = 0; j < DStates_2.size(); j++)
 				{
-					DStates_3.push_back(new State(DStates_1[i]->s + DStates_2[j]->s,
-					num++));
+                                	flag1 = false;
+                                	flag2 = false;
+                                	flag3 =false;
+                                	flag4 = false;
+					for (int t = 0; t < d_1->StartStates.size(); t++)
+					{
+						if(d_1->StartStates[t] == DStates_1[i])
+						{
+							flag1 = true;
+							break;
+						}
+					}
+                                        for (int t = 0; t < d_2->StartStates.size(); t++)
+                                        {
+                                                if(d_2->StartStates[t] == DStates_2[j])
+                                                {
+                                                        flag2 = true;
+                                                        break;
+                                                }
+                                        }
+                                        for (int t = 0; t < d_1->EndStates.size(); t++)
+                                        {
+                                                if(d_1->EndStates[t] == DStates_1[i])
+                                                {
+                                                        flag3 = true;
+                                                        break;
+                                                }
+                                        }
+                                        for (int t = 0; t < d_2->EndStates.size(); t++)
+                                        {
+                                                if(d_2->EndStates[t] == DStates_2[j])
+                                                {
+                                                        flag4 = true;
+                                                        break;
+                                                }
+                                        }
+					//if (DStates_1[i]->s != "$" && DStates_2[j]->s != "$")
+					//{
+						State *new_state = new State(DStates_1[i]->s + DStates_2[j]->s,
+                                                num++);
+						DStates_3.push_back(new_state);
+						if (flag1 &&  flag2)
+							StartStates_3.push_back(new_state);
+						if (flag3 && flag4)
+							EndStates_3.push_back(new_state);
+					//}
 				}
                         }
 
@@ -53,31 +151,8 @@ class DFA
                         {
                                 for (int j = 0; j < DStates_2.size(); j++)
                                 {
-                                         if(DStates_1[i]->to.size() == 0)
-                                         {
-						for (int t = 0; t < DStates_2[j]->to.size(); t++)
-						{
-                                                    for (int h = 0; h < DStates_3.size(); h++)
-                                                    {
-                                                                if (DStates_3[h]->s[1] == DStates_2[j]->to[t]->s[0])
-                                                                {
-                                                                        DStates_3[j + DStates_2.size()*i]->to.push_back(DStates_3[h]);
-                                                                }
-                                                    }
-						}
-                                         }
                                         for (int k = 0; k < DStates_1[i]->to.size(); k++)
 					{
-						if(DStates_2[j]->to.size() == 0)
-						{
-							for (int h = 0; h < DStates_3.size(); h++)
-                                                        {
-                                                                if (DStates_3[h]->s[0] == DStates_1[i]->to[k]->s[0])
-                                                                {
-                                                                        DStates_3[j + DStates_2.size()*i]->to.push_back(DStates_3[h]);
-                                                                }
-                                                        }
-						}
 						for (int t = 0; t < DStates_2[j]->to.size(); t++)
 						{
 							for (int h = 0; h < DStates_3.size(); h++)
@@ -96,9 +171,19 @@ class DFA
 				std::cout << i+1 << ": " << DStates_3[i]->s << "\n";
 			}
 			//printing dfa states
+			std::cout << "START STATES:\n";
+			for (int i = 0; i < StartStates_3.size(); i++)
+			{
+				std::cout << StartStates_3[i]->s << "\n";
+			}
+                        std::cout << "END STATES:\n";
+                        for (int i = 0; i < EndStates_3.size(); i++)
+                        {
+                                std::cout << EndStates_3[i]->s << "\n";
+                        }
                         for (int i = 0; i < DStates_3.size(); i++)
                         {
-                                std::cout << i+1 << " TRAVERSAL_DFA STATE: ";
+                                std::cout << i+1 << " TRAVERSAL_DFA STATE \"" <<  DStates_3[i]->s << "\": ";
                                 for (int j = 0; j < DStates_3[i]->to.size(); j++)
                                 {
                                         std::cout << DStates_3[i]->to[j]->s_num << " " << DStates_3[i]->to[j]->s;
@@ -107,6 +192,64 @@ class DFA
                                 }
                                 std::cout << "\n";
                         }
+                        s.push_back('$');
+                        State *cur_state;
+                        bool f = false;
+                        std::string b = std::string(1,s[0]);
+                        for(int i = 0; i < StartStates_3.size(); i++)
+                        {
+				bool is_equal = true;
+				for (int j = 0; j < StartStates_3[i]->s.size(); j++)
+				{
+					if (StartStates_3[i]->s[j] != s[0])
+					{
+						is_equal = false;
+						break;
+					}
+				}
+                                if (is_equal)
+                                {
+                                        cur_state = StartStates_3[i];
+                                        for (int j = 1; j < s.size(); j++)
+                                        {
+                                                f = false;
+                                                if (j == s.size() - 1)
+                                                {
+                                                        for (int t = 0; t < EndStates_3.size(); t++)
+                                                        {
+                                                                if (cur_state == EndStates_3[t])
+                                                                {
+                                                                        f = true;
+                                                                        break;
+                                                                }
+                                                        }
+                                                }
+                                                for (int k = 0; k < cur_state->to.size(); k++)
+                                                {
+							is_equal = true;
+                                                        for (int t = 0; t < cur_state->to[k]->s.size(); t++)
+                                			{
+                                        			if (cur_state->to[k]->s[t] != s[j])
+                                        			{
+                                                			is_equal = false;
+                                                			break;
+                                        			}
+           						}
+                                                        if (is_equal)
+                                                        {
+                                                                cur_state = cur_state->to[k];
+                                                                f = true;
+                                                                break;
+                                                        }
+                                                }
+                                                if (!f)
+                                                        break;
+                                        }
+                                        if (f)
+                                                return true;
+                                }
+                        }
+                        return false;
 		}
 
 		std::vector<State*> getDStates()
@@ -124,21 +267,21 @@ class DFA
 				for (int j = 0; j < R[i]->to.size(); j++)
 				{
 					flag = true;
-					//flag2 = false;
+					flag2 = false;
 					for (int k = 0; k < splitter.size(); k++)
 					{
+                                                if (R[i]->to[j]->s == c)
+                                                        flag2 = true;
 						if (R[i]->to[j]->s == c && R[i]->to[j] != splitter[k])
 						{
 							flag = false;
 							break;
 						}
-						//if (R[i]->to[j]->s == c)
-						//	flag2 = true;
 					}
 					if (!flag)
 						break;
 				}
-				if(flag)
+				if(flag && flag2)
 					R1.push_back(R[i]);
 				else
 					R2.push_back(R[i]);
@@ -158,7 +301,7 @@ class DFA
 			}
 			for (int i = 0; i < DStates.size(); i++)
 			{
-				if (DStates[i]->to.size() > 0)
+				if(DStates[i]->to.size() > 0)
 					not_terminal_states.push_back(DStates[i]);
 			}
 			classes.push_back(terminal_states);
