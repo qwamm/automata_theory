@@ -141,12 +141,15 @@ class Syntax_Tree
 						Syntax_Node **r = cur;
 						concat_str(s);
 						std::cout << s << "\n";
-                        for (int i = 0; i < s.size(); i++)
-                        {
+                        			for (int i = 0; i < s.size(); i++)
+                        			{
+								std::cout << s[i] << "\n";
+								if (s[i] == 'c')
+									std::cout << "C MARKER\n";
 								if (s[i] == '(')
 								{
 									f = i;
-                               		int j = i+1;
+                               						int j = i+1;
 									int q_1 = 1, q_2 = 0;
 									while (q_1 != q_2)
 									{
@@ -161,21 +164,21 @@ class Syntax_Tree
 										j++;
 									}
 									l = j - 1;
-                                	Syntax_Node *p_node = nullptr;
-                                	std::string buf = s.substr(f + 1, l-f-1);
-                                	std::cout << buf << "\n";
-                                	buf = group_capture(buf);
-                                	parse_string(buf, &p_node);
-					
-                                	if ((*cur) == nullptr)
-                                	{
-                                        	*cur = p_node;
-                                	}
-                                	else
-                                	{
-                                            (*cur)->right = p_node;
-                                            cur = &((*cur)->right);
-                                	}
+                                					Syntax_Node *p_node = nullptr;
+                                					std::string buf = s.substr(f + 1, l-f-1);
+                                					std::cout << buf << "\n";
+                                					buf = group_capture(buf);
+                                					parse_string(buf, &p_node);
+
+                                					if ((*cur) == nullptr)
+                                					{
+                                        					*cur = p_node;
+                                					}
+                                					else
+                                					{
+                                            					(*cur)->right = p_node;
+                                            					cur = &((*cur)->right);
+                                					}
 									i = l;
 								}
 								else if (s[i] == '|')
@@ -230,9 +233,10 @@ class Syntax_Tree
 								}
 								else if (s[i] == '{')
 								{
-									std::string token;	
-									//std::cout << s[i+1] << "\n";													
-									if ((s[i+1] >= 48 && s[i+1] <= 57) && s[i+2] == ',' && (s[i+1] >= 48 && s[i+1] <= 57) && s[i+3] > s[i+1] && s[i+4] == '}')
+									//std::cout << "SPECIAL MARKER: " << i << " \t" << s[i] << "\n";
+									std::string token;
+									if ((s[i+1] >= 48 && s[i+1] <= 57) && s[i+2] == ',' &&
+									 (s[i+1] >= 48 && s[i+1] <= 57) && s[i+3] >= s[i+1] && s[i+4] == '}')
 									{
 										token += s.substr(i, 5);
 									}
@@ -244,9 +248,16 @@ class Syntax_Tree
 									Syntax_Node *t_node = *cur;
 									if (s[i+1] == '0')
 									{
-										(*cur)->is_nullable = true;
+											std::cout << "CUR: " << (*cur)->data->value() << "\n";
+											(*cur)->is_nullable = true;
 									}
-									for (int i = 1; i < n; i++)
+									if (s[i+3] == '0')
+									{
+											delete *cur;
+											*cur = nullptr;
+									}
+									//std::cout << "SPECIAL MARKER: " << i << " \t" << s[i] << "\n";
+									for (int j = 1; j < n; j++)
 									{
 										Syntax_Node *сp_node = new Syntax_Node(new Symbol(std::string(1, '.')));
 										Syntax_Node *tp_node = new Syntax_Node(new Symbol(t_node->data->value()));
@@ -254,16 +265,17 @@ class Syntax_Tree
 											tp_node->data->is_metasymbol = true;
 										copy_tree(t_node, tp_node);
 										сp_node->data->is_metasymbol = true;
-										if (i + 1 > m)
+										if (j + 1 > m)
 										{
 											tp_node->is_nullable = true;
 										}
 										set_root(сp_node, cur);
 										(*cur)->right = tp_node;
 									}
+									std::cout << "SPECIAL MARKER: " << i << " \t" << s[i] << "\n";
 									i += 4;
 								}
-					    	else if(s[i] != ')')
+					    		else if(s[i] != ')')
 							{
 								std::string token;
 								if (s[i] == '#')
@@ -274,12 +286,14 @@ class Syntax_Tree
 										throw std::runtime_error("wrong regex");
 								}
 								token.push_back(s[i]);
-                              	Syntax_Node *a_node = new Syntax_Node(new Symbol(token));
+                              					Syntax_Node *a_node = new Syntax_Node(new Symbol(token));
 								if (*cur == nullptr)
 								{
 									*cur = a_node;
 								}
-								else if(((*cur)->data->value() == "." || (*cur)->data->value() == "|" || (*cur)->data->value() == "+") && (*cur)->data->is_metasymbol)
+								else if(((*cur)->data->value() == "." ||
+								 (*cur)->data->value() == "|" || (*cur)->data->value() == "+") &&
+								 (*cur)->data->is_metasymbol)
 								{
 									std::cout << "SYMBOL: " << s[i] << "\n";
 										(*cur)->right = a_node;
