@@ -121,7 +121,11 @@ TEST_CASE("strings")
 		m = "ac";
 		REQUIRE(reg->match(m) == true);
 		delete reg;
-                /*reg = new SRegex("ab{1,1}c");
+                reg = new SRegex("ab{0,0}c");
+                m = "abc";
+                REQUIRE(reg->match(m) == false);
+                delete reg;
+                reg = new SRegex("ab{1,1}c");
                 m = "abc";
 		REQUIRE(reg->match(m) == true);
 		delete reg;
@@ -130,7 +134,7 @@ TEST_CASE("strings")
                 REQUIRE(reg->match(m) == true);
                 delete reg;
                 reg = new SRegex("ab{0,1}c");
-                m = "ab";
+                m = "ac";
                 REQUIRE(reg->match(m) == true);
                 delete reg;
                 reg = new SRegex("b{0,1}+");
@@ -142,17 +146,31 @@ TEST_CASE("strings")
                 REQUIRE(reg->match(m) == true);
                 delete reg;
                 reg = new SRegex("b{0,1}+");
+                m = "b";
+                REQUIRE(reg->match(m) == true);
+                delete reg;
+                reg = new SRegex("b{0,1}+");
                 m = "bb";
+                REQUIRE(reg->match(m) == true);
+                delete reg;
+                reg = new SRegex("b{2,2}+");
+                m = "bb";
+                REQUIRE(reg->match(m) == true);
+		m = "b";
+		REQUIRE(reg->match(m) == false);
+                m = "bbb";
+                REQUIRE(reg->match(m) == false);
+                m = "bbbb";
                 REQUIRE(reg->match(m) == true);
                 delete reg;
                 reg = new SRegex("ab{0,1}c");
                 m = "abc";
                 REQUIRE(reg->match(m) == true);
-                delete reg; */
+                delete reg;
 	}
 
-}
-/*	SECTION("capture groups")
+
+	SECTION("capture groups")
 	{
 		std::string in = "jrw(1:bwjerg)tu(2:dkjgb)(3:ogo, it's over)", m = "jrwbwjergtudkjgbogo, it's over";
 		SRegex *reg = new SRegex(in);
@@ -209,4 +227,4 @@ TEST_CASE("traversial of languages")
 	REQUIRE(reg.regex_traversal (r2, m) == true);
 }
 
-*/
+

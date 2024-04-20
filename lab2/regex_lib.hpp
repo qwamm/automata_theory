@@ -44,6 +44,17 @@ class SRegex
 				if (b == d->StartStates[i]->s)
 				{
 					cur_state = d->StartStates[i];
+					if (s.size() == 1)
+					{
+                                                        for (int t = 0; t < d->EndStates.size(); t++)
+                                                        {
+                                                                if (cur_state == d->EndStates[t])
+                                                                {
+                                                                    	return true;
+                                                                }
+                                                        }
+							break;
+					}
                        			for (int j = 1; j < s.size(); j++)
                         		{
 						f = false;
@@ -53,8 +64,8 @@ class SRegex
 							{
 								if (cur_state == d->EndStates[t])
 								{
-									f = true;
-									break;
+                                                                        f = true;
+                                                                        break;
 								}
 							}
 						}

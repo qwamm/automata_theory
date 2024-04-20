@@ -20,6 +20,7 @@ class Syntax_Node
         Expression *data;
         Syntax_Node *left;
         Syntax_Node *right;
+	Syntax_Node *parent;
 		bool is_nullable;
 		std::vector<Vertex> f;
 		std::vector<Vertex> l;
@@ -66,6 +67,7 @@ class Syntax_Tree
 			Syntax_Node *buf = (*r);
 			(*r) = node;
 			(*r)->left = buf;
+			buf->parent = *r;
 		}
 
 		void concat_str(std::string &s)
@@ -169,7 +171,9 @@ class Syntax_Tree
                                 					std::cout << buf << "\n";
                                 					buf = group_capture(buf);
                                 					parse_string(buf, &p_node);
-
+									i = l;
+									if (s[i+1] != '{' ||  s[i+4] != '0')
+									{
                                 					if ((*cur) == nullptr)
                                 					{
                                         					*cur = p_node;
@@ -177,9 +181,14 @@ class Syntax_Tree
                                 					else
                                 					{
                                             					(*cur)->right = p_node;
+										p_node->parent = *cur;
                                             					cur = &((*cur)->right);
                                 					}
-									i = l;
+									}
+									else
+									{
+										i += 6;
+									}
 								}
 								else if (s[i] == '|')
 								{
@@ -221,6 +230,7 @@ class Syntax_Tree
 									else
 									{
 										(*cur)->right = c_node;
+										c_node->parent = *cur;
 										cur = &((*cur)->right);
 										//std::cout << "HERE:" << (*cur)->data->value() << "\n";
 									}
@@ -251,11 +261,45 @@ class Syntax_Tree
 											std::cout << "CUR: " << (*cur)->data->value() << "\n";
 											(*cur)->is_nullable = true;
 									}
-									if (s[i+3] == '0')
+									//std::cout << "PARENT: " << (*cur)->parent->data->value() << "\n";
+									/*if (s[i+3] == '0')
 									{
-											delete *cur;
-											*cur = nullptr;
-									}
+											Syntax_Node *buf = *cur;
+											cur = &((*cur)->parent);
+											bool right = false;
+											if ((*cur)->right == buf)
+											{
+												(*cur)->right = nullptr;
+												right = true;
+											}
+											else
+											{
+												(*cur)->left = nullptr;
+											}
+											delete buf;
+											buf = nullptr;
+											if ((*cur)->data->is_metasymbol == true)
+											{
+												if (right)
+												{
+													buf = (*cur);
+                                                                                                        if (*r == *cur)
+                                                                                                                r = &((*cur)->left);
+													cur = &((*cur)->left);
+													(*cur)->parent = nullptr;
+													delete buf;
+												}
+												else
+												{
+                                                                                                        buf = (*cur);
+													if (*r == *cur)
+														r = &((*cur)->right);
+                                                                                                        cur = &((*cur)->right);
+													(*cur)->parent = nullptr;
+                                                                                                        delete buf;
+												}
+											}
+									}*/
 									//std::cout << "SPECIAL MARKER: " << i << " \t" << s[i] << "\n";
 									for (int j = 1; j < n; j++)
 									{
@@ -271,12 +315,15 @@ class Syntax_Tree
 										}
 										set_root(сp_node, cur);
 										(*cur)->right = tp_node;
+										tp_node->parent = *cur;
 									}
 									std::cout << "SPECIAL MARKER: " << i << " \t" << s[i] << "\n";
 									i += 4;
 								}
 					    		else if(s[i] != ')')
 							{
+								if (s[i+1] != '{' ||  s[i+4] != '0')
+								{
 								std::string token;
 								if (s[i] == '#')
 								{
@@ -297,13 +344,20 @@ class Syntax_Tree
 								{
 									std::cout << "SYMBOL: " << s[i] << "\n";
 										(*cur)->right = a_node;
+										a_node->parent = *cur;
 										cur = &((*cur)->right);
 								}
 								else
 								{
 									(*r)->right = a_node;
+									a_node->parent = *r;
 									cur = &(*r);
 									//r = &((*r)->right);
+								}
+								}
+								else
+								{
+									i+=6;
 								}
 							}
 						std::cout << i+1 << " ITERATION:\n";
