@@ -59,6 +59,8 @@ class SRegex
 								if (f)
                         			break;
                         		f = parsing(cur_state, s, ++ind, call + 1);
+                        		if(!f && call > 0)
+        							m[cur_state->group_num].pop_back();
                         		if (call > 0)
                         			ind--;
                         		if(f)
@@ -111,44 +113,58 @@ class SRegex
 
 		void path_passing(State *current_state, int k, bool &flag, std::string &buf, std::string &res, int p_num, int ind, int i)
 		{
-						if(current_state->s != "$")
+												if(current_state->s != "$")
+												{
+													if (current_state->s == "(" || current_state->s == ")"
+													|| current_state->s == "." || current_state->s == "|")
+													{
+														buf.push_back('#');
+													}
                                                 	buf += current_state->s;
-						std::string prev = buf;
+												}
+												std::string prev = buf;
                                                 std::cout << buf << "\t" << i << "\t" << k << "\n";
                                                 flag = false;
                                                 for (int j = ind; j < current_state->to.size(); j++)
                                                 {
-                                                        if ((current_state->to[j]->s_num <= k || p_num == 0 || current_state->to[j]->to.size() == 0 || (current_state->to[j]->to.size() == 1 && current_state->to[j]->to[0]->s == "$"))
-                                                        && current_state->to[j] != current_state)
-                                                        {
-                                                                //std::cout << k << "\t" << current_state->to[j]->s << "\n";
-                                                                p_num++;
-                                                                ind = 0;
-								path_passing(current_state->to[j], k, flag, buf, res, p_num, ind, i);
-								if (j < current_state->to.size() - 1)
-									buf = prev;
-								flag = true;
-                                                        }
-                                                        else if ((current_state->to[j]->s_num <= k || p_num == 0 || current_state->to[j]->to.size() == 0)
+                                                        if ((current_state->to[j]->s_num <= k || p_num == 0 || current_state->to[j]->to.size() == 0)
                                                         && current_state->to[j] == current_state)
                                                         {
                                                                 buf += '+';
                                                                 flag = true;
                                                                 ind = j + 1;
                                                         }
+                                                        else if ((current_state->to[j]->s_num <= k || p_num == 0 || current_state->to[j]->to.size() == 0)
+                                                        && current_state->to[j]->s_num < current_state->s_num && current_state->to[j]->passed)
+                                                   		{
+                                                   				buf += ')';
+                                                                buf += '+';
+                                                                std::string l = "(";
+                                                                buf.insert(current_state->to[j]->s_num - 1, l);
+                                                                flag = true;
+                                                                ind = j + 1;
+                                                        }     
+                                                        else if ((current_state->to[j]->s_num <= k || p_num == 0 || current_state->to[j]->to.size() == 0 || (current_state->to[j]->to.size() == 1 && current_state->to[j]->to[0]->s == "$"))
+                                                        && current_state->to[j] != current_state)
+                                                        {
+                                                                p_num++;
+                                                                ind = 0;
+                                                                current_state->passed = true;
+																path_passing(current_state->to[j], k, flag, buf, res, p_num, ind, i);
+																if (j < current_state->to.size() - 1)
+																	buf = prev;
+																flag = true;
+                                                        }                                                 
                                                 }
                                                 if (current_state->to.size() == 0)
                                                         flag = true;
-                                                // if (current_state->to.size() == 0 && current_state->s != "$" &&  current_state != d->StartStates[i])
-                                                // {
-                                                //          buf += current_state->s;
-                                                // }
-                                        if ((flag && current_state->to.size() == 0) || (flag && current_state->to.size() == 1 && current_state->to[0] ==
-                                        	current_state))
-                                        {
-                                                res += buf;
-                                                res.push_back('|');
-                                        }
+		                                        if ((flag && current_state->to.size() == 0) ||
+		                                         (flag && current_state->to.size() == 1 &&
+		                                          current_state->to[0] == current_state))
+		                                        {
+		                                                res += buf;
+		                                                res.push_back('|');
+		                                        }
 		}
 
 		std::string restore_regex() //K-path algorithm
@@ -165,22 +181,12 @@ class SRegex
 					 buf = "";
 					current_state = d->StartStates[i];
 					std::cout << "START SATTE: " << current_state->s << "\n";
-					path_passing(current_state, k ,flag, buf, res, 0, 0, i);
-					/*if (flag)
+					for (int i = 0 ; i < DStates.size(); i++)
 					{
-						res += buf;
-						res.push_back('|');
-					}*/
+						DStates[i]->passed = false;
+					}
+					path_passing(current_state, k ,flag, buf, res, 0, 0, i);
 				}
-                                /*if (k < DStates.size() - 1 && buf.size() > 0 && flag)
-                                {
-                                        res += buf;
-                                        res.push_back('|');
-                                }
-                                else if (flag)
-                                {
-                                        res += buf;
-                                }*/
 				k++;
 			}
 			if (res[res.size()-1] == '|')

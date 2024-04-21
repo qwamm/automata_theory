@@ -103,70 +103,62 @@ TEST_CASE("strings")
 
 	SECTION ("{}")
 	{
-		std::string in = "(#|#.#|){3,5}", m = "|.|";
-		SRegex *reg = new SRegex(in);
-		REQUIRE(reg->match(m) == false);
-		m = "|.||.|";
-		REQUIRE(reg->match(m) == false);
-		m = "|.||.||.|";
-		REQUIRE(reg->match(m) == true);
-                m = "|.||.||.||.|";
-                REQUIRE(reg->match(m) == true);
-                m = "|.||.||.||.||.|";
-                REQUIRE(reg->match(m) == true);
-                m = "|.||.||.||.||.||.|";
-                REQUIRE(reg->match(m) == false);
-		delete reg;
-		reg = new SRegex("ab{0,0}c");
-		m = "ac";
-		REQUIRE(reg->match(m) == true);
-		delete reg;
-                reg = new SRegex("ab{0,0}c");
-                m = "abc";
-                REQUIRE(reg->match(m) == false);
-                delete reg;
-                reg = new SRegex("ab{1,1}c");
-                m = "abc";
-		REQUIRE(reg->match(m) == true);
-		delete reg;
-                reg = new SRegex("ab{0,1}c");
-                m = "abc";
-                REQUIRE(reg->match(m) == true);
-                delete reg;
-                reg = new SRegex("ab{0,1}c");
-                m = "ac";
-                REQUIRE(reg->match(m) == true);
-                delete reg;
-                reg = new SRegex("b{0,1}+");
-                m = "b";
-                REQUIRE(reg->match(m) == true);
-                delete reg;
-                reg = new SRegex("b{0,1}+");
-                m = "";
-                REQUIRE(reg->match(m) == true);
-                delete reg;
-                reg = new SRegex("b{0,1}+");
-                m = "b";
-                REQUIRE(reg->match(m) == true);
-                delete reg;
-                reg = new SRegex("b{0,1}+");
-                m = "bb";
-                REQUIRE(reg->match(m) == true);
-                delete reg;
-                reg = new SRegex("b{2,2}+");
-                m = "bb";
-                REQUIRE(reg->match(m) == true);
-		m = "b";
-		REQUIRE(reg->match(m) == false);
-                m = "bbb";
-                REQUIRE(reg->match(m) == false);
-                m = "bbbb";
-                REQUIRE(reg->match(m) == true);
-                delete reg;
-                reg = new SRegex("ab{0,1}c");
-                m = "abc";
-                REQUIRE(reg->match(m) == true);
-                delete reg;
+			std::string in = "(#|#.#|){3,5}", m = "|.|";
+			SRegex *reg = new SRegex(in);
+			REQUIRE(reg->match(m) == false);
+			m = "|.||.|";
+			REQUIRE(reg->match(m) == false);
+			m = "|.||.||.|";
+			REQUIRE(reg->match(m) == true);
+	        m = "|.||.||.||.|";
+	        REQUIRE(reg->match(m) == true);
+	        m = "|.||.||.||.||.|";
+	        REQUIRE(reg->match(m) == true);
+	        m = "|.||.||.||.||.||.|";
+	        REQUIRE(reg->match(m) == false);
+			delete reg;
+			reg = new SRegex("ab{0,0}c");
+			m = "ac";
+			REQUIRE(reg->match(m) == true);
+			delete reg;
+	        reg = new SRegex("ab{0,0}c");
+	        m = "abc";
+	        REQUIRE(reg->match(m) == false);
+	        delete reg;
+	        reg = new SRegex("ab{1,1}c");
+	        m = "abc";
+			REQUIRE(reg->match(m) == true);
+			delete reg;
+	        reg = new SRegex("ab{0,1}c");
+	        m = "abc";
+	        REQUIRE(reg->match(m) == true);
+	        delete reg;
+	        reg = new SRegex("ab{0,1}c");
+	        m = "ac";
+	        REQUIRE(reg->match(m) == true);
+	        delete reg;
+	        reg = new SRegex("b{0,1}+");
+	        m = "b";
+	        REQUIRE(reg->match(m) == true);
+	        delete reg;
+	        reg = new SRegex("b{0,1}+");
+	        m = "";
+	        REQUIRE(reg->match(m) == true);
+	        delete reg;
+	        reg = new SRegex("b{0,1}+");
+	        m = "bb";
+	        REQUIRE(reg->match(m) == true);
+	        delete reg;
+	        reg = new SRegex("b{2,2}+");
+	        m = "bb";
+	        REQUIRE(reg->match(m) == true);
+			m = "b";
+			REQUIRE(reg->match(m) == false);
+	        m = "bbb";
+	        REQUIRE(reg->match(m) == false);
+	        m = "bbbb";
+	        REQUIRE(reg->match(m) == true);
+	        delete reg;
 	}
 
 
@@ -190,7 +182,7 @@ TEST_CASE("strings")
 		reg = new SRegex("cef(1:ab+)b");
 		reg->match("cefabb");
 		//REQUIRE(reg->match("cefabb") == true);
-		REQUIRE(reg->m[1] == "abb");
+		REQUIRE(reg->m[1] == "ab");
 		reg = new SRegex("((ab)|(1:ac))");
 		REQUIRE(reg->match("ac") == true);
 		REQUIRE(reg->m[1] == "ac");
@@ -208,7 +200,7 @@ TEST_CASE("strings")
 		delete reg;
 	}
 
-	/*SECTION("void substrings")
+	SECTION("void substrings")
 	{
 		std::string in = "ab^c", m = "abc";
 		SRegex reg(in);
@@ -223,21 +215,169 @@ TEST_CASE("strings")
 		REQUIRE(reg3.match("b") == true);
 		SRegex reg4("a^+b");
 		REQUIRE(reg4.match("ab") == true);
-	}*/
+	}
 }
 
-/*TEST_CASE("K-path")
+TEST_CASE("K-path")
 {
 	std::string in = "a(b|c)(d|m)", m = "acd";
-	SRegex reg(in);
-	REQUIRE(reg.match(m) == true);
-	reg.d->minimize_DFA();
-	SRegex restore_reg(reg.restore_regex());
-	REQUIRE(restore_reg.match(m) == true);
-	restore_reg.d->minimize_DFA();
-}*/
+	SRegex *reg = new SRegex(in);
+	REQUIRE(reg->match(m) == true);
+	SRegex *restore_reg = new SRegex(reg->restore_regex());
+	REQUIRE(restore_reg->match(m) == true);
+	delete reg;
+	delete restore_reg;
+	reg = new SRegex("abc");
+	REQUIRE(reg->match("abc"));
+	restore_reg = new SRegex(reg->restore_regex());
+	REQUIRE(restore_reg->match("abc") == true);
+	delete reg;
+	delete restore_reg;
+	reg = new SRegex("abcd");
+	REQUIRE(!reg->match("abc"));
+	restore_reg = new SRegex(reg->restore_regex());
+	REQUIRE(restore_reg->match("abc") == false);
+	delete reg;
+	delete restore_reg;
+	reg = new SRegex("#((expelled)#)");
+	REQUIRE(reg->match("(expelled)"));
+	restore_reg = new SRegex(reg->restore_regex());
+	REQUIRE(restore_reg->match("(expelled)") == true);
+	delete reg;
+	delete restore_reg;
+	reg = new SRegex("(abc)+");
+	REQUIRE(reg->match("abcabcabcabcabc"));
+	restore_reg = new SRegex(reg->restore_regex());
+	REQUIRE(restore_reg->match("abcabcabcabcabc") == true);
+	delete reg;
+	delete restore_reg;
+	reg = new SRegex("h++");
+	REQUIRE(reg->match("hhhh"));
+	restore_reg = new SRegex(reg->restore_regex());
+	REQUIRE(restore_reg->match("hhhh") == true);
+	delete restore_reg;
+	REQUIRE(reg->match("h"));
+	restore_reg = new SRegex(reg->restore_regex());
+	REQUIRE(restore_reg->match("h") == true);
+	delete reg;
+	delete restore_reg;
+	reg = new SRegex("a|b");
+	REQUIRE(reg->match("a"));
+	restore_reg = new SRegex(reg->restore_regex());
+	REQUIRE(restore_reg->match("a") == true);
+	delete restore_reg;
+	REQUIRE(reg->match("b"));
+	restore_reg = new SRegex(reg->restore_regex());
+	REQUIRE(restore_reg->match("b") == true);
+	delete reg;
+	delete restore_reg;
+	reg = new SRegex("(a|b)|c+");
+	REQUIRE(reg->match("a"));
+	restore_reg = new SRegex(reg->restore_regex());
+	REQUIRE(restore_reg->match("a") == true);
+	delete restore_reg;
+	REQUIRE(reg->match("b"));
+	restore_reg = new SRegex(reg->restore_regex());
+	REQUIRE(restore_reg->match("b") == true);
+	delete restore_reg;
+	REQUIRE(reg->match("ccccccc"));
+	restore_reg = new SRegex(reg->restore_regex());
+	REQUIRE(restore_reg->match("ccccccc") == true);
+	delete reg;
+	delete restore_reg;
+	reg = new SRegex("(a|b)+");
+	REQUIRE(reg->match("abababab"));
+	restore_reg = new SRegex(reg->restore_regex());
+	REQUIRE(restore_reg->match("abababab") == true);
+	delete reg;
+	delete restore_reg;
+	reg = new SRegex("g(abc)+");
+	REQUIRE(reg->match("gabcabcabcabc"));
+	restore_reg = new SRegex(reg->restore_regex());
+	REQUIRE(restore_reg->match("gabcabcabcabc") == true);
+	delete reg;
+	delete restore_reg;
+	reg = new SRegex("(abc)+t");
+	REQUIRE(reg->match("abcabct"));
+	restore_reg = new SRegex(reg->restore_regex());
+	REQUIRE(restore_reg->match("abcabct") == true);
+	delete reg;
+	delete restore_reg;
+	reg = new SRegex("ab{0,0}c");
+	REQUIRE(reg->match("ac"));
+	restore_reg = new SRegex(reg->restore_regex());
+	REQUIRE(restore_reg->match("ac") == true);
+	delete reg;
+	delete restore_reg;
+	reg = new SRegex("ab{0,0}c");
+	REQUIRE(!reg->match("abc"));
+	restore_reg = new SRegex(reg->restore_regex());
+	REQUIRE(restore_reg->match("abc") == false);
+	delete reg;
+	delete restore_reg;
+	reg = new SRegex("ab{1,1}c");
+	REQUIRE(reg->match("abc"));
+	restore_reg = new SRegex(reg->restore_regex());
+	REQUIRE(restore_reg->match("abc") == true);
+	delete reg;
+	delete restore_reg;
+	reg = new SRegex("ab{0,1}c");
+	REQUIRE(reg->match("abc"));
+	restore_reg = new SRegex(reg->restore_regex());
+	REQUIRE(restore_reg->match("abc") == true);
+	delete reg;
+	delete restore_reg;
+	reg = new SRegex("ab{0,1}c");
+	REQUIRE(reg->match("ac"));
+	restore_reg = new SRegex(reg->restore_regex());
+	REQUIRE(restore_reg->match("ac") == true);
+	delete reg;
+	delete restore_reg;
+	reg = new SRegex("b{0,1}+");
+	REQUIRE(reg->match("b"));
+	restore_reg = new SRegex(reg->restore_regex());
+	REQUIRE(restore_reg->match("b") == true);
+	delete reg;
+	delete restore_reg;
+	reg = new SRegex("b{0,1}+");
+	REQUIRE(reg->match(""));
+	restore_reg = new SRegex(reg->restore_regex());
+	REQUIRE(restore_reg->match("") == true);
+	delete reg;
+	delete restore_reg;
+	reg = new SRegex("b{0,1}+");
+	REQUIRE(reg->match("bb"));
+	restore_reg = new SRegex(reg->restore_regex());
+	REQUIRE(restore_reg->match("bb") == true);
+	delete reg;
+	delete restore_reg;
+	reg = new SRegex("b{2,2}+");
+	REQUIRE(reg->match("bb"));
+	restore_reg = new SRegex(reg->restore_regex());
+	REQUIRE(restore_reg->match("bb") == true);
+	delete reg;
+	delete restore_reg;
+	reg = new SRegex("b{2,2}+");
+	REQUIRE(reg->match("bbbb"));
+	restore_reg = new SRegex(reg->restore_regex());
+	REQUIRE(restore_reg->match("bbbb") == true);
+	delete reg;
+	delete restore_reg;
+	reg = new SRegex("b{2,2}+");
+	REQUIRE(!reg->match("b"));
+	restore_reg = new SRegex(reg->restore_regex());
+	REQUIRE(restore_reg->match("b") == false);
+	delete reg;
+	delete restore_reg;
+	reg = new SRegex("b{2,2}+");
+	REQUIRE(!reg->match("bbb"));
+	restore_reg = new SRegex(reg->restore_regex());
+	REQUIRE(restore_reg->match("bbb") == false);
+	delete reg;
+	delete restore_reg;
+}
 
-/*TEST_CASE("addition to language")
+TEST_CASE("addition to language")
 {
 	 std::string in = "(a|b)c", m = "bc";
 	 SRegex reg(in);
@@ -253,10 +393,10 @@ TEST_CASE("traversial of languages")
 	REQUIRE(reg.regex_traversal (r2, m) == true);
 }
 
-TEST_CASE("minimization")
-{
-	SRegex reg("(a|a|a|a)b");
-	reg.d->minimize_DFA();
-}
+// TEST_CASE("minimization")
+// {
+// 	SRegex reg("(a|a|a|a)b");
+// 	reg.d->minimize_DFA();
+// }
 
-*/
+

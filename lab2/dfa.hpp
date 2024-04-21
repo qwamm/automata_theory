@@ -7,6 +7,7 @@
 
 struct State
 {
+		bool passed;
 		int s_num;
 		int group_num;
 		std::string s;
@@ -35,59 +36,6 @@ class DFA
 				delete DStates[i];
 			}
 		}
-
-		/*void reverse_dfa()
-		{
-			std::vector<State*> NStartStates;
-			State *dollar_state = nullptr;
-			for (int i = 0; i < DStates.size(); i++)
-			{
-				for (int j = 0; j < DStates[i]->to.size(); j++)
-				{
-					if (DStates[i]->to[j]->s == "$" && DStates[i]->to[j]->to.size() == 0)
-					{
-						NStartStates.push_back(DStates[i]);
-						DStates[i]->to.erase(DStates[i]->to.begin() + j);
-						dollar_state = DStates[i]->to[j];
-						break;
-					}
-				}
-			}
-			for (int i = 0; i < StartStates.size(); i++)
-			{
-				StartStates[i]->to.push_back(dollar_state);
-			}
-			StartStates.clear();
-			for (int i = 0; i < NStartStates.size(); i++)
-			{
-				StartStates.push_back(NStartStates[i]);
-			}
-
-			for (int i = 0; i < DStates.size(); i++)
-			{
-				for (int j = 0; j < DStates[i]->to.size(); j++)
-				{
-					if (DStates[i]->to[j]->s == "c")
-						std::cout << i+1 << "\n";
-					if (DStates[i]->to[j]->s_num > i+1 && (DStates[i]->to[j]->s != "$" || DStates[i]->to[j]->to.size() != 0))
-					{
-						DStates[i]->to[j]->to.push_back(DStates[i]);
-						DStates[i]->to.erase(DStates[i]->to.begin() + j);
-					}
-				}
-			}
-                        for (int i = 0; i < DStates.size(); i++)
-                        {
-                                std::cout << i+1 << "REVERSE DFA STATE \"" << DStates[i]->s << "\": ";
-                                for (int j = 0; j < DStates[i]->to.size(); j++)
-                                {
-                                        std::cout << DStates[i]->to[j]->s_num << " " << DStates[i]->to[j]->s;
-                                        if (j < DStates[i]->to.size())
-                                                std::cout << ", ";
-                                }
-                                std::cout << "\n";
-                        }
-		}*/
 
 		bool automata_product(DFA *d_1, DFA *d_2, std::string& s)
 		{
@@ -456,32 +404,40 @@ class DFA
 							StartStates.push_back(cur_state);
 					}
 				}
-                                for (int j = 0; j < t->root->l.size(); j++)
-                                {
-                                        if (t->root->l[j].n == v[i].n && t->root->l[j].s == v[i].s && t->root->l[j].group_num == v[i].group_num
-                                        && v[i].s == "$")
-                                        {
-                                                        EndStates.push_back(cur_state);
-														dollar_state = cur_state;
-                                        }
-                                }
+	            for (int j = 0; j < t->root->l.size(); j++)
+	            {
+                    if (t->root->l[j].n == v[i].n && t->root->l[j].s == v[i].s && t->root->l[j].group_num == v[i].group_num
+                    && v[i].s == "$")
+                    {
+                        EndStates.push_back(cur_state);
+						dollar_state = cur_state;
+                    }
+	            }
 				DStates.push_back(cur_state);
 			}
 
+			bool f = false;
 			//transition definition
 			for (int i = 0; i < DStates.size(); i++)
 			{
-				if (t->follow_pos[i].size() == 0 && DStates[i]->s != "$")
+				f = false;
+				for (int j = 0; j < t->root->l.size(); j++)
+				{
+					if(t->root->l[j].n == DStates[i]->s_num && t->root->l[j].s == DStates[i]->s)
+					{
+						f = true;
+						break;
+					}
+				}
+				if (f && DStates[i]->s != "$")
 				{
 					DStates[i]->to.push_back(dollar_state);
 				}
-				else
-				{
-				for (int j = 0; j < t->follow_pos[i].size(); j++)
-				{
-					DStates[i]->to.push_back(DStates[t->follow_pos[i][j].n - 1]);
-				}
-				}
+					for (int j = 0; j < t->follow_pos[i].size(); j++)
+					{
+						DStates[i]->to.push_back(DStates[t->follow_pos[i][j].n - 1]);
+					}
+				
 			}
 			for (int i = 0; i < DStates.size(); i++)
 			{
