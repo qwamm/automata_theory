@@ -31,8 +31,46 @@ class SRegex
 			return false;
 		}
 
-		bool match(std::string &s)
+		bool parsing(State *cur_state, std::string s, int ind, int call)
 		{
+				bool f = false;
+				std::string b;
+                m[cur_state->group_num].push_back(s[ind-1]);
+        		for (int k = 0; k < cur_state->to.size(); k++)
+        		{
+                		b = std::string(1,s[ind]);
+                		//std::cout << cur_state->to[k]->s << " " << s[ind] << "\n";
+                		if (b == cur_state->to[k]->s)
+                		{
+                				//std::cout << "CUR STATE: " << cur_state->s_num << " " << cur_state->s << "\n";
+								cur_state = cur_state->to[k];
+								if (ind == s.size() - 1)
+								{
+									//std::cout << "END STATE: " << cur_state->s_num << " " << cur_state->s << "\n";
+									for (int t = 0; t < d->EndStates.size(); t++)
+									{
+										if (cur_state == d->EndStates[t])
+										{
+				                                f = true;
+				                                break;
+										}
+									}
+								}
+								if (f)
+                        			break;
+                        		f = parsing(cur_state, s, ++ind, call + 1);
+                        		if (call > 0)
+                        			ind--;
+                        		if(f)
+                        			break;
+                		}
+        		}
+        		return f;
+		}
+
+		bool match(std::string s)
+		{
+			m.clear();
 			s.push_back('$');
 			std::cout << s << "\n";
 			State *cur_state;
@@ -40,51 +78,26 @@ class SRegex
 			std::string b = std::string(1,s[0]);
 			for(int i = 0; i < d->StartStates.size(); i++)
 			{
-				b = std::string(1,s[0]);
-				if (b == d->StartStates[i]->s)
-				{
-					cur_state = d->StartStates[i];
-					if (s.size() == 1)
+					b = std::string(1,s[0]);
+					if (b == d->StartStates[i]->s)
 					{
-                                                        for (int t = 0; t < d->EndStates.size(); t++)
-                                                        {
-                                                                if (cur_state == d->EndStates[t])
-                                                                {
-                                                                    	return true;
-                                                                }
-                                                        }
-							break;
-					}
-                       			for (int j = 1; j < s.size(); j++)
-                        		{
-						f = false;
-						if (j == s.size() - 1)
+						cur_state = d->StartStates[i];
+						if (s.size() == 1)
 						{
-							for (int t = 0; t < d->EndStates.size(); t++)
-							{
-								if (cur_state == d->EndStates[t])
-								{
-                                                                        f = true;
-                                                                        break;
-								}
-							}
+								m[cur_state->group_num].push_back(s[0]);
+	                            for (int t = 0; t < d->EndStates.size(); t++)
+	                            {
+	                                    if (cur_state == d->EndStates[t])
+	                                    {
+	                                        	return true;
+	                                    }
+	                            }
+								break;
 						}
-                                		for (int k = 0; k < cur_state->to.size(); k++)
-                                		{
-                                        		b = std::string(1,s[j]);
-                                        		if (b == cur_state->to[k]->s)
-                                        		{
-                                                		cur_state = cur_state->to[k];
-                                                		f = true;
-                                                		break;
-                                        		}
-                                		}
-                                		if (!f)
-                                        		break;
-                        		}
-					if (f)
-                        			return true;
-				}
+               			f = parsing(cur_state, s, 1, 0);
+						if (f)
+                    			return true;
+					}	
 			}
 			return false;
 		}

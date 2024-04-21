@@ -8,12 +8,14 @@
 struct State
 {
 		int s_num;
+		int group_num;
 		std::string s;
 		std::vector <State*> to;
-		State(std::string _s, int _num)
+		State(std::string _s, int _num, int _group_num)
 		{
 			s_num = _num;
 			s = _s;
+			group_num = _group_num;
 		}
 };
 
@@ -136,7 +138,7 @@ class DFA
 					//if (DStates_1[i]->s != "$" && DStates_2[j]->s != "$")
 					//{
 						State *new_state = new State(DStates_1[i]->s + DStates_2[j]->s,
-                                                num++);
+                                                num++, DStates_1[i]->group_num);
 						DStates_3.push_back(new_state);
 						if (flag1 &&  flag2)
 							StartStates_3.push_back(new_state);
@@ -351,7 +353,7 @@ class DFA
 				{
 					min_s += min_states[i][j]->s;
 				}
-				min_state = new State(min_s, min_states[i][0]->s_num);
+				min_state = new State(min_s, min_states[i][0]->s_num, min_states[i][0]->group_num);
 				min_DStates.push_back(min_state);
 			}
 
@@ -446,20 +448,21 @@ class DFA
 			//copying vector of states
 			for (int i = 0; i < v.size(); i++)
 			{
-				State *cur_state = new State(v[i].s, v[i].n);
+				State *cur_state = new State(v[i].s, v[i].n, v[i].group_num);
 				for (int j = 0; j < t->root->f.size(); j++)
 				{
-					if (t->root->f[j].n == v[i].n && t->root->f[j].s == v[i].s)
+					if (t->root->f[j].n == v[i].n && t->root->f[j].s == v[i].s && t->root->f[j].group_num == v[i].group_num)
 					{
 							StartStates.push_back(cur_state);
 					}
 				}
                                 for (int j = 0; j < t->root->l.size(); j++)
                                 {
-                                        if (t->root->l[j].n == v[i].n && t->root->l[j].s == v[i].s && v[i].s == "$")
+                                        if (t->root->l[j].n == v[i].n && t->root->l[j].s == v[i].s && t->root->l[j].group_num == v[i].group_num
+                                        && v[i].s == "$")
                                         {
                                                         EndStates.push_back(cur_state);
-							dollar_state = cur_state;
+														dollar_state = cur_state;
                                         }
                                 }
 				DStates.push_back(cur_state);
@@ -482,7 +485,7 @@ class DFA
 			}
 			for (int i = 0; i < DStates.size(); i++)
 			{
-				std::cout << i+1 << " DFA STATE: ";
+				std::cout << i+1 << " " <<  DStates[i]->s << " DFA STATE WITH CAPTURED GROUP " << DStates[i]->group_num << ": ";
 				for (int j = 0; j < DStates[i]->to.size(); j++)
 				{
 					std::cout << DStates[i]->to[j]->s_num << " " << DStates[i]->to[j]->s;

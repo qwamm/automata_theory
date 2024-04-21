@@ -6,11 +6,13 @@
 struct Vertex
 {
 	int n;
+	int group_num;
 	std::string s;
-	Vertex (int _n, std::string _s)
+	Vertex (int _n, std::string _s, int _group_num)
 	{
 		n = _n;
 		s = _s;
+		group_num = _group_num;
 	}
 };
 
@@ -22,6 +24,7 @@ class Syntax_Node
         Syntax_Node *right;
 	Syntax_Node *parent;
 		bool is_nullable;
+		int group_num;
 		std::vector<Vertex> f;
 		std::vector<Vertex> l;
 		Syntax_Node(Expression *_data)
@@ -120,7 +123,7 @@ class Syntax_Tree
 			}
 		}
 
-		std::string group_capture(const std::string &s)
+		std::string group_capture(const std::string &s, int *group_num)
 		{
 			int i = 0;
 			std::string group = s, num = "";
@@ -131,13 +134,14 @@ class Syntax_Tree
 			}
 			if (s[i] == ':' && num.size() > 0)
 			{
+				*group_num = std::stoi(num);
 				group = s.substr(i+1);
 				capture_groups[std::stoi(num)] = group;
 			}
 			return group;
 		}
 
-		bool parse_string(std::string &s, Syntax_Node **cur)
+		bool parse_string(std::string &s, Syntax_Node **cur, int group_num)
 		{
 						int f,l;
 						Syntax_Node **r = cur;
@@ -169,8 +173,9 @@ class Syntax_Tree
                                 					Syntax_Node *p_node = nullptr;
                                 					std::string buf = s.substr(f + 1, l-f-1);
                                 					std::cout << buf << "\n";
-                                					buf = group_capture(buf);
-                                					parse_string(buf, &p_node);
+									int cur_group_num = 0;
+                                					buf = group_capture(buf, &cur_group_num);
+                                					parse_string(buf, &p_node, cur_group_num);
 									i = l;
 									if (s[i+1] != '{' ||  s[i+4] != '0')
 									{
@@ -193,6 +198,7 @@ class Syntax_Tree
 								else if (s[i] == '|')
 								{
 									Syntax_Node *or_node = new Syntax_Node(new Symbol(std::string(1, s[i])));
+									or_node->group_num = group_num;
 									or_node->data->is_metasymbol = true;
 									set_root(or_node, r);
 									cur = &(*r);
@@ -206,10 +212,11 @@ class Syntax_Tree
 									set_root(c_node, r);
 									(*r)->right = d_node;
 									i++;
-                                                		}*/
+                 						*/
 								else if (s[i] == '.')
 								{
 									Syntax_Node *c_node = new Syntax_Node(new Symbol(std::string(1, s[i])));
+									c_node->group_num = group_num;
 									c_node->data->is_metasymbol = true;
 									if (s[i-1] == ')' && s[i-2] != '#')
 									{
@@ -238,6 +245,7 @@ class Syntax_Tree
 								else if (s[i] == '+')
 								{
 									Syntax_Node *p_node = new Syntax_Node(new Symbol(std::string(1, s[i])));
+									p_node->group_num = group_num;
 									p_node->data->is_metasymbol = true;
 									set_root(p_node, cur);
 								}
@@ -261,50 +269,12 @@ class Syntax_Tree
 											std::cout << "CUR: " << (*cur)->data->value() << "\n";
 											(*cur)->is_nullable = true;
 									}
-									//std::cout << "PARENT: " << (*cur)->parent->data->value() << "\n";
-									/*if (s[i+3] == '0')
-									{
-											Syntax_Node *buf = *cur;
-											cur = &((*cur)->parent);
-											bool right = false;
-											if ((*cur)->right == buf)
-											{
-												(*cur)->right = nullptr;
-												right = true;
-											}
-											else
-											{
-												(*cur)->left = nullptr;
-											}
-											delete buf;
-											buf = nullptr;
-											if ((*cur)->data->is_metasymbol == true)
-											{
-												if (right)
-												{
-													buf = (*cur);
-                                                                                                        if (*r == *cur)
-                                                                                                                r = &((*cur)->left);
-													cur = &((*cur)->left);
-													(*cur)->parent = nullptr;
-													delete buf;
-												}
-												else
-												{
-                                                                                                        buf = (*cur);
-													if (*r == *cur)
-														r = &((*cur)->right);
-                                                                                                        cur = &((*cur)->right);
-													(*cur)->parent = nullptr;
-                                                                                                        delete buf;
-												}
-											}
-									}*/
-									//std::cout << "SPECIAL MARKER: " << i << " \t" << s[i] << "\n";
 									for (int j = 1; j < n; j++)
 									{
 										Syntax_Node *сp_node = new Syntax_Node(new Symbol(std::string(1, '.')));
 										Syntax_Node *tp_node = new Syntax_Node(new Symbol(t_node->data->value()));
+										сp_node->group_num = group_num;
+										tp_node->group_num = group_num;
 										if (t_node->data->is_metasymbol)
 											tp_node->data->is_metasymbol = true;
 										copy_tree(t_node, tp_node);
@@ -334,6 +304,7 @@ class Syntax_Tree
 								}
 								token.push_back(s[i]);
                               					Syntax_Node *a_node = new Syntax_Node(new Symbol(token));
+								a_node->group_num = group_num;
 								if (*cur == nullptr)
 								{
 									*cur = a_node;
@@ -480,8 +451,8 @@ class Syntax_Tree
     	}
     	else
     	{
-    		(*ptr)->f.push_back(Vertex(ind, (*ptr)->data->value()));
-    		(*ptr)->l.push_back(Vertex(ind, (*ptr)->data->value()));
+    		(*ptr)->f.push_back(Vertex(ind, (*ptr)->data->value(), (*ptr)->group_num));
+    		(*ptr)->l.push_back(Vertex(ind, (*ptr)->data->value(), (*ptr)->group_num));
     	}
     }
 
@@ -496,7 +467,7 @@ class Syntax_Tree
     		{
     			(*ind)++;
     			follow_pos.emplace_back();
-    			states.push_back(Vertex(*ind, (*ptr)->data->value()));
+    			states.push_back(Vertex(*ind, (*ptr)->data->value(), (*ptr)->group_num));
     		}
     		set_node(ptr, *ind);
     		std::cout << (*ptr)->data->value() << " " << "N set: " << (*ptr)->is_nullable << " " <<
@@ -528,7 +499,7 @@ class Syntax_Tree
 	{
 			s.push_back('$');
 			int ind = 0; //index of each a_node in ast
-			parse_string(s, &root);
+			parse_string(s, &root, 0);
 			std::vector<Vertex> states;
 			create_sets(&root, &ind, states);
 			std::cout << "FP-set:\n";
@@ -544,7 +515,7 @@ class Syntax_Tree
 			std::cout << "STATES:\n";
 			for (int i =0; i < states.size(); i++)
 			{
-				std::cout << states[i].n << " " << states[i].s << "\n";
+				std::cout << states[i].n << " " << states[i].s << " WITH CAPTURED GROUP " << states[i].group_num << "\n";
 			}
 			return states;
 	}

@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/qurst/automata_theory/lab2
+CMAKE_SOURCE_DIR = /home/fdfdas/automata_theory/lab2
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/qurst/automata_theory/lab2
+CMAKE_BINARY_DIR = /home/fdfdas/automata_theory/lab2
 
 # Include any dependencies generated for this target.
 include CMakeFiles/lib1.dir/depend.make
@@ -77,7 +77,7 @@ lib1_EXTERNAL_OBJECTS =
 
 liblib1.a: CMakeFiles/lib1.dir/build.make
 liblib1.a: CMakeFiles/lib1.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/qurst/automata_theory/lab2/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Linking CXX static library liblib1.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/fdfdas/automata_theory/lab2/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Linking CXX static library liblib1.a"
 	$(CMAKE_COMMAND) -P CMakeFiles/lib1.dir/cmake_clean_target.cmake
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/lib1.dir/link.txt --verbose=$(VERBOSE)
 
@@ -90,6 +90,6 @@ CMakeFiles/lib1.dir/clean:
 .PHONY : CMakeFiles/lib1.dir/clean
 
 CMakeFiles/lib1.dir/depend:
-	cd /home/qurst/automata_theory/lab2 && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/qurst/automata_theory/lab2 /home/qurst/automata_theory/lab2 /home/qurst/automata_theory/lab2 /home/qurst/automata_theory/lab2 /home/qurst/automata_theory/lab2/CMakeFiles/lib1.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/fdfdas/automata_theory/lab2 && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/fdfdas/automata_theory/lab2 /home/fdfdas/automata_theory/lab2 /home/fdfdas/automata_theory/lab2 /home/fdfdas/automata_theory/lab2 /home/fdfdas/automata_theory/lab2/CMakeFiles/lib1.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/lib1.dir/depend
 

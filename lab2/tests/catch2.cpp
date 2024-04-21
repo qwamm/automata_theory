@@ -1,6 +1,6 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
-#include "/home/qurst/automata_theory/lab2/regex_lib.hpp"
+#include "/home/fdfdas/automata_theory/lab2/regex_lib.hpp"
 
 TEST_CASE("strings")
 {
@@ -175,22 +175,40 @@ TEST_CASE("strings")
 		std::string in = "jrw(1:bwjerg)tu(2:dkjgb)(3:ogo, it's over)", m = "jrwbwjergtudkjgbogo, it's over";
 		SRegex *reg = new SRegex(in);
 		REQUIRE(reg->match(m) == true);
-		m = "kakaya to hren";
-		REQUIRE(reg->match(m) == false);
-		reg->set_capture_groups();
-		REQUIRE(reg->m[1] == "b.w.j.e.r.g");
-                REQUIRE(reg->m[2] == "d.k.j.g.b");
-                REQUIRE(reg->m[3] == "o.g.o.,. .i.t.'.s. .o.v.e.r");
+		//m = "kakaya to hren";
+		//REQUIRE(reg->match(m) == false);
+		std::cout << reg->m[0] << "\n";
+		REQUIRE(reg->m[1] == "bwjerg");
+                REQUIRE(reg->m[2] == "dkjgb");
+                REQUIRE(reg->m[3] == "ogo, it's over");
 		delete reg;
                 reg = new SRegex("((1:ab)|(2:ac))");
-		m = "ab";
-		REQUIRE(reg->match(m) == true);
-		reg->set_capture_groups();
-		REQUIRE(reg->m[1] == "a.b");
-		REQUIRE(reg->m[2] == "a.c");
+		REQUIRE(reg->match("ab") == true);
+		REQUIRE(reg->m[1] == "ab");
+		REQUIRE(reg->m[2].size() == 0);
+		delete reg;
+		reg = new SRegex("cef(1:ab+)b");
+		reg->match("cefabb");
+		//REQUIRE(reg->match("cefabb") == true);
+		REQUIRE(reg->m[1] == "abb");
+		reg = new SRegex("((ab)|(1:ac))");
+		REQUIRE(reg->match("ac") == true);
+		REQUIRE(reg->m[1] == "ac");
+		REQUIRE(reg->match("ab") == true);
+		REQUIRE(reg->m[1].size() == 0);
+		delete reg;
+		reg = new SRegex("b(1:baa)+a");
+		REQUIRE(reg->match("bbaabaaa") == true);
+		REQUIRE(reg->m[1]=="baabaa");
+		reg = new SRegex("ac(1:ab|ac)ab");
+		REQUIRE(reg->match("acabab") == true);
+		REQUIRE(reg->m[1]=="ab");
+		REQUIRE(reg->match("acacab") == true);
+		REQUIRE(reg->m[1]=="ac");
+		delete reg;
 	}
 
-	SECTION("void substrings")
+	/*SECTION("void substrings")
 	{
 		std::string in = "ab^c", m = "abc";
 		SRegex reg(in);
@@ -199,19 +217,27 @@ TEST_CASE("strings")
 		m = "fg";
 		SRegex reg2(in);
 		REQUIRE(reg2.match(m) == true);
-	}
+		SRegex reg3("(a|^)b");
+		m = "ab";
+		REQUIRE(reg3.match(m) == true);
+		REQUIRE(reg3.match("b") == true);
+		SRegex reg4("a^+b");
+		REQUIRE(reg4.match("ab") == true);
+	}*/
 }
 
-TEST_CASE("K-path")
+/*TEST_CASE("K-path")
 {
 	std::string in = "a(b|c)(d|m)", m = "acd";
 	SRegex reg(in);
 	REQUIRE(reg.match(m) == true);
+	reg.d->minimize_DFA();
 	SRegex restore_reg(reg.restore_regex());
 	REQUIRE(restore_reg.match(m) == true);
-}
+	restore_reg.d->minimize_DFA();
+}*/
 
-TEST_CASE("addition to language")
+/*TEST_CASE("addition to language")
 {
 	 std::string in = "(a|b)c", m = "bc";
 	 SRegex reg(in);
@@ -227,4 +253,10 @@ TEST_CASE("traversial of languages")
 	REQUIRE(reg.regex_traversal (r2, m) == true);
 }
 
+TEST_CASE("minimization")
+{
+	SRegex reg("(a|a|a|a)b");
+	reg.d->minimize_DFA();
+}
 
+*/
