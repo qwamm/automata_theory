@@ -1,5 +1,5 @@
 CMakeFiles/test.dir/tests/catch2.cpp.o: \
- /home/fdfdas/automata_theory/lab2/tests/catch2.cpp \
+ /home/qurst/automata_theory/lab2/tests/catch2.cpp \
  /usr/include/stdc-predef.h /usr/include/catch2/catch.hpp \
  /usr/include/c++/11/cstddef \
  /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h \
@@ -299,8 +299,8 @@ CMakeFiles/test.dir/tests/catch2.cpp.o: \
  /usr/include/c++/11/bits/regex.h /usr/include/c++/11/bits/regex.tcc \
  /usr/include/c++/11/bits/regex_executor.h \
  /usr/include/c++/11/bits/regex_executor.tcc /usr/include/c++/11/iostream \
- /home/fdfdas/automata_theory/lab2/regex_lib.hpp \
- /home/fdfdas/automata_theory/lab2/dfa.hpp /usr/include/c++/11/queue \
+ /home/qurst/automata_theory/lab2/regex_lib.hpp \
+ /home/qurst/automata_theory/lab2/dfa.hpp /usr/include/c++/11/queue \
  /usr/include/c++/11/bits/stl_queue.h \
- /home/fdfdas/automata_theory/lab2/syntax_tree.hpp \
- /home/fdfdas/automata_theory/lab2/ast.hpp
+ /home/qurst/automata_theory/lab2/syntax_tree.hpp \
+ /home/qurst/automata_theory/lab2/ast.hpp

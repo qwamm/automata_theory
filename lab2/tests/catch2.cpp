@@ -1,6 +1,6 @@
 #define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
-#include "/home/fdfdas/automata_theory/lab2/regex_lib.hpp"
+#include "/home/qurst/automata_theory/lab2/regex_lib.hpp"
 
 TEST_CASE("strings")
 {
@@ -180,9 +180,8 @@ TEST_CASE("strings")
 		REQUIRE(reg->m[2].size() == 0);
 		delete reg;
 		reg = new SRegex("cef(1:ab+)b");
-		reg->match("cefabb");
-		//REQUIRE(reg->match("cefabb") == true);
-		REQUIRE(reg->m[1] == "ab");
+		REQUIRE(reg->match("cefabbbb") == true);
+		REQUIRE(reg->m[1] == "abbb");
 		reg = new SRegex("((ab)|(1:ac))");
 		REQUIRE(reg->match("ac") == true);
 		REQUIRE(reg->m[1] == "ac");
@@ -198,6 +197,13 @@ TEST_CASE("strings")
 		REQUIRE(reg->match("acacab") == true);
 		REQUIRE(reg->m[1]=="ac");
 		delete reg;
+		reg = new SRegex("a+(1:a+)a+");
+		REQUIRE(reg->match("aaaaaaaa") == true);
+		std::cout << reg->m[1] << "\n";
+		reg = new SRegex("(1:a|b)(2:a|b)(3:a|b)");
+		delete reg;
+		reg = new SRegex("(a|b)|(a|b)|(a|b)");
+		reg->d->minimize_DFA();
 	}
 
 	SECTION("void substrings")

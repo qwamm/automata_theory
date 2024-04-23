@@ -1,5 +1,5 @@
 CMakeFiles/test_lab2.dir/main.cpp.o: \
- /home/fdfdas/automata_theory/lab2/main.cpp /usr/include/stdc-predef.h \
+ /home/qurst/automata_theory/lab2/main.cpp /usr/include/stdc-predef.h \
  /usr/include/c++/11/iostream \
  /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h \
@@ -156,8 +156,8 @@ CMakeFiles/test_lab2.dir/main.cpp.o: \
  /usr/include/c++/11/bits/basic_ios.tcc \
  /usr/include/c++/11/bits/ostream.tcc /usr/include/c++/11/istream \
  /usr/include/c++/11/bits/istream.tcc \
- /home/fdfdas/automata_theory/lab2/regex_lib.hpp \
- /home/fdfdas/automata_theory/lab2/dfa.hpp /usr/include/c++/11/utility \
+ /home/qurst/automata_theory/lab2/regex_lib.hpp \
+ /home/qurst/automata_theory/lab2/dfa.hpp /usr/include/c++/11/utility \
  /usr/include/c++/11/bits/stl_relops.h /usr/include/c++/11/vector \
  /usr/include/c++/11/bits/stl_uninitialized.h \
  /usr/include/c++/11/bits/stl_vector.h \
@@ -175,5 +175,5 @@ CMakeFiles/test_lab2.dir/main.cpp.o: \
  /usr/include/c++/11/bits/node_handle.h \
  /usr/include/c++/11/bits/unordered_map.h \
  /usr/include/c++/11/bits/erase_if.h \
- /home/fdfdas/automata_theory/lab2/syntax_tree.hpp \
- /home/fdfdas/automata_theory/lab2/ast.hpp
+ /home/qurst/automata_theory/lab2/syntax_tree.hpp \
+ /home/qurst/automata_theory/lab2/ast.hpp
