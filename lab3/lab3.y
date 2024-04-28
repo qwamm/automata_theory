@@ -14,137 +14,44 @@
 %token <ival> INTNUM
 %token <bval> BOOLNUM
 
+%left '>' '<'
+%left '+' '-'
+%left '*' '/'
+%right '^'
+%right UMINUS
+
 %%
 
 program:
-	program '\n' 
-	{
-		printf("empty string\n");
-	}
-
-	| program expr '\n'
-	{
-		printf("result = %d\n", $<ival>2);
-	}
-	|
-	{
-		printf("entern a expression:\n");
-	}
-	;
-compare:
-	compare '>' unary
-	{
-		$<ival>$ = $<ival>1 > $<ival>2;
-		$<bval>$ = $<bval>1 > $<bval>2;
-	}
-	|
-        compare '<' unary
-        {
-                $<ival>$ = $<ival>1 < $<ival>2;
-                $<bval>$ = $<bval>1 < $<bval>2;
-        }
-	|
-	compare '?' unary
-	{
-                $<ival>$ = $<ival>1 == $<ival>2;
-                $<bval>$ = $<bval>1 == $<bval>2;
-	}
-	|
-        compare '!' unary
-        {
-                $<ival>$ = $<ival>1 != $<ival>2;
-                $<bval>$ = $<bval>1 != $<bval>2;
-        }
-	|
-	unary
-	{
-		$<ival>$ = $<ival>1;
-		$<bval>$ = $<bval>1;
-	}
-	;
-unary:
-	'-' expr
-	{
-		$<ival>$ = -$<ival>2;
-		$<bval>$ = !($<bval>2);
-	}
-	|
-	expr
-	{
-                $<ival>$ = $<ival>1;
-                $<bval>$ = $<bval>1;
-	}
-	;
+ 	program '\n' {
+ 		printf("empty string\n", $<ival>2);
+ 	}
+ 	| program expr '\n' {
+ 		printf("int result = %d\n", $<ival>2);
+ 		printf("bool result = %d\n", $<bval>2);
+ 	}
+ 	| {
+ 	printf("enter a expression:\n");
+ 	}
+ 	; 
 expr:
-	INTNUM '+' INTNUM
-	{
-		$<ival>$ = $<ival>1 + $<ival>3;
-	}
+	INTNUM {$<ival>$ = $<ival>1;}
 	|
-	BOOLNUM '+' BOOLNUM
-	{
-		$<bval>$ = $<bval>1 || $<bval>3;
-	}
-	| expr '-' term
-	{
-		$<ival>$ = $<ival>1 - $<ival>3;
-		$<bval>$ = $<bval>1 ^ $<bval>3;
-	}
-	| term
-	{
-                $<ival>$ = $<ival>1;
-                $<bval>$ = $<bval>1;
-	}
-	;
-term:
-	term '*' power
-	{
-		$<ival>$ = $<ival>1 * $<ival>3;
-		$<bval>$ = $<bval>1 && $<bval>3;
-	}
-	| term '/' power
-	{
-		$<ival>$ = $<ival>1 / $<ival>3;
-		$<bval>$ = !($<bval>1 && $<bval>3);
-	}
-	| power
-	{
-                $<ival>$ = $<ival>1;
-                $<bval>$ = $<bval>1;
-	}
+	BOOLNUM {$<bval>$ = $<bval>1; printf("BOOLNUM\n");}
+	| expr '<' expr {$<ival>$ = $<ival>1 < $<ival>3;}
+	| expr '>' expr {$<bval>$ = $<bval>1 > $<bval>3;}
+	| expr '+' expr {$<ival>$ = $<ival>1 + $<ival>3;}
+	| expr '-' expr {$<ival>$ = $<ival>1 - $<ival>3;}
+	| expr '*' expr {$<ival>$ = $<ival>1 * $<ival>3;}
+	| expr '/' expr {$<ival>$ = $<ival>1 / $<ival>3;}
+	| expr '^' expr {$<ival>$ = pow($<ival>1 , $<ival>3);}
+	| '(' expr ')' {$<ival>$ = $<ival>2;}
+	| '-' expr %prec UMINUS      { $<ival>$ = -$<ival>2; } 
 	;
 
-power:
-	factor '^' power
-	{
-		$<ival>$ = pow($<ival>1, $<ival>3);
-		$<bval>$ = !($<bval>1 || $<bval>3);
-	}
-	|
-	factor {
-                $<ival>$ = $<ival>1;
-                $<bval>$ = $<bval>1;
-	}
-	;
 
-factor:
-	INTNUM
-	{
-		printf("int=%d to factor : %d\n", $<ival>1, $<ival>$);
-	}
-	|
-	BOOLNUM
-	{
-		printf("bool=%d to factor : %d\n", $<bval>1, $<bval>$);
-	}
-	|
-	'(' expr ')'
-	{
-		$<ival>$ = $<ival>2;
-		$<bval>$ = $<bval>2;
-	}
-	;
 %%
+
 #include <stdbool.h>
 
 void yyerror(const char *s)
@@ -152,7 +59,7 @@ void yyerror(const char *s)
 	fprintf(stderr, "%s\n", s);
 }
 
-int yylex(void)
+/*int yylex(void)
 {
 	int c;
 	while ((c = getchar()) == ' '|| c == '\t')
@@ -172,7 +79,7 @@ int yylex(void)
 	if (c == EOF)
 		return 0;
 	return c;  
-}
+}*/
 
 int main(void)
 {
