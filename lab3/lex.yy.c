@@ -465,20 +465,21 @@ int yy_flex_debug = 0;
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
 #line 1 "lab3.l"
-#line 3 "lab3.l"
-	struct val
-	{
-		char* text;
-	};
-	#define YYSTYPE val
+#line 2 "lab3.l"
+	#include "nodes.h"
+        struct val
+        {
+                char *text;
+		node *tree;
+        };
+        #define YYSTYPE val
 	#include "lab3.tab.h"
-	#include <stdlib.h>
-	#include <stdbool.h>
-	#include <string.h>
-	#include <math.h>
+	#include <cstdlib>
+	#include <string>
+	#include <cmath>
 	void yyerror(const char*);
-#line 481 "lex.yy.c"
 #line 482 "lex.yy.c"
+#line 483 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -698,7 +699,7 @@ YY_DECL
 #line 16 "lab3.l"
 
 
-#line 702 "lex.yy.c"
+#line 703 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -759,7 +760,7 @@ case 1:
 YY_RULE_SETUP
 #line 18 "lab3.l"
 {		
-	yylva2l.text = yytext;
+	yylval.text = yytext;
 	return INTNUM;
 }
 	YY_BREAK
@@ -783,7 +784,7 @@ case 4:
 YY_RULE_SETUP
 #line 33 "lab3.l"
 {
-	yylval = yytext;
+	yylval.text = yytext;
 	return UNDEF;
 }
 	YY_BREAK
@@ -791,7 +792,7 @@ case 5:
 YY_RULE_SETUP
 #line 38 "lab3.l"
 {
-	yylval = yytext;
+	yylval.text = yytext;
 	return SVAL;
 }
 	YY_BREAK
@@ -820,7 +821,7 @@ YY_RULE_SETUP
 #line 52 "lab3.l"
 ECHO;
 	YY_BREAK
-#line 824 "lex.yy.c"
+#line 825 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 

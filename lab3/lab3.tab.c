@@ -68,11 +68,14 @@
 
 /* First part of user prologue.  */
 
+	#include "nodes.h"
 	#define YYSTYPE val
-    struct val
+	struct val
 	{
-		char* text;
-    };
+		char *text;
+		node *tree;
+	};
+	node *ast;
 	#include <stdio.h>
 	#include <stdbool.h>
 	#include <math.h>
@@ -516,8 +519,8 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    30,    30,    33,    37,    42,    44,    45,    46,    47,
-      48,    49,    50,    51,    52,    53,    54,    55
+       0,    32,    32,    35,    38,    43,    45,    46,    47,    48,
+      49,    50,    51,    52,    53,    54,    55,    56
 };
 #endif
 
@@ -1100,14 +1103,13 @@ yyreduce:
     {
   case 2: /* program: program '\n'  */
                      {
- 		std::cout << "emprty string\n";
+ 		printf("emprty string\n");
  	}
     break;
 
   case 3: /* program: program expr '\n'  */
                             {
- 		printf("int result = %d\n", (yyvsp[-1].text));
- 		printf("bool result = %d\n", (yyvsp[-1].text));
+ 		printf("result = %d\n", yyvsp[-1]);
  	}
     break;
 
@@ -1118,7 +1120,7 @@ yyreduce:
     break;
 
   case 5: /* expr: INTNUM  */
-               {;}
+               {printf("INTNUM\n");}
     break;
 
   case 6: /* expr: BOOLNUM  */
@@ -1126,47 +1128,47 @@ yyreduce:
     break;
 
   case 7: /* expr: expr '<' expr  */
-                        {}
+                        {yyval.tree = new operation_node(yyvsp[-2].tree, yyvsp[-1].tree, LESSN);}
     break;
 
   case 8: /* expr: expr '>' expr  */
-                        {}
+                        {yyval.tree = new operation_node(yyvsp[-2].tree, yyvsp[-1].tree, GREATERN);}
     break;
 
   case 9: /* expr: expr '+' expr  */
-                        {}
+                        {yyval.tree = new operation_node(yyvsp[-2].tree, yyvsp[-1].tree, PLUSN);}
     break;
 
   case 10: /* expr: expr '-' expr  */
-                        {}
+                        {yyval.tree = new operation_node(yyvsp[-2].tree, yyvsp[-1].tree, NEGN);}
     break;
 
   case 11: /* expr: expr '?' expr  */
-                        {}
+                        {yyval.tree = new operation_node(yyvsp[-2].tree, yyvsp[-1].tree, EQUN);}
     break;
 
   case 12: /* expr: expr '!' expr  */
-                        {}
+                        {yyval.tree = new operation_node(yyvsp[-2].tree, yyvsp[-1].tree, NOTEQUN);}
     break;
 
   case 13: /* expr: expr '*' expr  */
-                        {}
+                        {yyval.tree = new operation_node(yyvsp[-2].tree, yyvsp[-1].tree, MULN);}
     break;
 
   case 14: /* expr: expr '/' expr  */
-                        {}
+                        {yyval.tree = new operation_node(yyvsp[-2].tree, yyvsp[-1].tree, DIVN);}
     break;
 
   case 15: /* expr: expr '^' expr  */
-                        {}
+                        {yyval.tree = new operation_node(yyvsp[-2].tree, yyvsp[-1].tree, EXPN);}
     break;
 
   case 16: /* expr: '(' expr ')'  */
-                       {}
+                       {yyval.tree = yyvsp[-2].tree;}
     break;
 
   case 17: /* expr: '-' expr  */
-                                     {}
+                                     {yyval.tree = new unary_node(yyvsp[-1].tree, UMINN);}
     break;
 
 

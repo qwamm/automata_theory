@@ -1,38 +1,42 @@
-%option c++
 %{
-	#define YYSTYPE char*
+	#include "nodes.h"
+        struct val
+        {
+                char *text;
+		node *tree;
+        };
+        #define YYSTYPE val
 	#include "lab3.tab.h"
-	#include <stdlib.h>
-	#include <stdbool.h>
-	#include <string.h>
-	#include <math.h>
+	#include <cstdlib>
+	#include <string>
+	#include <cmath>
 	void yyerror(const char*);
 %}
 
 %%
 
 [0-9]+ {		
-	yylva2l = yytext;
+	yylval.text = yytext;
 	return INTNUM;
 }
 
 TRUE|FALSE {
-	yylval = yytext;
+	yylval.text = yytext;
 	return BOOLNUM;
 }
 
 NUMERIC|LOGIC|STRING {
-	yylval = yytext;
+	yylval.text = yytext;
 	return TYPE;
 }
 
 UNDEF {
-	yylval = yytext;
+	yylval.text = yytext;
 	return UNDEF;
 }
 
 \".\" {
-	yylval = yytext;
+	yylval.text = yytext;
 	return SVAL;
 }
 
