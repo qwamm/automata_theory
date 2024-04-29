@@ -1,4 +1,6 @@
+%option c++
 %{
+	#define YYSTYPE char*
 	#include "lab3.tab.h"
 	#include <stdlib.h>
 	#include <stdbool.h>
@@ -7,33 +9,34 @@
 	void yyerror(const char*);
 %}
 
-TRUE "TRUE"
-
-FALSE "FALSE"
-
 %%
 
 [0-9]+ {		
-	yylval.ival = atoi(yytext);		
-	//printf("INTNUM\n");
-	return INTNUM;	
+	yylva2l = yytext;
+	return INTNUM;
 }
 
 TRUE|FALSE {
-	printf("%s\n", yytext);
-	if (strcmp(yytext, "TRUE") == 0)
-	{
-		yylval.bval = true;
-	}
-	else
-	{
-		yylval.bval = false;
-	}
-	printf("%d\n", yylval.bval);
+	yylval = yytext;
 	return BOOLNUM;
 }
 
-[-+*/^?!<>\n] {
+NUMERIC|LOGIC|STRING {
+	yylval = yytext;
+	return TYPE;
+}
+
+UNDEF {
+	yylval = yytext;
+	return UNDEF;
+}
+
+\".\" {
+	yylval = yytext;
+	return SVAL;
+}
+
+[-+*/^?!<>\n\"] {
 	return *yytext;
 }
 

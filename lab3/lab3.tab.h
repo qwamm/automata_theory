@@ -1,4 +1,3 @@
-#include <stdbool.h>
 /* A Bison parser, made by GNU Bison 3.8.2.  */
 
 /* Bison interface for Yacc-like parsers in C
@@ -57,25 +56,15 @@ extern int yydebug;
     YYUNDEF = 257,                 /* "invalid token"  */
     INTNUM = 258,                  /* INTNUM  */
     BOOLNUM = 259,                 /* BOOLNUM  */
-    UMINUS = 260                   /* UMINUS  */
+    TYPE = 260,                    /* TYPE  */
+    UNDEF = 261,                   /* UNDEF  */
+    SVAL = 262,                    /* SVAL  */
+    UMINUS = 263                   /* UMINUS  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
 
 /* Value type.  */
-#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-union YYSTYPE
-{
-
-	bool bval;
-	int ival;
-
-
-};
-typedef union YYSTYPE YYSTYPE;
-# define YYSTYPE_IS_TRIVIAL 1
-# define YYSTYPE_IS_DECLARED 1
-#endif
 
 
 extern YYSTYPE yylval;
