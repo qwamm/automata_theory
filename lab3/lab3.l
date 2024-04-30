@@ -35,12 +35,12 @@ UNDEF {
 	return UNDEF;
 }
 
-\".\" {
+[a-zA-Z][a-zA-Z]* {
 	yylval.text = yytext;
 	return SVAL;
 }
 
-[-+*/^?!<>\n\"] {
+[-+*/^?!<>\n\"()=] {
 	return *yytext;
 }
 
@@ -49,6 +49,9 @@ UNDEF {
 . {
 	yyerror("Unknown character");
 }
+
+<<EOF>> {return EF;}
+
 %%
 
 int yywrap(void)

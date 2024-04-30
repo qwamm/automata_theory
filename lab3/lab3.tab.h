@@ -59,7 +59,8 @@ extern int yydebug;
     TYPE = 260,                    /* TYPE  */
     UNDEF = 261,                   /* UNDEF  */
     SVAL = 262,                    /* SVAL  */
-    UMINUS = 263                   /* UMINUS  */
+    EF = 263,                      /* EF  */
+    UMINUS = 264                   /* UMINUS  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
