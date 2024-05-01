@@ -38,7 +38,7 @@ program:
 	program '\n' {
 		printf("emprty string\n");
 	}
-	| program expr '\n' {
+	| program group '\n' {
 		//printf("result = %d\n", $2);
 	}
 	| {
@@ -46,45 +46,59 @@ program:
 		printf("enter a expression:\n");
 	}
 	; 
-expr:
-	INTNUM {$$.tree = new int_node(atoi($1.text), INTN); printf("INTNUM\n");}
-	| BOOLNUM {bool buf; if ($1.text == "TRUE") {buf = true;} else {buf = false;} $$.tree = new bool_node(buf,
-	 BOOLN); printf("BOOLNUM\n");}
-	| SVAL {$$.tree = new str_node($1.text, SVAL); printf("SVAL\n"); }
-	| EF {printf("Programm finished successfully!\n");}
-	| '(' expr ')' {$$.tree = $2.tree; syntax_tree->root = $$.tree;}
-	| expr '<' expr {$$.tree = new operation_node($1.tree, $3.tree, LESSN); syntax_tree->root = $$.tree;}
-	| expr '>' expr {$$.tree = new operation_node($1.tree, $3.tree, GREATERN); syntax_tree->root = $$.tree;}
-	| expr '+' expr {$$.tree = new operation_node($1.tree, $3.tree, PLUSN); syntax_tree->root = $$.tree;}
-	| expr '-' expr {$$.tree = new operation_node($1.tree, $3.tree, NEGN); syntax_tree->root = $$.tree;}
-	| expr '?' expr {$$.tree = new operation_node($1.tree, $3.tree, EQUN); syntax_tree->root = $$.tree;}
-	| expr '!' expr {$$.tree = new operation_node($1.tree, $3.tree, NOTEQUN); syntax_tree->root = $$.tree;}
-	| expr '*' expr {$$.tree = new operation_node($1.tree, $3.tree, MULN); syntax_tree->root = $$.tree;}
-	| expr '/' expr {$$.tree = new operation_node($1.tree, $3.tree, DIVN); syntax_tree->root = $$.tree;}
-	| expr '^' expr {$$.tree = new operation_node($1.tree, $3.tree, EXPN); syntax_tree->root = $$.tree;}
-	| '-' expr %prec UMINUS {$$.tree = new unary_node($1.tree, UMINN); syntax_tree->add($$.tree);}
-	| declaration {
+group:
+	sentence {$$ = $1; syntax_tree->put_tree($$.tree, 0); }
+	| sentence ',' group
+	{
+		$1.tree->set_left($3.tree);
 		$$ = $1;
 	}
-	 
-declaration:	
-	TYPE SVAL {$$.tree = new decl_node($1.text, $2.text, 1, nullptr, UNDEFVARN); syntax_tree->add($$.tree);
-	syntax_tree->put_tree($$.tree, 0);}
-	| TYPE SVAL '=' expr	{$$.tree = new decl_node($1.text, $2.text, 1, $4.tree, VARN); syntax_tree->
-	put_tree($$.tree, 0); syntax_tree->add($$.tree);}
-	| TYPE SVAL '[' INTNUM ']' {
-		$$.tree = new decl_node($1.text, $2.text, atoi($4.text), nullptr, UNDEFVARN); syntax_tree->
-		put_tree($$.tree, 0); syntax_tree->add($$.tree);
-	}
-        | SVAL '[' INTNUM ']' '=' expr {
-                $$.tree = new assign_node($1.text, atoi($3.text), $6.tree, ARRASSIGNN);
-		 syntax_tree->put_tree($$.tree, 0); syntax_tree->add($$.tree);
-        }
-        | SVAL '=' expr {
-                $$.tree = new assign_node($1.text, 0, $3.tree, ASSIGNN);
-                 syntax_tree->put_tree($$.tree, 0); syntax_tree->add($$.tree);
-        }
+	| block { $$ = $1; }
 	;
+block:
+	BLOCK group UNBLOCK
+	{
+		$$.tree = new block_node($1.tree, BLOCKN);  printf("%d\n", $1.tree == nullptr);
+	}
+	;
+sentence:	
+	expr {printf("%s\n", $1.text);}
+	| TYPE SVAL {$$.tree = new decl_node($1.text, $2.text, 1, nullptr, UNDEFVARN);  syntax_tree->add($$.tree);
+	syntax_tree->put_tree($$.tree, 0);}
+	| TYPE SVAL '=' expr	{$$.tree = new decl_node($1.text, $2.text, 1, $4.tree, VARN); syntax_tree->add($$.tree); syntax_tree->
+	put_tree($$.tree, 0); }
+	| TYPE SVAL '[' INTNUM ']' {
+		$$.tree = new decl_node($1.text, $2.text, atoi($4.text), nullptr, UNDEFVARN); syntax_tree->add($$.tree); syntax_tree->
+		put_tree($$.tree, 0); 
+	}
+	| SVAL '[' INTNUM ']' '=' expr {
+            $$.tree = new assign_node($1.text, atoi($3.text), $6.tree, ARRASSIGNN); syntax_tree->add($$.tree);
+	 syntax_tree->put_tree($$.tree, 0); 
+    }
+    | SVAL '=' expr {
+            $$.tree = new assign_node($1.text, 0, $3.tree, ASSIGNN); syntax_tree->add($$.tree);
+             syntax_tree->put_tree($$.tree, 0); 
+    }
+	;
+expr:
+	INTNUM {$$.tree = new int_node(atoi($1.text), INTN); printf("INTNUM\n");}
+	| BOOLNUM {bool buf; if (strcmp($1.text, "TRUE") == 0) {buf = true;} else {buf = false;} $$.tree = new bool_node(buf,
+	 BOOLN); printf("BOOLNUM %d\n", buf);}
+	| SVAL {$$.tree = new str_node($1.text, SVAL); printf("SVAL\n"); }
+	| EF {printf("Programm finished successfully!\n");}
+	| '(' expr ')' {$$.tree = $2.tree;}
+	| expr '<' expr {$$.tree = new operation_node($1.tree, $3.tree, LESSN); }
+	| expr '>' expr {$$.tree = new operation_node($1.tree, $3.tree, GREATERN); }
+	| expr '+' expr {$$.tree = new operation_node($1.tree, $3.tree, PLUSN); }
+	| expr '-' expr {$$.tree = new operation_node($1.tree, $3.tree, NEGN); }
+	| expr '?' expr {$$.tree = new operation_node($1.tree, $3.tree, EQUN); }
+	| expr '!' expr {$$.tree = new operation_node($1.tree, $3.tree, NOTEQUN); }
+	| expr '*' expr {$$.tree = new operation_node($1.tree, $3.tree, MULN); }
+	| expr '/' expr {$$.tree = new operation_node($1.tree, $3.tree, DIVN); }
+	| expr '^' expr {$$.tree = new operation_node($1.tree, $3.tree, EXPN); }
+	| '-' expr %prec UMINUS {$$.tree = new unary_node($1.tree, UMINN);}
+	;
+	 
 
 %%
 

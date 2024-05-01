@@ -16,17 +16,25 @@
 #define UNDEFVARN 15 // undef var
 #define ASSIGNN 16 //assign to variable
 #define ARRASSIGNN 17 // assign to array element
+#define BLOCKN 18 //BLOCK <group of sentences> UNBLOCK
+
 class node
 {
 	public:
 		int operation;
 		node *left, *right;
+                bool inside;
 		node(int operation)
 		{
 			this->operation = operation;
 			left = nullptr;
 			right = nullptr;
+                        inside = false;
 		}
+                void set_left (node *ptr)
+                {
+                        this->left = ptr;
+                }
                 char* copy_str(char *buf)
                 {
                         char *new_str = new char[strlen(buf) + 1];

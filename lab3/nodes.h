@@ -3,6 +3,21 @@
 #include <cstdlib>
 #include "ast.h"
 
+class block_node : public node
+{
+	node *child;
+	public:
+		block_node(node *child, int operation) : node(operation)
+		{
+			this->child = child;
+		}
+		void print_val() override
+		{
+			std::cout << "BLOCK";
+		}
+		~block_node() {}
+};
+
 class str_node : public node
 {
 	char *str;
