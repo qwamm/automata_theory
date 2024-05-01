@@ -1,4 +1,6 @@
 #include <iostream>
+#include <cstring>
+#include <cstdlib>
 #include "ast.h"
 
 class str_node : public node
@@ -7,7 +9,7 @@ class str_node : public node
 	public:
 		str_node(char *string, int operation) : node(operation)
 		{
-			this->str = string;
+			this->str = copy_str(string);
 		}
 		void print_val() override
 		{
@@ -27,23 +29,51 @@ class undef_node : public node
 		~undef_node(){}
 };
 
+class assign_node : public node
+{
+	char *var_name;
+	int index;
+	node *child;
+	public:
+		assign_node(char *var_name, int index, node *child, int operation) : node(operation)
+		{
+			this->index = index;
+			this->var_name = copy_str(var_name);
+			this->child = child;
+		}
+		~assign_node() {}
+		void print_val() override
+		{
+			std::cout << "ASSIGN ";
+			child->print_val();
+		}
+};
+
 class decl_node : public node
 {
 	char *type;
 	char *var_name;
+	int size;
+	node *child;
 	public:
-		decl_node(char *type, char *var_name, node *child, int operation) : node(operation)
+		decl_node(char *type, char *var_name, int size, node *child, int operation) : node(operation)
 		{
-			this->type = type;
-			this->var_name = var_name;
-			right = child;
+			this->size = size;
+			this->type = copy_str(type);
+			this->var_name = copy_str(var_name);
+			this->child = child;
 		}
                 void print_val() override
                 {
 			if (operation == VARN)
-                        	std::cout << "VAR";
+			{
+                        	std::cout << "VAR ";
+				child->print_val();
+			}
 			else
-				std::cout << "UNDEFVAR";
+			{
+				std::cout << "UNDEFVAR " << this->size;
+			}
                 }
 		~decl_node() {}
 };

@@ -30,6 +30,31 @@ NUMERIC|LOGIC|STRING {
 	return TYPE;
 }
 
+PROC {
+	yylval.text = yytext;
+	return PROC;
+}
+
+BLOCK {
+	yylval.text = yytext;
+	return BLOCK;
+}
+
+UNBLOCK {
+	yylval.text = yytext;
+	return UNBLOCK;
+}
+
+MOVEUP|MOVEDOWN|MOVERIGHT|MOVELEFT {
+	yylval.text = yytext;
+	return MOVE;
+}
+
+PINGUP|PINGDOWN|PINGLEFT|PINGRIGHT {
+	yylval.text = yytext;
+	return PING;
+}
+
 UNDEF {
 	yylval.text = yytext;
 	return UNDEF;
@@ -40,7 +65,7 @@ UNDEF {
 	return SVAL;
 }
 
-[-+*/^?!<>\n\"()=] {
+[-+*/^?!<>\n\"()=\[\],] {
 	return *yytext;
 }
 

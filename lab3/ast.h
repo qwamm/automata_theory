@@ -1,3 +1,4 @@
+#include <cstring>
 #define STRN 1 //string token
 #define INTN 2 //int token
 #define BOOLN 3 //bool token
@@ -13,7 +14,8 @@
 #define UMINN 13 // -
 #define VARN 14 // variable token
 #define UNDEFVARN 15 // undef var
-
+#define ASSIGNN 16 //assign to variable
+#define ARRASSIGNN 17 // assign to array element
 class node
 {
 	public:
@@ -25,9 +27,20 @@ class node
 			left = nullptr;
 			right = nullptr;
 		}
+                char* copy_str(char *buf)
+                {
+                        char *new_str = new char[strlen(buf) + 1];
+                        int i = 0;
+                        for (i = 0; i < strlen(buf); i++)
+                        {
+                                new_str[i] = buf[i];
+                        }
+                        new_str[i] = '\0';
+                        return new_str;
+                }
 		virtual void print_val() = 0;
 		int gettype();
-		~node();
+		~node() {}
 };
 
 class ast
