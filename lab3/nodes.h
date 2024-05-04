@@ -3,6 +3,104 @@
 #include <cstdlib>
 #include "ast.h"
 
+class voice_node : public node
+{
+        node *child;
+        public:
+                voice_node(node *child, int operation) : node(operation)
+                {
+                        this->child = child;
+                }
+                void print_val() override
+                {
+                        std::cout << "VOICE";
+                }
+                ~voice_node() {}
+};
+
+class vision_node : public node
+{
+        node *child;
+        public:
+                vision_node(node *child, int operation) : node(operation)
+                {
+                        this->child = child;
+                }
+                void print_val() override
+                {
+                        std::cout << "VISION";
+                }
+                ~vision_node() {}
+};
+
+class ping_node : public node
+{
+        node *child;
+        public:
+                ping_node(node *child, int operation) : node(operation)
+                {
+                        this->child = child;
+                }
+                void print_val() override
+                {
+                        std::cout << "PING";
+                }
+                ~ping_node() {}
+};
+
+class move_node : public node
+{
+	node *child;
+	public:
+		move_node(node *child, int operation) : node(operation)
+		{
+			this->child = child;
+		}
+                void print_val() override
+                {
+                        std::cout << "MOVE";
+                }
+                ~move_node() {}
+};
+
+class proc_node : public node //procedures declaration and calling
+{
+	char *name;
+	node *parameters, *body;
+	public:
+		proc_node(char *name, node *parameters, node *body, int operation) : node (operation)
+		{
+			this->name = new char[strlen(name) + 1];
+			strcpy(this->name, name);
+			this->body = body;
+			this->parameters = parameters;
+		}
+                void print_val() override
+                {
+			if (operation == PROCN)
+                        	std::cout << "PROC";
+			else if (operation == CALLN)
+				std::cout << "CALL";
+                }
+                ~proc_node() {}
+};
+
+class cond_node : public node
+{
+	node *block, *condition;
+	public:
+		cond_node(node *condition, node *block, int operation) : node(operation)
+		{
+			this->block = block;
+			this->condition = condition;
+		}
+                void print_val() override
+                {
+                        std::cout << "COND";
+                }
+                ~cond_node() {}
+};
+
 class block_node : public node
 {
 	node *child;

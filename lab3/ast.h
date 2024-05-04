@@ -17,6 +17,19 @@
 #define ASSIGNN 16 //assign to variable
 #define ARRASSIGNN 17 // assign to array element
 #define BLOCKN 18 //BLOCK <group of sentences> UNBLOCK
+#define CONDN 19 //loop/condition operator node
+#define PROCN 20 //procedure node
+#define CALLN 21 //call procedure node
+#define MOVERIGHT 22
+#define MOVELEFT 23
+#define MOVEUP 24
+#define MOVEDOWN 25
+#define PINGUP 26
+#define PINGRIGHT 27
+#define PINGLEFT 28
+#define PINGDOWN 29
+#define VOICEN 30
+#define VISIONN 31
 
 class node
 {
@@ -57,6 +70,7 @@ class ast
                 node *root;
                 ast();
                 ~ast() {}
+		void del_root();
                 void put_tree(node *ptr, int level);
                 void add(node *new_node);
 };

@@ -64,8 +64,10 @@ extern int yydebug;
     UNBLOCK = 265,                 /* UNBLOCK  */
     MOVE = 266,                    /* MOVE  */
     PING = 267,                    /* PING  */
-    EF = 268,                      /* EF  */
-    UMINUS = 269                   /* UMINUS  */
+    VISION = 268,                  /* VISION  */
+    VOICE = 269,                   /* VOICE  */
+    EF = 270,                      /* EF  */
+    UMINUS = 271                   /* UMINUS  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif

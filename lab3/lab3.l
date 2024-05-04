@@ -3,6 +3,7 @@
         struct val
         {
                 char *text;
+		bool one = true;
 		node *tree;
         };
         #define YYSTYPE val
@@ -28,6 +29,16 @@ TRUE|FALSE {
 NUMERIC|LOGIC|STRING {
 	yylval.text = yytext;
 	return TYPE;
+}
+
+VISION {
+	yylval.text = yytext;
+	return VISION;
+}
+
+VOICE {
+        yylval.text = yytext;
+        return VOICE;
 }
 
 PROC {
@@ -60,18 +71,22 @@ UNDEF {
 	return UNDEF;
 }
 
-[a-zA-Z][a-zA-Z]* {
-	yylval.text = yytext;
-	return SVAL;
+[-+*/^?!<>\n\"()=\[\],{}] {
+        return *yytext;
 }
 
-[-+*/^?!<>\n\"()=\[\],] {
-	return *yytext;
+[a-zA-Z]([a-zA-Z0-9])* {
+	//yylval.text = yytext;
+	yylval.text = (char*)malloc(strlen(yytext) + 1);
+	strcpy(yylval.text, yytext);
+	printf("SVAL CAPTURED: %s\n", yytext);
+	return SVAL;
 }
 
 [ \t]	;	/* skip tabs and whitespaces */
 
 . {
+	printf("%s\n", yytext);
 	yyerror("Unknown character");
 }
 

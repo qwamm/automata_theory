@@ -6,6 +6,13 @@ ast::ast()
 	root = nullptr;
 }
 
+void ast::del_root()
+{
+	node *left = root->left, *old = root;
+	root->left = nullptr;
+	root = left;
+}
+
 void ast::add(node *new_node)
 {
 	/*if (root != nullptr && root->left == nullptr)
