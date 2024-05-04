@@ -28,6 +28,8 @@
 %token VISION
 %token VOICE
 %token EF
+%left '='
+%left '[' ']'
 %left '>' '<'
 %left '+' '-'
 %left '?' '!'
@@ -203,14 +205,6 @@ sentence:
 		$$.tree = new decl_node($1.text, $2.text, atoi($4.text), nullptr, UNDEFVARN); syntax_tree->
 		put_tree($$.tree, 0); 
 	}
-	| SVAL '[' INTNUM ']' '=' expr {
-            $$.tree = new assign_node($1.text, atoi($3.text), $6.tree, ARRASSIGNN);
-	    syntax_tree->put_tree($$.tree, 0); 
-	}
-	| SVAL '=' expr {
-            $$.tree = new assign_node($1.text, 0, $3.tree, ASSIGNN);
-             syntax_tree->put_tree($$.tree, 0); 
-	}
 	;
 expr:
 	SVAL {$$.tree = new str_node($1.text, SVAL); printf("SVAL WITH VAL = \"%s\"\n", $1.text); }
@@ -229,6 +223,14 @@ expr:
 	| expr '/' expr {$$.tree = new operation_node($1.tree, $3.tree, DIVN); }
 	| expr '^' expr {$$.tree = new operation_node($1.tree, $3.tree, EXPN); }
 	| '-' expr %prec UMINUS {$$.tree = new unary_node($1.tree, UMINN);}
+	| expr '[' expr ']' {
+            $$.tree = new arr_node($1.tree, $3.tree, ARRASSIGNN);
+	    syntax_tree->put_tree($$.tree, 0); 
+	}
+	| expr '=' expr {
+            $$.tree = new assign_node($1.text, 0, $3.tree, ASSIGNN);
+             syntax_tree->put_tree($$.tree, 0); 
+	}
 	;
 	 
 

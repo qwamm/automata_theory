@@ -3,6 +3,22 @@
 #include <cstdlib>
 #include "ast.h"
 
+class arr_node : public node
+{
+	node *name, *index;
+        public:
+                arr_node(node *name, node *index, int operation) : node(operation)
+                {
+                        this->name = name;
+			this->index = index;
+                }
+                void print_val() override
+                {
+                        std::cout << "ARR";
+                }
+                ~arr_node() {}
+};
+
 class voice_node : public node
 {
         node *child;
