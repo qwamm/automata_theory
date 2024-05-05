@@ -12,4 +12,5 @@ class tree_parser
 		~tree_parser() {}
 		void parse(node *ptr);
 		int parse_int(node *ptr);
+		bool parse_bool(node *ptr);
 };

@@ -134,8 +134,8 @@ class block_node : public node
 
 class str_node : public node
 {
-	char *str;
 	public:
+		char *str;
 		str_node(char *string, int operation) : node(operation)
 		{
 			this->str = copy_str(string);
@@ -222,8 +222,8 @@ class int_node : public node
 
 class bool_node : public node
 {
-	bool value;
 	public:
+		bool value;
 		bool_node(bool value, int operation) : node(operation)
 		{
 			this->value = value;

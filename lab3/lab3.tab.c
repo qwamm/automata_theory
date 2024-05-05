@@ -548,10 +548,10 @@ static const yytype_int8 yytranslate[] =
 static const yytype_uint8 yyrline[] =
 {
        0,    49,    49,    52,    55,    61,    62,    69,    72,    78,
-      81,    86,    89,   105,   117,   120,   135,   136,   138,   140,
-     146,   147,   148,   149,   151,   152,   153,   154,   155,   156,
-     157,   158,   159,   160,   161,   162,   163,   166,   170,   191,
-     212,   216
+      81,    86,    89,   105,   117,   120,   135,   136,   138,   141,
+     147,   148,   149,   150,   152,   153,   154,   155,   156,   157,
+     158,   159,   160,   161,   162,   163,   164,   167,   171,   192,
+     213,   217
 };
 #endif
 
@@ -1316,7 +1316,8 @@ yyreduce:
     break;
 
   case 18: /* sentence: TYPE SVAL '=' expr  */
-                                {yyval.tree = new decl_node(yyvsp[-3].text, yyvsp[-2].text, 1, yyvsp[0].tree, VARN); printf("NAME: %s\n", yyvsp[-2].text); printf("TYPE: %s\n", yyvsp[-3].text); syntax_tree->
+                                {char *str = (char*)malloc(strlen(yyvsp[-2].text) + 1); strcpy(str, yyvsp[-2].text); yyval.tree = new decl_node(yyvsp[-3].text, str, 1, yyvsp[0].tree, VARN);
+	 printf("NAME: %s\n", yyvsp[-2].text); printf("TYPE: %s\n", yyvsp[-3].text); syntax_tree->
 	put_tree(yyval.tree, 0); }
     break;
 

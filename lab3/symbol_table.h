@@ -17,6 +17,7 @@ class symbol_table
                         else
                         {
                                 storval[name] = val;
+				return true;
                         }
 		}
 		bool assign(char *name, Value *val)
@@ -28,6 +29,7 @@ class symbol_table
 			else
 			{
 				storval[name] = val;
+				return true;
 			}
 		}
 };

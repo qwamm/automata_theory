@@ -1,0 +1,1 @@
+g++ ast.cpp ast.h lab3.tab.c lab3.tab.h lex.yy.c nodes.h tree_parser.cpp tree_parser.h -ggdb3 -std=c++20 -lm -o lab3
