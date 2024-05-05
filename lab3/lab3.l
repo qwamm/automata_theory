@@ -1,5 +1,8 @@
 %{
+	#ifndef AST
+	#define AST
 	#include "nodes.h"
+	#endif
         struct val
         {
                 char *text;
@@ -9,7 +12,7 @@
         #define YYSTYPE val
 	#include "lab3.tab.h"
 	#include <cstdlib>
-	#include <string>
+	#include <cstring>
 	#include <cmath>
 	void yyerror(const char*);
 %}
@@ -27,7 +30,9 @@ TRUE|FALSE {
 }
 
 NUMERIC|LOGIC|STRING {
-	yylval.text = yytext;
+	yylval.text = (char*)malloc(strlen(yytext) + 1);
+	strcpy(yylval.text, yytext);
+	printf("TYPE CAPTURED: %s\n", yytext);
 	return TYPE;
 }
 
@@ -71,18 +76,28 @@ UNDEF {
 	return UNDEF;
 }
 
-[-+*/^?!<>\n\"()=\[\],{}] {
+[&-+*/^?!<>\n\"()=\[\],{}] {
         return *yytext;
 }
 
 [a-zA-Z]([a-zA-Z0-9])* {
-	//yylval.text = yytext;
 	yylval.text = (char*)malloc(strlen(yytext) + 1);
 	strcpy(yylval.text, yytext);
 	printf("SVAL CAPTURED: %s\n", yytext);
 	return SVAL;
 }
-
+\"[a-zA-Z]([a-zA-Z0-9])*\" {
+        yylval.text = (char*)malloc(strlen(yytext) + 1);
+	int i = 0;
+        for (i = 1; i < strlen(yytext) - 1; i++)
+	{
+		yylval.text[i-1] = yytext[i];
+	}
+	yylval.text[i-1] = '\0';
+	printf("%d\n", i);
+        printf("LITERAL CAPTURED: %s\n", yytext);
+        return LITERAL;
+}
 [ \t]	;	/* skip tabs and whitespaces */
 
 . {

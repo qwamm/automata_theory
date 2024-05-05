@@ -59,15 +59,16 @@ extern int yydebug;
     TYPE = 260,                    /* TYPE  */
     UNDEF = 261,                   /* UNDEF  */
     SVAL = 262,                    /* SVAL  */
-    PROC = 263,                    /* PROC  */
-    BLOCK = 264,                   /* BLOCK  */
-    UNBLOCK = 265,                 /* UNBLOCK  */
-    MOVE = 266,                    /* MOVE  */
-    PING = 267,                    /* PING  */
-    VISION = 268,                  /* VISION  */
-    VOICE = 269,                   /* VOICE  */
-    EF = 270,                      /* EF  */
-    UMINUS = 271                   /* UMINUS  */
+    LITERAL = 263,                 /* LITERAL  */
+    PROC = 264,                    /* PROC  */
+    BLOCK = 265,                   /* BLOCK  */
+    UNBLOCK = 266,                 /* UNBLOCK  */
+    MOVE = 267,                    /* MOVE  */
+    PING = 268,                    /* PING  */
+    VISION = 269,                  /* VISION  */
+    VOICE = 270,                   /* VOICE  */
+    EF = 271,                      /* EF  */
+    UMINUS = 272                   /* UMINUS  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif

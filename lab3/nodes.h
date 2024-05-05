@@ -160,14 +160,12 @@ class undef_node : public node
 
 class assign_node : public node
 {
-	char *var_name;
-	int index;
+	node *left_op;
 	node *child;
 	public:
-		assign_node(char *var_name, int index, node *child, int operation) : node(operation)
+		assign_node(node *left_op, node *child, int operation) : node(operation)
 		{
-			this->index = index;
-			this->var_name = copy_str(var_name);
+			this->left_op = left_op;
 			this->child = child;
 		}
 		~assign_node() {}
@@ -180,11 +178,11 @@ class assign_node : public node
 
 class decl_node : public node
 {
+	public:
 	char *type;
 	char *var_name;
 	int size;
 	node *child;
-	public:
 		decl_node(char *type, char *var_name, int size, node *child, int operation) : node(operation)
 		{
 			this->size = size;
@@ -209,8 +207,8 @@ class decl_node : public node
 
 class int_node : public node
 {
-	int value;
 	public:
+		int value;
 		int_node(int value, int operation) : node(operation)
 		{
 			this->value = value;

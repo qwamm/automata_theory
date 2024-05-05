@@ -30,6 +30,7 @@
 #define PINGDOWN 29
 #define VOICEN 30
 #define VISIONN 31
+#define LITERALN 32
 
 class node
 {
