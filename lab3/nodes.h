@@ -181,9 +181,9 @@ class decl_node : public node
 	public:
 	char *type;
 	char *var_name;
-	int size;
+	node *size;
 	node *child;
-		decl_node(char *type, char *var_name, int size, node *child, int operation) : node(operation)
+		decl_node(char *type, char *var_name, node *size, node *child, int operation) : node(operation)
 		{
 			this->size = size;
 			this->type = copy_str(type);
@@ -199,7 +199,7 @@ class decl_node : public node
 			}
 			else
 			{
-				std::cout << "UNDEFVAR " << this->size;
+				std::cout << "UNDEFVAR ";
 			}
                 }
 		~decl_node() {}

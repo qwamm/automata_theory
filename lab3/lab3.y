@@ -133,14 +133,12 @@ call:
 
 sentence:	
 	expr {$$ = $1; printf("EXPR\n");}
-	| TYPE SVAL {$$.tree = new decl_node($1.text, $2.text, 1, nullptr, UNDEFVARN);
+	| TYPE SVAL {$$.tree = new decl_node($1.text, $2.text, nullptr, nullptr, UNDEFVARN);
 	syntax_tree->put_tree($$.tree, 0);}
-	| TYPE SVAL '=' expr	{char *str = (char*)malloc(strlen($2.text) + 1); strcpy(str, $2.text); $$.tree = new decl_node($1.text, str, 1, $4.tree, VARN);
-	 printf("NAME: %s\n", $2.text); printf("TYPE: %s\n", $1.text); syntax_tree->
-	put_tree($$.tree, 0); }
-	| TYPE SVAL '[' INTNUM ']' {
-		$$.tree = new decl_node($1.text, $2.text, atoi($4.text), nullptr, UNDEFVARN); syntax_tree->
-		put_tree($$.tree, 0); 
+	| TYPE SVAL '=' expr	{char *str = (char*)malloc(strlen($2.text) + 1); strcpy(str, $2.text); $$.tree = new decl_node($1.text, str, nullptr, $4.tree, VARN);
+	 printf("NAME: %s\n", $2.text); printf("TYPE: %s\n", $1.text); syntax_tree->put_tree($$.tree, 0); }
+	| TYPE SVAL '[' expr ']' {
+		$$.tree = new decl_node($1.text, $2.text, $4.tree, nullptr, UNDEFVARN); syntax_tree->put_tree($$.tree, 0); 
 	}
 	;
 expr:

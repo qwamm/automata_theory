@@ -3,49 +3,71 @@
 
 class Value
 {
-	char *type;
+	protected:
+		bool defined;
 	public:
-		Value(char *type)
+		int size;
+		char *type;
+		Value(char *type, int size, bool defined)
 		{
 			this->type = new char[strlen(type) + 1];
 			strcpy(this->type, type);
+			this->size = size;
+			this->defined = defined;
 		}
-		~Value()
-		{
-			delete type;
-		}
+		virtual ~Value() {};
 };
 
 class Int_Value : public Value
 {
-	int val;
 	public:
-		Int_Value(char *type, int val) : Value(type)
+		int *val;
+		Int_Value(char *type, int size, int val, bool defined) : Value(type, size, defined)
 		{
-			this->val = val;
+			this->val = new int[val];
+            for (int i = 0; i < size; i++)
+            {
+            	this->val[i] = val;
+            }
 		}
-		~Int_Value() {}
+		~Int_Value() override { delete type; delete[] val;}
 };
 
 class Bool_Value : public Value
 {
-	bool val;
-        public:
-                Bool_Value(char *type, bool val) : Value(type)
-                {
-                        this->val = val;
-                }
-                ~Bool_Value() {}
+	bool *val;
+    public:
+            Bool_Value(char *type, int size, bool val, bool defined) : Value(type, size, defined)
+            {
+                    this->val = new bool [val];
+                    for (int i = 0; i < size; i++)
+                    {
+                    	this->val[i] = val;
+                    }
+            }
+            ~Bool_Value() override { delete type; delete[] val;}
 };
 
 class Char_Value : public Value
 {
-	char *val;
-        public:
-                Char_Value(char *type, char *val) : Value(type)
-                {
-                        this->val = new char[strlen(val) + 1];
-			strcpy(this->val, val);
-                }
-                ~Char_Value() {}
+	char **val;
+    public:
+            Char_Value(char *type, int size, char *val, bool defined) : Value(type, size, defined)
+            {
+                    this->val = new char*[size];
+                    for (int i = 0; i < size; i++)
+                    {
+                    	this->val[i] = new char[strlen(val) + 1]; 
+                    	strcpy(this->val[i], val);
+                    }
+            }
+            ~Char_Value() override
+            {
+            		delete type;
+            		for (int i = 0; i < size; i++)
+            		{
+            			delete[] val[i];
+            		}
+            		delete[] val;
+            }
 };
