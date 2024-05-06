@@ -51,6 +51,31 @@ PROC {
 	return PROC;
 }
 
+RECORD {
+	yylval.text = yytext;
+	return RECORD;
+}
+
+DATA {
+	yylval.text = yytext;
+	return DATA;
+}
+
+CONVERSION {
+	yylval.text = yytext;
+	return CONVERSION;
+}
+
+TO {
+	yylval.text = yytext;
+	return yytext;
+}
+
+FROM {
+	yylval.text = yytext;
+	return yytext;
+}
+
 BLOCK {
 	yylval.text = yytext;
 	return BLOCK;
@@ -98,6 +123,7 @@ UNDEF {
         printf("LITERAL CAPTURED: %s\n", yytext);
         return LITERAL;
 }
+
 [ \t]	;	/* skip tabs and whitespaces */
 
 . {

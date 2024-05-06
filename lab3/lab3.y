@@ -25,6 +25,11 @@
 %token UNDEF
 %token SVAL
 %token LITERAL
+%token RECORD
+%token DATA
+%token CONVERSION
+%token TO
+%token FROM
 %token PROC
 %token BLOCK
 %token UNBLOCK
@@ -83,8 +88,16 @@ cond_operator:
 		$$.tree = new cond_node($2.tree, $4.tree, CONDN);
 		if ($$.tree) {syntax_tree->del_root(); syntax_tree->add($$.tree);}
 	}
-	| proc {$$ = $1;}
+	| record {$$ = $1;}
 	;
+record:
+	RECORD SVAL DATA '['group']'
+	{
+
+	}
+	| proc{$$ = $1;}
+	;
+
 proc:
 	PROC SVAL group '&' block
 	{

@@ -24,11 +24,14 @@ class Int_Value : public Value
 		int *val;
 		Int_Value(char *type, int size, int val, bool defined) : Value(type, size, defined)
 		{
-			this->val = new int[val];
-            for (int i = 0; i < size; i++)
-            {
-            	this->val[i] = val;
-            }
+			this->val = new int[size];
+			if (defined)
+			{
+	            for (int i = 0; i < size; i++)
+	            {
+	            	this->val[i] = val;
+	            }
+        	}
 		}
 		~Int_Value() override { delete type; delete[] val;}
 };
@@ -39,11 +42,14 @@ class Bool_Value : public Value
     public:
             Bool_Value(char *type, int size, bool val, bool defined) : Value(type, size, defined)
             {
-                    this->val = new bool [val];
-                    for (int i = 0; i < size; i++)
+                    this->val = new bool [size];
+                    if (defined)
                     {
-                    	this->val[i] = val;
-                    }
+	                    for (int i = 0; i < size; i++)
+	                    {
+	                    	this->val[i] = val;
+	                    }
+                	}
             }
             ~Bool_Value() override { delete type; delete[] val;}
 };
@@ -55,10 +61,13 @@ class Char_Value : public Value
             Char_Value(char *type, int size, char *val, bool defined) : Value(type, size, defined)
             {
                     this->val = new char*[size];
-                    for (int i = 0; i < size; i++)
+                    if (defined)
                     {
-                    	this->val[i] = new char[strlen(val) + 1]; 
-                    	strcpy(this->val[i], val);
+	                    for (int i = 0; i < size; i++)
+	                    {
+	                    	this->val[i] = new char[strlen(val) + 1]; 
+	                    	strcpy(this->val[i], val);
+	                    }
                     }
             }
             ~Char_Value() override
