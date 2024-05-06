@@ -12,6 +12,8 @@
 		node *tree;
 	};
 	ast *syntax_tree;
+	#include <iostream>
+	#include <string>
 	#include <stdio.h>
 	#include <stdbool.h>
 	#include <math.h>
@@ -39,12 +41,12 @@
 %token VOICE
 %token EF
 %left '='
-%left '[' ']'
 %left '>' '<'
 %left '+' '-'
 %left '?' '!'
 %left '*' '/'
 %left '^'
+%left '[' ']'
 %left SVAL
 %right UMINUS
 
@@ -56,6 +58,8 @@ program:
 	}
 	| program group '\n' {
 		tree_parser x;
+		std::cout << "SYNTAX TREE:\n";
+		syntax_tree->put_tree(syntax_tree->root, 0);
 		x.parse(syntax_tree->root);
 	}
 	| {
@@ -64,22 +68,48 @@ program:
 	}
 	;
 group:
-	sentence {$$ = $1; printf("%d\n", $$.tree == nullptr); if ($$.tree) {syntax_tree->add($$.tree);} printf("MARKER\n"); }
+	sentence {$$ = $1; if ($$.tree) {syntax_tree->add($$.tree);} printf("MARKER\n"); syntax_tree->put_tree(syntax_tree->root, 0); }
 	| sentence ',' group
 	{
-		$1.tree->set_left($3.tree);
-		$$ = $1;
-		if ($2.one == false)
-			$$.one = false;
+		syntax_tree->del_root();
+		$3.tree->set_left($1.tree);
+		$$ = $3;
+		$$.one = false;
 	}
+	| 	RECORD SVAL DATA '['group']' CONVERSION FROM '[' group ']' CONVERSION TO '[' group ']'
+	{
+		$$.tree = new record_node(std::string($2.text), $5.tree, $10.tree, $15.tree , RECORDN);
+		if ($$.tree) {syntax_tree->add($$.tree);}
+	}
+	|	RECORD SVAL DATA '['group']' CONVERSION FROM '[' group ']'
+	{
+		$$.tree = new record_node(std::string($2.text), $5.tree, $10.tree, nullptr, RECORDN);
+		if ($$.tree) {syntax_tree->add($$.tree);}
+	}
+	| 	RECORD SVAL DATA '['group']' CONVERSION TO '[' group ']'
+	{
+		$$.tree = new record_node(std::string($2.text), $5.tree, nullptr, $10.tree , RECORDN);
+		if ($$.tree) {syntax_tree->add($$.tree);}
+	}
+	|    SVAL group
+        {
+                $$.tree = new proc_node(std::string($1.text), $2.tree, nullptr, CALLN);
+                if ($2.one && $$.tree)
+                {
+                        syntax_tree->del_root();
+                }
+                if ($$.tree)
+                {
+                        syntax_tree->add($$.tree);
+                }
+        }
 	| block { $$ = $1; }
 	;
 block:
 	BLOCK group UNBLOCK
 	{
-		if ($2.one) {syntax_tree->del_root();}
 		$$.tree = new block_node($2.tree, BLOCKN);
-		if ($$.tree) {syntax_tree->add($$.tree);}
+		//if ($$.tree) {syntax_tree->add($$.tree);}
 	}
 	| cond_operator {$$ = $1;}
 	;
@@ -87,22 +117,15 @@ cond_operator:
 	'{' expr '}' block
 	{
 		$$.tree = new cond_node($2.tree, $4.tree, CONDN);
-		if ($$.tree) {syntax_tree->del_root(); syntax_tree->add($$.tree);}
+		if ($$.tree) {syntax_tree->add($$.tree);}
 	}
-	| record {$$ = $1;}
-	;
-record:
-	RECORD SVAL DATA '['group']'
-	{
-
-	}
-	| proc{$$ = $1;}
+	| proc {$$ = $1;}
 	;
 
 proc:
 	PROC SVAL group '&' block
 	{
-		$$.tree = new proc_node($2.text, $3.tree, $5.tree, PROCN);
+		$$.tree = new proc_node(std::string($2.text), $3.tree, $5.tree, PROCN);
 		if ($$.tree)
 		{
 			syntax_tree->del_root();
@@ -118,23 +141,8 @@ proc:
 	}
         | PROC SVAL group '&' sentence
         {
-                $$.tree = new proc_node($2.text, $3.tree, $5.tree, PROCN);
+                $$.tree = new proc_node(std::string($2.text), $3.tree, $5.tree, PROCN);
                 if ($3.one && $$.tree)
-                {
-                        syntax_tree->del_root();
-                }
-                if ($$.tree)
-                {
-                        syntax_tree->add($$.tree);
-                }
-        }
-	| call {$$ = $1;}
-	;
-call:
-        SVAL group
-        {
-                $$.tree = new proc_node($1.text, $2.tree, nullptr, CALLN);
-                if ($2.one && $$.tree)
                 {
                         syntax_tree->del_root();
                 }
@@ -147,17 +155,17 @@ call:
 
 sentence:	
 	expr {$$ = $1; printf("EXPR\n");}
-	| TYPE SVAL {$$.tree = new decl_node($1.text, $2.text, nullptr, nullptr, UNDEFVARN);
+	| TYPE SVAL {$$.tree = new decl_node(std::string($1.text), std::string($2.text), nullptr, nullptr, UNDEFVARN);
 	syntax_tree->put_tree($$.tree, 0);}
-	| TYPE SVAL '=' expr	{char *str = (char*)malloc(strlen($2.text) + 1); strcpy(str, $2.text); $$.tree = new decl_node($1.text, str, nullptr, $4.tree, VARN);
+	| TYPE SVAL '=' expr	{$$.tree = new decl_node(std::string($1.text), std::string($2.text), nullptr, $4.tree, VARN);
 	 printf("NAME: %s\n", $2.text); printf("TYPE: %s\n", $1.text); syntax_tree->put_tree($$.tree, 0); }
 	| TYPE SVAL '[' expr ']' {
-		$$.tree = new decl_node($1.text, $2.text, $4.tree, nullptr, UNDEFVARN); syntax_tree->put_tree($$.tree, 0); 
+		$$.tree = new decl_node(std::string($1.text), std::string($2.text), $4.tree, nullptr, UNDEFVARN); syntax_tree->put_tree($$.tree, 0); 
 	}
 	;
 expr:
-	SVAL {$$.tree = new str_node($1.text, STRN); printf("SVAL WITH VAL = \"%s\"\n", $1.text);}
-	| LITERAL {$$.tree = new str_node($1.text, LITERALN);  printf("LITERAL WITH VAL = \"%s\"\n", $1.text);}
+	SVAL {$$.tree = new str_node(std::string($1.text), STRN); printf("SVAL WITH VAL = \"%s\"\n", $1.text);}
+	| LITERAL {$$.tree = new str_node(std::string($1.text), LITERALN);  printf("LITERAL WITH VAL = \"%s\"\n", $1.text);}
 	| INTNUM {$$.tree = new int_node(atoi($1.text), INTN); printf("INTNUM\n");}
 	| BOOLNUM {bool buf; if (strcmp($1.text, "TRUE") == 0) {buf = true;} else {buf = false;} $$.tree = new bool_node(buf,
 	 BOOLN); printf("BOOLNUM %d\n", buf);}

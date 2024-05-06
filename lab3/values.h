@@ -6,11 +6,10 @@ class Value
 	public:
 		bool defined;
 		int size;
-		char *type;
-		Value(char *type, int size, bool defined)
+		std::string type;
+		Value(std::string type, int size, bool defined)
 		{
-			this->type = new char[strlen(type) + 1];
-			strcpy(this->type, type);
+			this->type = type;
 			this->size = size;
 			this->defined = defined;
 		}
@@ -22,7 +21,7 @@ class Int_Value : public Value
 {
 	public:
 		int *val;
-		Int_Value(char *type, int size, int val, bool defined) : Value(type, size, defined)
+		Int_Value(std::string type, int size, int val, bool defined) : Value(type, size, defined)
 		{
 			this->val = new int[size];
 			if (defined)
@@ -37,17 +36,17 @@ class Int_Value : public Value
 		{
 			for (int i = 0; i < size; i++)
 			{
-				std::cout << val[i] << " ";
+				std::cout << "ind: " <<  i << " val: " << val[i] << "\n";
 			}
 		}
-		~Int_Value() override { delete type; delete[] val;}
+		~Int_Value() override {  delete[] val;}
 };
 
 class Bool_Value : public Value
 {
     public:
  			bool *val;
-            Bool_Value(char *type, int size, bool val, bool defined) : Value(type, size, defined)
+            Bool_Value(std::string type, int size, bool val, bool defined) : Value(type, size, defined)
             {
                     this->val = new bool [size];
                     if (defined)
@@ -62,42 +61,33 @@ class Bool_Value : public Value
 			{
 				for (int i = 0; i < size; i++)
 				{
-					std::cout << val[i] << " ";
+					std::cout << "ind: " <<  i << " val: " << val[i] << "\n";
 				}
 			}
-            ~Bool_Value() override { delete type; delete[] val;}
+            ~Bool_Value() override {  delete[] val;}
 };
 
 class Char_Value : public Value
 {
     public:
- 			char **val;
-            Char_Value(char *type, int size, char *val, bool defined) : Value(type, size, defined)
+ 			std::string *val;
+            Char_Value(std::string type, int size, std::string val, bool defined) : Value(type, size, defined)
             {
-                    this->val = new char*[size];
+                    this->val = new std::string[size];
                     if (defined)
                     {
-	                    for (int i = 0; i < size; i++)
-	                    {
-	                    	this->val[i] = new char[strlen(val) + 1]; 
-	                    	strcpy(this->val[i], val);
-	                    }
+	                    this->val[0] = val;
                     }
             }
 			void print() override
 			{
 				for (int i = 0; i < size; i++)
 				{
-					std::cout << val[i] << " ";
+					std::cout << "ind: " <<  i << " val: " << val[i] << "\n";
 				}
 			}
             ~Char_Value() override
             {
-            		delete type;
-            		for (int i = 0; i < size; i++)
-            		{
-            			delete[] val[i];
-            		}
             		delete[] val;
             }
 };

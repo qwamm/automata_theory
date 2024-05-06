@@ -3,6 +3,25 @@
 #include <cstdlib>
 #include "ast.h"
 
+class record_node : public node
+{
+	public:
+		node *сhild, *from, *to;
+		std::string type_name;
+        record_node(std::string type_name, node *child, node *from, node *to, int operation) : node(operation)
+        {
+                this->type_name = type_name;
+				this->сhild = child;
+				this->from = from;
+				this->to = to;
+        }
+        void print_val() override
+        {
+                std::cout << "RECORD";
+        }
+        ~record_node() {}
+};
+
 class arr_node : public node
 {
         public:
@@ -72,55 +91,54 @@ class move_node : public node
 		{
 			this->child = child;
 		}
-                void print_val() override
-                {
-                        std::cout << "MOVE";
-                }
-                ~move_node() {}
+        void print_val() override
+        {
+                std::cout << "MOVE";
+        }
+        ~move_node() {}
 };
 
 class proc_node : public node //procedures declaration and calling
 {
-	char *name;
+	std::string name;
 	node *parameters, *body;
 	public:
-		proc_node(char *name, node *parameters, node *body, int operation) : node (operation)
+		proc_node(std::string name, node *parameters, node *body, int operation) : node (operation)
 		{
-			this->name = new char[strlen(name) + 1];
-			strcpy(this->name, name);
+			this->name = name;
 			this->body = body;
 			this->parameters = parameters;
 		}
-                void print_val() override
-                {
+        void print_val() override
+        {
 			if (operation == PROCN)
-                        	std::cout << "PROC";
+            	std::cout << "PROC";
 			else if (operation == CALLN)
 				std::cout << "CALL";
-                }
-                ~proc_node() {}
+        }
+        ~proc_node() {}
 };
 
 class cond_node : public node
 {
-	node *block, *condition;
 	public:
+		node *block, *condition;
 		cond_node(node *condition, node *block, int operation) : node(operation)
 		{
 			this->block = block;
 			this->condition = condition;
 		}
-                void print_val() override
-                {
-                        std::cout << "COND";
-                }
-                ~cond_node() {}
+        void print_val() override
+        {
+                std::cout << "COND";
+        }
+        ~cond_node() {}
 };
 
 class block_node : public node
 {
-	node *child;
 	public:
+		node *child;
 		block_node(node *child, int operation) : node(operation)
 		{
 			this->child = child;
@@ -135,10 +153,10 @@ class block_node : public node
 class str_node : public node
 {
 	public:
-		char *str;
-		str_node(char *string, int operation) : node(operation)
+		std::string str;
+		str_node(std::string str, int operation) : node(operation)
 		{
-			this->str = copy_str(string);
+			this->str = str;
 		}
 		void print_val() override
 		{
@@ -179,29 +197,29 @@ class assign_node : public node
 class decl_node : public node
 {
 	public:
-	char *type;
-	char *var_name;
-	node *size;
-	node *child;
-		decl_node(char *type, char *var_name, node *size, node *child, int operation) : node(operation)
+		std::string type;
+		std::string var_name;
+		node *size;
+		node *child;
+		decl_node(std::string type, std::string var_name, node *size, node *child, int operation) : node(operation)
 		{
 			this->size = size;
-			this->type = copy_str(type);
-			this->var_name = copy_str(var_name);
+			this->type = type;
+			this->var_name = var_name;
 			this->child = child;
 		}
-                void print_val() override
-                {
+        void print_val() override
+        {
 			if (operation == VARN)
 			{
-                        	std::cout << "VAR ";
+                std::cout << "VAR ";
 				child->print_val();
 			}
 			else
 			{
 				std::cout << "UNDEFVAR ";
 			}
-                }
+        }
 		~decl_node() {}
 };
 
@@ -213,10 +231,10 @@ class int_node : public node
 		{
 			this->value = value;
 		}
-                void print_val() override
-                {
-                        std::cout << value;
-                }
+        void print_val() override
+        {
+                std::cout << value;
+        }
 		~int_node();
 };
 
@@ -228,10 +246,10 @@ class bool_node : public node
 		{
 			this->value = value;
 		}
-                void print_val() override
-                {
-                        std::cout << value;
-                }
+	    void print_val() override
+	    {
+	            std::cout << value;
+	    }
 		~bool_node();
 };
 
@@ -256,9 +274,9 @@ class operation_node : public node
 			this->left = left;
 			this->right = right;
 		}
-                void print_val() override
-                {
-                       	switch(operation)
+        void print_val() override
+        {
+            switch(operation)
 			{
 				case PLUSN:
 					std::cout << "+";
@@ -288,7 +306,7 @@ class operation_node : public node
 					std::cout << ">";
 					break;
 			}
-                }
+        }
 		~operation_node() {}
 };
 

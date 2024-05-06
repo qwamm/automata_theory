@@ -31,6 +31,7 @@
 #define VOICEN 30
 #define VISIONN 31
 #define LITERALN 32
+#define RECORDN 33
 
 class node
 {
@@ -48,17 +49,6 @@ class node
                 void set_left (node *ptr)
                 {
                         this->left = ptr;
-                }
-                char* copy_str(char *buf)
-                {
-                        char *new_str = new char[strlen(buf) + 1];
-                        int i = 0;
-                        for (i = 0; i < strlen(buf); i++)
-                        {
-                                new_str[i] = buf[i];
-                        }
-                        new_str[i] = '\0';
-                        return new_str;
                 }
 		virtual void print_val() = 0;
 		int gettype();
