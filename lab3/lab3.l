@@ -68,12 +68,12 @@ CONVERSION {
 
 TO {
 	yylval.text = yytext;
-	return yytext;
+	return TO;
 }
 
 FROM {
 	yylval.text = yytext;
-	return yytext;
+	return FROM;
 }
 
 BLOCK {

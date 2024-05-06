@@ -3,9 +3,8 @@
 
 class Value
 {
-	protected:
-		bool defined;
 	public:
+		bool defined;
 		int size;
 		char *type;
 		Value(char *type, int size, bool defined)
@@ -16,6 +15,7 @@ class Value
 			this->defined = defined;
 		}
 		virtual ~Value() {};
+		virtual void print() = 0;
 };
 
 class Int_Value : public Value
@@ -33,13 +33,20 @@ class Int_Value : public Value
 	            }
         	}
 		}
+		void print() override
+		{
+			for (int i = 0; i < size; i++)
+			{
+				std::cout << val[i] << " ";
+			}
+		}
 		~Int_Value() override { delete type; delete[] val;}
 };
 
 class Bool_Value : public Value
 {
-	bool *val;
     public:
+ 			bool *val;
             Bool_Value(char *type, int size, bool val, bool defined) : Value(type, size, defined)
             {
                     this->val = new bool [size];
@@ -51,13 +58,20 @@ class Bool_Value : public Value
 	                    }
                 	}
             }
+			void print() override
+			{
+				for (int i = 0; i < size; i++)
+				{
+					std::cout << val[i] << " ";
+				}
+			}
             ~Bool_Value() override { delete type; delete[] val;}
 };
 
 class Char_Value : public Value
 {
-	char **val;
     public:
+ 			char **val;
             Char_Value(char *type, int size, char *val, bool defined) : Value(type, size, defined)
             {
                     this->val = new char*[size];
@@ -70,6 +84,13 @@ class Char_Value : public Value
 	                    }
                     }
             }
+			void print() override
+			{
+				for (int i = 0; i < size; i++)
+				{
+					std::cout << val[i] << " ";
+				}
+			}
             ~Char_Value() override
             {
             		delete type;

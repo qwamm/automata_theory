@@ -1,3 +1,4 @@
+#include <cmath>
 #include "tree_parser.h"
 
 void tree_parser::parse(node *ptr)
@@ -9,7 +10,6 @@ void tree_parser::parse(node *ptr)
 			 decl_node *temp = dynamic_cast<decl_node*>(ptr);
 			 char *type = temp->type;
 			 char *var_name = temp->var_name;
-			 std::cout << type << "\n";
 			 if (temp->size == nullptr)
 			 {
 					 if (strcmp(type, "NUMERIC") == 0)
@@ -87,8 +87,36 @@ void tree_parser::parse(node *ptr)
 	}
 	else if (ptr->operation == ASSIGNN)
 	{
+		std::cout << "HERE\n";
 		assign_node *temp = dynamic_cast<assign_node*>(ptr);
+		node *l = temp->left_op, *r = temp->child;
+		if (l->operation == STRN)
+		{
+			str_node *l_temp = dynamic_cast<str_node*>(l);
+			if (r->operation == STRN)
+			{
+						str_node *r_temp = dynamic_cast<str_node*>(r);
+			            if (!stab.assign(l_temp->str, 0, r_temp->str, 0))
+			            {
+			                     throw(std::runtime_error("variadble wasn't declared or index out of range"));
+			            }
+			}
+			else if (r->operation == ARRASSIGNN)
+			{
+						arr_node *r_temp = dynamic_cast<arr_node*>(r);
+						if (r_temp->name->operation == STRN)
+						{
+							int ind = parse_int(r_temp->index);
+							str_node *t = dynamic_cast<str_node*>(r_temp->name);
+				            if (!stab.assign(l_temp->str, 0, t->str, ind))
+				            {
+				                     throw(std::runtime_error("variadble wasn't declared or index out of range"));
+				            }
+						}
+			}
+		}
 	}
+	stab.print();
 }
 
 bool tree_parser::parse_bool(node *ptr)
@@ -139,16 +167,16 @@ bool tree_parser::parse_bool(node *ptr)
         {
         	return !parse_bool(ptr->left);
         }
-	else if (ptr->operation == STRN)
-	{
-		str_node *temp = dynamic_cast<str_node*>(ptr);
-		if(stab.storval.contains(temp->str) && strcmp(stab.storval[temp->str]->type, "STRING") == 0 &&
-		 stab.storval[temp->str]->size == 1)
+		else if (ptr->operation == STRN)
 		{
-			Bool_Value *temp_2 = dynamic_cast<Bool_Value*>(stab.storval[temp->str]);
-			return *(temp_2->val);
+			str_node *temp = dynamic_cast<str_node*>(ptr);
+			if(stab.storval.contains(temp->str) && strcmp(stab.storval[temp->str]->type, "STRING") == 0 &&
+			 stab.storval[temp->str]->size == 1)
+			{
+				Bool_Value *temp_2 = dynamic_cast<Bool_Value*>(stab.storval[temp->str]);
+				return *(temp_2->val);
+			}
 		}
-	}
         else
         {
                 throw (std::runtime_error("wrong expression from the right side of ="));

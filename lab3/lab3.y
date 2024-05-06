@@ -55,7 +55,8 @@ program:
 		printf("emprty string\n");
 	}
 	| program group '\n' {
-		//printf("result = %d\n", $2);
+		tree_parser x;
+		x.parse(syntax_tree->root);
 	}
 	| {
 		syntax_tree = new ast();
@@ -155,7 +156,7 @@ sentence:
 	}
 	;
 expr:
-	SVAL {$$.tree = new str_node($1.text, SVAL); printf("SVAL WITH VAL = \"%s\"\n", $1.text);}
+	SVAL {$$.tree = new str_node($1.text, STRN); printf("SVAL WITH VAL = \"%s\"\n", $1.text);}
 	| LITERAL {$$.tree = new str_node($1.text, LITERALN);  printf("LITERAL WITH VAL = \"%s\"\n", $1.text);}
 	| INTNUM {$$.tree = new int_node(atoi($1.text), INTN); printf("INTNUM\n");}
 	| BOOLNUM {bool buf; if (strcmp($1.text, "TRUE") == 0) {buf = true;} else {buf = false;} $$.tree = new bool_node(buf,
@@ -267,7 +268,5 @@ int main(void)
 {
 	yyparse();
 	syntax_tree->put_tree(syntax_tree->root, 0);
-	tree_parser x;
-	x.parse(syntax_tree->root);
 	return 0;
 }

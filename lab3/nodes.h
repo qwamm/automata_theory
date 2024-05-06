@@ -5,18 +5,18 @@
 
 class arr_node : public node
 {
-	node *name, *index;
         public:
-                arr_node(node *name, node *index, int operation) : node(operation)
-                {
-                        this->name = name;
-			this->index = index;
-                }
-                void print_val() override
-                {
-                        std::cout << "ARR";
-                }
-                ~arr_node() {}
+			node *name, *index;
+            arr_node(node *name, node *index, int operation) : node(operation)
+            {
+                    this->name = name;
+					this->index = index;
+            }
+            void print_val() override
+            {
+                    std::cout << "ARR";
+            }
+            ~arr_node() {}
 };
 
 class voice_node : public node
@@ -160,9 +160,9 @@ class undef_node : public node
 
 class assign_node : public node
 {
-	node *left_op;
-	node *child;
 	public:
+		node *left_op;
+		node *child;
 		assign_node(node *left_op, node *child, int operation) : node(operation)
 		{
 			this->left_op = left_op;

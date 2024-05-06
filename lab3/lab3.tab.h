@@ -60,15 +60,20 @@ extern int yydebug;
     UNDEF = 261,                   /* UNDEF  */
     SVAL = 262,                    /* SVAL  */
     LITERAL = 263,                 /* LITERAL  */
-    PROC = 264,                    /* PROC  */
-    BLOCK = 265,                   /* BLOCK  */
-    UNBLOCK = 266,                 /* UNBLOCK  */
-    MOVE = 267,                    /* MOVE  */
-    PING = 268,                    /* PING  */
-    VISION = 269,                  /* VISION  */
-    VOICE = 270,                   /* VOICE  */
-    EF = 271,                      /* EF  */
-    UMINUS = 272                   /* UMINUS  */
+    RECORD = 264,                  /* RECORD  */
+    DATA = 265,                    /* DATA  */
+    CONVERSION = 266,              /* CONVERSION  */
+    TO = 267,                      /* TO  */
+    FROM = 268,                    /* FROM  */
+    PROC = 269,                    /* PROC  */
+    BLOCK = 270,                   /* BLOCK  */
+    UNBLOCK = 271,                 /* UNBLOCK  */
+    MOVE = 272,                    /* MOVE  */
+    PING = 273,                    /* PING  */
+    VISION = 274,                  /* VISION  */
+    VOICE = 275,                   /* VOICE  */
+    EF = 276,                      /* EF  */
+    UMINUS = 277                   /* UMINUS  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif

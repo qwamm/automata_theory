@@ -888,7 +888,7 @@ YY_RULE_SETUP
 #line 69 "lab3.l"
 {
 	yylval.text = yytext;
-	return yytext;
+	return TO;
 }
 	YY_BREAK
 case 11:
@@ -896,7 +896,7 @@ YY_RULE_SETUP
 #line 74 "lab3.l"
 {
 	yylval.text = yytext;
-	return yytext;
+	return FROM;
 }
 	YY_BREAK
 case 12:
