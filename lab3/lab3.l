@@ -19,8 +19,10 @@
 
 %%
 
-[0-9]+ {		
-	yylval.text = yytext;
+[0-9]+ {
+	std::cout << "INTNUM CAPTURED " << yytext << "\n";
+	yylval.text = new char[strlen(yytext) + 1];
+	strcpy(yylval.text, yytext);
 	return INTNUM;
 }
 
@@ -101,7 +103,8 @@ UNDEF {
 	return UNDEF;
 }
 
-[&-+*/^?!<>\n\"()=\[\],{}] {
+[&-+*/^?!<>\n\"()=\[\],{}@] {
+	std::cout << "SYMBOL CAPTURED " << yytext << "\n";
         return *yytext;
 }
 

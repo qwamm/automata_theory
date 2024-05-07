@@ -386,7 +386,7 @@ static const YY_CHAR yy_ec[256] =
         1,    2,    4,    5,    1,    1,    1,    4,    4,    4,
         4,    4,    4,    4,    1,    1,    4,    6,    6,    6,
         6,    6,    6,    6,    6,    6,    6,    1,    1,    4,
-        4,    4,    4,    1,    7,    8,    9,   10,   11,   12,
+        4,    4,    4,    4,    7,    8,    9,   10,   11,   12,
        13,   14,   15,   16,   17,   18,   19,   20,   21,   22,
        16,   23,   24,   25,   26,   27,   28,   16,   16,   16,
         4,    1,    4,    4,    1,    1,   16,   16,   16,   16,
@@ -812,14 +812,16 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 YY_RULE_SETUP
 #line 22 "lab3.l"
-{		
-	yylval.text = yytext;
+{
+	std::cout << "INTNUM CAPTURED " << yytext << "\n";
+	yylval.text = new char[strlen(yytext) + 1];
+	strcpy(yylval.text, yytext);
 	return INTNUM;
 }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 27 "lab3.l"
+#line 29 "lab3.l"
 {
 	yylval.text = yytext;
 	return BOOLNUM;
@@ -827,7 +829,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 32 "lab3.l"
+#line 34 "lab3.l"
 {
 	yylval.text = (char*)malloc(strlen(yytext) + 1);
 	strcpy(yylval.text, yytext);
@@ -837,7 +839,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 39 "lab3.l"
+#line 41 "lab3.l"
 {
 	yylval.text = yytext;
 	return VISION;
@@ -845,7 +847,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 44 "lab3.l"
+#line 46 "lab3.l"
 {
         yylval.text = yytext;
         return VOICE;
@@ -853,7 +855,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 49 "lab3.l"
+#line 51 "lab3.l"
 {
 	yylval.text = yytext;
 	return PROC;
@@ -861,7 +863,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 54 "lab3.l"
+#line 56 "lab3.l"
 {
 	yylval.text = yytext;
 	return RECORD;
@@ -869,7 +871,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 59 "lab3.l"
+#line 61 "lab3.l"
 {
 	yylval.text = yytext;
 	return DATA;
@@ -877,7 +879,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 64 "lab3.l"
+#line 66 "lab3.l"
 {
 	yylval.text = yytext;
 	return CONVERSION;
@@ -885,7 +887,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 69 "lab3.l"
+#line 71 "lab3.l"
 {
 	yylval.text = yytext;
 	return TO;
@@ -893,7 +895,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 74 "lab3.l"
+#line 76 "lab3.l"
 {
 	yylval.text = yytext;
 	return FROM;
@@ -901,7 +903,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 79 "lab3.l"
+#line 81 "lab3.l"
 {
 	yylval.text = yytext;
 	return BLOCK;
@@ -909,7 +911,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 84 "lab3.l"
+#line 86 "lab3.l"
 {
 	yylval.text = yytext;
 	return UNBLOCK;
@@ -917,7 +919,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 89 "lab3.l"
+#line 91 "lab3.l"
 {
 	yylval.text = yytext;
 	return MOVE;
@@ -925,7 +927,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 94 "lab3.l"
+#line 96 "lab3.l"
 {
 	yylval.text = yytext;
 	return PING;
@@ -933,7 +935,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 99 "lab3.l"
+#line 101 "lab3.l"
 {
 	yylval.text = yytext;
 	return UNDEF;
@@ -942,14 +944,15 @@ YY_RULE_SETUP
 case 17:
 /* rule 17 can match eol */
 YY_RULE_SETUP
-#line 104 "lab3.l"
+#line 106 "lab3.l"
 {
+	std::cout << "SYMBOL CAPTURED " << yytext << "\n";
         return *yytext;
 }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 108 "lab3.l"
+#line 111 "lab3.l"
 {
 	yylval.text = (char*)malloc(strlen(yytext) + 1);
 	strcpy(yylval.text, yytext);
@@ -959,7 +962,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 114 "lab3.l"
+#line 117 "lab3.l"
 {
         yylval.text = (char*)malloc(strlen(yytext) + 1);
 	int i = 0;
@@ -975,27 +978,27 @@ YY_RULE_SETUP
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 127 "lab3.l"
+#line 130 "lab3.l"
 ;	/* skip tabs and whitespaces */
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 129 "lab3.l"
+#line 132 "lab3.l"
 {
 	printf("%s\n", yytext);
 	yyerror("Unknown character");
 }
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
-#line 134 "lab3.l"
+#line 137 "lab3.l"
 {return EF;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 136 "lab3.l"
+#line 139 "lab3.l"
 ECHO;
 	YY_BREAK
-#line 999 "lex.yy.c"
+#line 1002 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -1998,7 +2001,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 136 "lab3.l"
+#line 139 "lab3.l"
 
 
 int yywrap(void)

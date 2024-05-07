@@ -41,6 +41,8 @@
 %token VOICE
 %token EF
 %left '='
+%left '@'
+%left ','
 %left '>' '<'
 %left '+' '-'
 %left '?' '!'
@@ -53,10 +55,7 @@
 %%
 
 program:
-	program '\n' {
-		printf("emprty string\n");
-	}
-	| program group '\n' {
+	program group '\n' {
 		tree_parser x;
 		std::cout << "SYNTAX TREE:\n";
 		syntax_tree->put_tree(syntax_tree->root, 0);
@@ -69,13 +68,6 @@ program:
 	;
 group:
 	sentence {$$ = $1; if ($$.tree) {syntax_tree->add($$.tree);} printf("MARKER\n"); syntax_tree->put_tree(syntax_tree->root, 0); }
-	| sentence ',' group
-	{
-		syntax_tree->del_root();
-		$3.tree->set_left($1.tree);
-		$$ = $3;
-		$$.one = false;
-	}
 	| 	RECORD SVAL DATA '['group']' CONVERSION FROM '[' group ']' CONVERSION TO '[' group ']'
 	{
 		$$.tree = new record_node(std::string($2.text), $5.tree, $10.tree, $15.tree , RECORDN);
@@ -91,18 +83,6 @@ group:
 		$$.tree = new record_node(std::string($2.text), $5.tree, nullptr, $10.tree , RECORDN);
 		if ($$.tree) {syntax_tree->add($$.tree);}
 	}
-	|    SVAL group
-        {
-                $$.tree = new proc_node(std::string($1.text), $2.tree, nullptr, CALLN);
-                if ($2.one && $$.tree)
-                {
-                        syntax_tree->del_root();
-                }
-                if ($$.tree)
-                {
-                        syntax_tree->add($$.tree);
-                }
-        }
 	| block { $$ = $1; }
 	;
 block:
@@ -153,8 +133,8 @@ proc:
         }
 	;
 
-sentence:	
-	expr {$$ = $1; printf("EXPR\n");}
+sentence:
+	arg_set {$$ = $1;}	
 	| TYPE SVAL {$$.tree = new decl_node(std::string($1.text), std::string($2.text), nullptr, nullptr, UNDEFVARN);
 	syntax_tree->put_tree($$.tree, 0);}
 	| TYPE SVAL '=' expr	{$$.tree = new decl_node(std::string($1.text), std::string($2.text), nullptr, $4.tree, VARN);
@@ -163,10 +143,17 @@ sentence:
 		$$.tree = new decl_node(std::string($1.text), std::string($2.text), $4.tree, nullptr, UNDEFVARN); syntax_tree->put_tree($$.tree, 0); 
 	}
 	;
+
+arg_set:
+	'\n' {printf("emprty string\n");}
+	| expr { $$ = $1; std::cout << $1.text  << "\n";}
+	| expr ',' arg_set {std::cout << "HERE\n";}
+	;
+
 expr:
 	SVAL {$$.tree = new str_node(std::string($1.text), STRN); printf("SVAL WITH VAL = \"%s\"\n", $1.text);}
 	| LITERAL {$$.tree = new str_node(std::string($1.text), LITERALN);  printf("LITERAL WITH VAL = \"%s\"\n", $1.text);}
-	| INTNUM {$$.tree = new int_node(atoi($1.text), INTN); printf("INTNUM\n");}
+	| INTNUM {$$.tree = new int_node(atoi($1.text), INTN); printf("INTNUM %d\n", atoi($1.text));}
 	| BOOLNUM {bool buf; if (strcmp($1.text, "TRUE") == 0) {buf = true;} else {buf = false;} $$.tree = new bool_node(buf,
 	 BOOLN); printf("BOOLNUM %d\n", buf);}
 	| EF {printf("Programm finished successfully!\n");}
@@ -188,6 +175,19 @@ expr:
             $$.tree = new assign_node($1.tree, $3.tree, ASSIGNN);
              syntax_tree->put_tree($$.tree, 0); 
 	}
+	| '@' SVAL arg_set
+    {
+    		std::cout << "CALL HERE!\n";
+            $$.tree = new proc_node(std::string($1.text), $2.tree, nullptr, CALLN);
+            if ($2.one && $$.tree)
+            {
+                    syntax_tree->del_root();
+            }
+            if ($$.tree)
+            {
+                    syntax_tree->add($$.tree);
+            }
+    }
 	| MOVE '[' expr ']'
 	{
 		int op;
