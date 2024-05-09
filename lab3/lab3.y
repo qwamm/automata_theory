@@ -55,7 +55,29 @@
 %%
 
 program:
-	program group '\n' {
+	program record '\n' {
+		std::cout << "HERE RECORD\n";
+		tree_parser x;
+		std::cout << "SYNTAX TREE:\n";
+		syntax_tree->put_tree(syntax_tree->root, 0);
+		x.parse(syntax_tree->root);
+	}
+	| program block '\n' {
+		std::cout << "HERE BLOCK\n";
+		tree_parser x;
+		std::cout << "SYNTAX TREE:\n";
+		syntax_tree->put_tree(syntax_tree->root, 0);
+		x.parse(syntax_tree->root);
+	}
+	| program proc '\n' {
+		std::cout << "HERE PROC\n";
+		tree_parser x;
+		std::cout << "SYNTAX TREE:\n";
+		syntax_tree->put_tree(syntax_tree->root, 0);
+		x.parse(syntax_tree->root);
+	}
+	| program sentence '\n' {
+		std::cout << "HERE SENTENCE\n";
 		tree_parser x;
 		std::cout << "SYNTAX TREE:\n";
 		syntax_tree->put_tree(syntax_tree->root, 0);
@@ -66,44 +88,34 @@ program:
 		printf("enter a expression:\n");
 	}
 	;
-group:
-	sentence {$$ = $1; if ($$.tree) {syntax_tree->add($$.tree);} printf("MARKER\n"); syntax_tree->put_tree(syntax_tree->root, 0); }
-	| 	RECORD SVAL DATA '['group']' CONVERSION FROM '[' group ']' CONVERSION TO '[' group ']'
+record:
+	RECORD SVAL DATA '['sentence']' CONVERSION FROM '[' sentence ']' CONVERSION TO '[' sentence ']'
 	{
 		$$.tree = new record_node(std::string($2.text), $5.tree, $10.tree, $15.tree , RECORDN);
 		if ($$.tree) {syntax_tree->add($$.tree);}
 	}
-	|	RECORD SVAL DATA '['group']' CONVERSION FROM '[' group ']'
+	|	RECORD SVAL DATA '['sentence']' CONVERSION FROM '[' sentence ']'
 	{
 		$$.tree = new record_node(std::string($2.text), $5.tree, $10.tree, nullptr, RECORDN);
 		if ($$.tree) {syntax_tree->add($$.tree);}
 	}
-	| 	RECORD SVAL DATA '['group']' CONVERSION TO '[' group ']'
+	| 	RECORD SVAL DATA '['sentence']' CONVERSION TO '[' sentence ']'
 	{
 		$$.tree = new record_node(std::string($2.text), $5.tree, nullptr, $10.tree , RECORDN);
 		if ($$.tree) {syntax_tree->add($$.tree);}
 	}
-	| block { $$ = $1; }
 	;
 block:
-	BLOCK group UNBLOCK
+	BLOCK sentence UNBLOCK
 	{
+		if ($2.one) {syntax_tree->del_root();}
 		$$.tree = new block_node($2.tree, BLOCKN);
 		//if ($$.tree) {syntax_tree->add($$.tree);}
 	}
-	| cond_operator {$$ = $1;}
-	;
-cond_operator:
-	'{' expr '}' block
-	{
-		$$.tree = new cond_node($2.tree, $4.tree, CONDN);
-		if ($$.tree) {syntax_tree->add($$.tree);}
-	}
-	| proc {$$ = $1;}
 	;
 
 proc:
-	PROC SVAL group '&' block
+	PROC SVAL group_comma '&' block
 	{
 		$$.tree = new proc_node(std::string($2.text), $3.tree, $5.tree, PROCN);
 		if ($$.tree)
@@ -119,7 +131,7 @@ proc:
                         syntax_tree->add($$.tree);
                 }
 	}
-        | PROC SVAL group '&' sentence
+        | PROC SVAL group_comma '&' sentence
         {
                 $$.tree = new proc_node(std::string($2.text), $3.tree, $5.tree, PROCN);
                 if ($3.one && $$.tree)
@@ -133,15 +145,30 @@ proc:
         }
 	;
 
-sentence:
-	arg_set {$$ = $1;}	
-	| TYPE SVAL {$$.tree = new decl_node(std::string($1.text), std::string($2.text), nullptr, nullptr, UNDEFVARN);
+declaration:
+	TYPE SVAL {$$.tree = new decl_node(std::string($1.text), std::string($2.text), nullptr, nullptr, UNDEFVARN);
 	syntax_tree->put_tree($$.tree, 0);}
 	| TYPE SVAL '=' expr	{$$.tree = new decl_node(std::string($1.text), std::string($2.text), nullptr, $4.tree, VARN);
-	 printf("NAME: %s\n", $2.text); printf("TYPE: %s\n", $1.text); syntax_tree->put_tree($$.tree, 0); }
+	 printf("NAME: %s\n", $2.text); printf("TYPE: %s\n", $1.text); syntax_tree->put_tree($$.tree, 0);}
 	| TYPE SVAL '[' expr ']' {
-		$$.tree = new decl_node(std::string($1.text), std::string($2.text), $4.tree, nullptr, UNDEFVARN); syntax_tree->put_tree($$.tree, 0); 
+		$$.tree = new decl_node(std::string($1.text), std::string($2.text), $4.tree, nullptr, UNDEFVARN); syntax_tree->put_tree($$.tree, 0);  
 	}
+	;
+
+sentence:
+	declaration  {$$ = $1; if ($$.tree){syntax_tree->add($$.tree);}}
+	| expr {$$ = $1; if ($$.tree){syntax_tree->add($$.tree);}}
+	| declaration '\n' sentence {$3.tree->set_left($1.tree); $$ = $3; std::cout << "SENTENCE AND GROUP SET\n";}
+	| expr '\n' sentence {$3.tree->set_left($1.tree); $$ = $3; std::cout << "EXPR AND GROUP SET\n";}
+	| '{' expr '}' block
+	{
+		$$.tree = new cond_node($2.tree, $4.tree, CONDN);
+	}
+	;
+
+group_comma:
+	declaration {$$ = $1;}
+	| declaration ',' group_comma {std::cout << "GROUP COMMA\n";}
 	;
 
 arg_set:
@@ -175,19 +202,15 @@ expr:
             $$.tree = new assign_node($1.tree, $3.tree, ASSIGNN);
              syntax_tree->put_tree($$.tree, 0); 
 	}
-	| '@' SVAL arg_set
-    {
-    		std::cout << "CALL HERE!\n";
-            $$.tree = new proc_node(std::string($1.text), $2.tree, nullptr, CALLN);
-            if ($2.one && $$.tree)
-            {
-                    syntax_tree->del_root();
-            }
-            if ($$.tree)
-            {
-                    syntax_tree->add($$.tree);
-            }
-    }
+	| '@' SVAL arg_set '|'
+	{
+	    		std::cout << "CALL HERE!\n";
+	            $$.tree = new proc_node(std::string($2.text), $3.tree, nullptr, CALLN);
+	            if ($$.tree)
+	            {
+	                    syntax_tree->add($$.tree);
+	            }
+	}
 	| MOVE '[' expr ']'
 	{
 		int op;
