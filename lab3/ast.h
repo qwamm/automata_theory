@@ -48,7 +48,12 @@ class node
 		}
                 void set_left (node *ptr)
                 {
-                        this->left = ptr;
+                        node *temp = this;
+                        while (temp->left)
+                        {
+                                temp = temp->left;
+                        }
+                        temp->left = ptr;
                 }
 		virtual void print_val() = 0;
 		int gettype();

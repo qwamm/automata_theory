@@ -78,9 +78,10 @@ program:
 	}
 	| program sentence '\n' {
 		std::cout << "HERE SENTENCE\n";
-		tree_parser x;
 		std::cout << "SYNTAX TREE:\n";
-		syntax_tree->put_tree(syntax_tree->root, 0);
+		syntax_tree->put_tree($2.tree, 0);
+		if ($2.tree) {syntax_tree->add($2.tree);}
+		tree_parser x;
 		x.parse(syntax_tree->root);
 	}
 	| {
@@ -108,7 +109,6 @@ record:
 block:
 	BLOCK sentence UNBLOCK
 	{
-		if ($2.one) {syntax_tree->del_root();}
 		$$.tree = new block_node($2.tree, BLOCKN);
 		//if ($$.tree) {syntax_tree->add($$.tree);}
 	}
@@ -131,18 +131,18 @@ proc:
                         syntax_tree->add($$.tree);
                 }
 	}
-        | PROC SVAL group_comma '&' sentence
-        {
-                $$.tree = new proc_node(std::string($2.text), $3.tree, $5.tree, PROCN);
-                if ($3.one && $$.tree)
-                {
-                        syntax_tree->del_root();
-                }
-                if ($$.tree)
-                {
-                        syntax_tree->add($$.tree);
-                }
-        }
+    | PROC SVAL group_comma '&' sentence
+    {
+            $$.tree = new proc_node(std::string($2.text), $3.tree, $5.tree, PROCN);
+            if ($3.one && $$.tree)
+            {
+                    syntax_tree->del_root();
+            }
+            if ($$.tree)
+            {
+                    syntax_tree->add($$.tree);
+            }
+    }
 	;
 
 declaration:
@@ -156,11 +156,15 @@ declaration:
 	;
 
 sentence:
-	declaration  {$$ = $1; if ($$.tree){syntax_tree->add($$.tree);}}
-	| expr {$$ = $1; if ($$.tree){syntax_tree->add($$.tree);}}
-	| declaration '\n' sentence {$3.tree->set_left($1.tree); $$ = $3; std::cout << "SENTENCE AND GROUP SET\n";}
-	| expr '\n' sentence {$3.tree->set_left($1.tree); $$ = $3; std::cout << "EXPR AND GROUP SET\n";}
-	| '{' expr '}' block
+	declaration '\n'  {$$ = $1; }
+	| expr '\n' {$$ = $1; }
+	| cond '\n' {$$ = $1;}
+	| declaration '\n' sentence {$3.tree->set_left($1.tree); $$ = $3; std::cout << "SENTENCE AND GROUP SET\n"; syntax_tree->put_tree($$.tree, 0);}
+	| expr '\n' sentence {$3.tree->set_left($1.tree); $$ = $3; std::cout << "EXPR AND GROUP SET\n"; syntax_tree->put_tree($$.tree, 0);}
+	| cond '\n' sentence {$3.tree->set_left($1.tree); $$ = $3; std::cout << "BLOCK AND GROUP SET\n"; syntax_tree->put_tree($$.tree, 0);}
+	;
+cond:
+	'{' expr '}' block
 	{
 		$$.tree = new cond_node($2.tree, $4.tree, CONDN);
 	}
@@ -298,6 +302,5 @@ void yyerror(const char *s)
 int main(void)
 {
 	yyparse();
-	syntax_tree->put_tree(syntax_tree->root, 0);
 	return 0;
 }

@@ -103,7 +103,7 @@ UNDEF {
 	return UNDEF;
 }
 
-[&-+*/^?!<>\n\"()=\[\],{}@] {
+[-&+*/^?!<>\n\"()=\[\],{}@] {
 	std::cout << "SYMBOL CAPTURED " << yytext << "\n";
         return *yytext;
 }

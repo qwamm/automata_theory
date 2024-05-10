@@ -284,7 +284,6 @@ int tree_parser::parse_int(node *ptr)
     }
 	else if (ptr->operation == STRN)
 	{
-		std::cout <<"ARRMARKER\n";
 		str_node *temp = dynamic_cast<str_node*>(ptr);
 		if(stab.storval.contains(temp->str) && stab.storval[temp->str]->type == "NUMERIC" &&
 		 stab.storval[temp->str]->size == 1)
