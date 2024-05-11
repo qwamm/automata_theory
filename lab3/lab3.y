@@ -2,6 +2,7 @@
 	#ifndef AST
 	#define AST
 	#include "nodes.h"
+	#include "robot.h"
 	#endif
 	#include "tree_parser.h"
 	#define YYSTYPE val
@@ -14,6 +15,8 @@
 	ast *syntax_tree;
 	#include <iostream>
 	#include <string>
+	#include <fstream>
+	#include <vector>
 	#include <stdio.h>
 	#include <stdbool.h>
 	#include <math.h>
@@ -57,33 +60,25 @@
 program:
 	program record '\n' {
 		std::cout << "HERE RECORD\n";
-		tree_parser x;
 		std::cout << "SYNTAX TREE:\n";
 		syntax_tree->put_tree(syntax_tree->root, 0);
-		x.parse(syntax_tree->root, x.global);
 	}
 	| program block '\n' {
 		std::cout << "HERE BLOCK\n";
-		tree_parser x;
 		std::cout << "SYNTAX TREE:\n";
 		syntax_tree->put_tree(syntax_tree->root, 0);
-		x.parse(syntax_tree->root, x.global);
 	}
 	| program proc '\n' {
 		std::cout << "HERE PROC\n";
 		std::cout << "SYNTAX TREE:\n";
 		if ($2.tree) {syntax_tree->add($2.tree);}
 		syntax_tree->put_tree(syntax_tree->root, 0);
-		tree_parser x;
-		x.parse(syntax_tree->root, x.global);
 	}
 	| program sentence '\n' {
 		std::cout << "HERE SENTENCE\n";
 		std::cout << "SYNTAX TREE:\n";
 		if ($2.tree) {syntax_tree->add($2.tree);}
 		syntax_tree->put_tree(syntax_tree->root, 0);
-		tree_parser x;
-		x.parse(syntax_tree->root, x.global);
 	}
 	| {
 		syntax_tree = new ast();
@@ -91,19 +86,19 @@ program:
 	}
 	;
 record:
-	RECORD SVAL DATA '['sentence']' CONVERSION FROM '[' sentence ']' CONVERSION TO '[' sentence ']'
+	RECORD SVAL DATA '[' group_comma ']' CONVERSION FROM '[' TYPE ']' CONVERSION TO '[' TYPE ']'
 	{
-		$$.tree = new record_node(std::string($2.text), $5.tree, $10.tree, $15.tree , RECORDN);
+		$$.tree = new record_node(std::string($2.text), $5.tree, std::string($10.text), std::string($15.text) , RECORDN);
 		if ($$.tree) {syntax_tree->add($$.tree);}
 	}
-	|	RECORD SVAL DATA '['sentence']' CONVERSION FROM '[' sentence ']'
+	|	RECORD SVAL DATA '[' group_comma ']' CONVERSION FROM '[' TYPE ']'
 	{
-		$$.tree = new record_node(std::string($2.text), $5.tree, $10.tree, nullptr, RECORDN);
+		$$.tree = new record_node(std::string($2.text), $5.tree, std::string($10.text), nullptr, RECORDN);
 		if ($$.tree) {syntax_tree->add($$.tree);}
 	}
-	| 	RECORD SVAL DATA '['sentence']' CONVERSION TO '[' sentence ']'
+	| 	RECORD SVAL DATA '[' '\n' group_comma ']' CONVERSION TO '[' TYPE ']'
 	{
-		$$.tree = new record_node(std::string($2.text), $5.tree, nullptr, $10.tree , RECORDN);
+		$$.tree = new record_node(std::string($2.text), $5.tree, nullptr, std::string($10.text) , RECORDN);
 		if ($$.tree) {syntax_tree->add($$.tree);}
 	}
 	;
@@ -275,9 +270,26 @@ void yyerror(const char *s)
 int main(void)
 {
 	yyparse();
+	std::string line;
+	std::vector<std::string> v;
+	std::ifstream in;
+	in.open("maze.txt");
+	if (in.is_open())
+	{
+		while(std::getline(in,line))
+		{
+			v.push_back(line);
+		}
+		in.close();
+	}
+	robot r(v);
+	std::cout << "BEFORE\n";
+	r.print_field();
 	std::cout << "GLOBAL\n";
 	tree_parser x;
-	x.parse(syntax_tree->root, x.global);
+	x.parse(syntax_tree->root, x.global, r);
 	x.global.print();
+	std::cout << "AFTER\n";
+	r.print_field();
 	return 0;
 }

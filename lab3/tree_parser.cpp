@@ -1,7 +1,7 @@
 #include <cmath>
 #include "tree_parser.h"
 
-void tree_parser::parse(node *ptr, symbol_table& stab)
+void tree_parser::parse(node *ptr, symbol_table& stab, robot &r)
 {
 	if (ptr->left)
 		parse(ptr->left, stab);
@@ -18,6 +18,7 @@ void tree_parser::parse(node *ptr, symbol_table& stab)
 						Value *store = new Int_Value(type, 1, val, true, VAR);
 						if (!stab.add(var_name, store))
 						{
+							std::cout << var_name << "\n";
 							throw(std::runtime_error("multiple definition of variable"));
 						}
 					 }
@@ -61,7 +62,7 @@ void tree_parser::parse(node *ptr, symbol_table& stab)
 				Value *store = new Int_Value(type, size, 0, false, VAR);
 				if (!stab.add(var_name, store))
 				{
-					throw("multiple definition of variable");
+					throw(std::runtime_error("multiple definition of variable"));
 				}
 		 }
 		 else if(type == "LOGIC")
@@ -159,7 +160,10 @@ void tree_parser::parse(node *ptr, symbol_table& stab)
 	else if (ptr->operation == CONDN)
 	{
 		cond_node *temp = dynamic_cast<cond_node*>(ptr);
-		while (parse_int(temp->condition, stab))
+		ast t;
+		//t.put_tree(temp->condition, 0);
+		std::cout << "BOOL PARSE RESULT\n" << parse_bool(temp->condition, stab) << "\n";
+		while (parse_bool(temp->condition, stab))
 		{
 			block_node *b = dynamic_cast<block_node*>(temp->block);
 			parse(b->child, stab);
@@ -182,38 +186,65 @@ void tree_parser::parse(node *ptr, symbol_table& stab)
 		node *func_body = p->body;
 		block_node *b = dynamic_cast<block_node*>(func_body);
 		symbol_table local;
-		assign_params(func_params, call->parameters, local);
+		check_height(func_params, call->parameters);
+		assign_params(func_params, call->parameters, local, stab);
 		parse(b->child, local);
+	}
+	else if (ptr->operation >= 22 && ptr->operation <= 25) //MOVE
+	{
+		move_node *move = dynamic_cast<move_node*>(ptr);
+		if (move->child->operation != INTN)
+		{
+			throw(std::runtime_error("parameter of MOVE functions must be a number"));
+		}
+		int steps = parse_int(move->child);
+
 	}
 }
 
-void tree_parser::assign_params (node *func_params, node *call_params, symbol_table &local)
+void tree_parser::assign_params (node *func_params, node *call_params, symbol_table &local, symbol_table &lglobal)
 {
-	while (call_params && func_params)
+	if (call_params->left && func_params->left)
 	{
-		if (call_params->operation != STRN) {throw (std::runtime_error("parameter of function must be a reference on global variable"));}
-		str_node *s = dynamic_cast<str_node*>(call_params);
-		decl_node *f = dynamic_cast<decl_node*>(func_params);
-		Value *v;
-		if (!(v = global.find_var(s->str)))
-		{
-			throw (std::runtime_error("global variable put as func parameter wasn't found"));
-		}
-		local.add(f->var_name, v);
+		assign_params(func_params->left, call_params->left, local, lglobal);
+	}
+	if (call_params->operation != STRN) {throw (std::runtime_error("parameter of function must be a reference on global variable"));}
+	str_node *s = dynamic_cast<str_node*>(call_params);
+	decl_node *f = dynamic_cast<decl_node*>(func_params);
+	Value *v;
+	if (!(v = lglobal.find_var(s->str)))
+	{
+		throw (std::runtime_error("global variable put as func parameter wasn't found"));
+	}
+	local.add(f->var_name, v);
+}
+
+void tree_parser::check_height(node *func_params, node *call_params)
+{
+	while (call_params->left && func_params->left)
+	{
 		call_params = call_params->left;
 		func_params = func_params->left;
 	}
-	if (func_params || call_params)
+	if (func_params->left || call_params->left)
 	{
 		throw (std::runtime_error("too less or too many arguments for function"));
 	}
 }
 
-bool tree_parser::parse_bool(node *ptr, symbol_table& stab)
+int tree_parser::parse_bool(node *ptr, symbol_table& stab)
 {
         if (ptr->operation == BOOLN)
         {
                 bool_node *temp = dynamic_cast<bool_node*>(ptr);
+                if (!temp->left && !temp->right)
+                {
+                        return temp->value;
+                }
+        }
+        else if (ptr->operation == INTN)
+        {
+                int_node *temp = dynamic_cast<int_node*>(ptr);
                 if (!temp->left && !temp->right)
                 {
                         return temp->value;
@@ -236,20 +267,20 @@ bool tree_parser::parse_bool(node *ptr, symbol_table& stab)
                                 return !(parse_bool(ptr->left, stab) && parse_bool(ptr->right, stab));
                                 break;
                         case(8):
-                               return !(parse_bool(ptr->left, stab) || parse_bool(ptr->right, stab));
+                               return parse_bool(ptr->left, stab) == parse_bool(ptr->right, stab);
                                break;
                         case(9):
-                        	return parse_bool(ptr->left, stab) != parse_bool(ptr->right, stab);
-                        	break;
+	                        	return parse_bool(ptr->left, stab) != parse_bool(ptr->right, stab);
+	                        	break;
                         case(10):
-                        	return parse_bool(ptr->left, stab) == parse_bool(ptr->right, stab);
-                        	break;
+	                        	return !(parse_bool(ptr->left, stab) || parse_bool(ptr->right, stab));
+	                        	break;
                         case(11):
-                        	return parse_bool(ptr->left, stab) < parse_bool(ptr->right, stab);
-                        	break;
+	                        	return parse_bool(ptr->left, stab) < parse_bool(ptr->right, stab);
+	                        	break;
                         case(12):
-                        	return parse_bool(ptr->left, stab) > parse_bool(ptr->right, stab);
-                        	break;
+	                        	return parse_bool(ptr->left, stab) > parse_bool(ptr->right, stab);
+	                        	break;
                 }
         }
         else if (ptr->operation == 13)
@@ -259,11 +290,33 @@ bool tree_parser::parse_bool(node *ptr, symbol_table& stab)
 		else if (ptr->operation == STRN)
 		{
 			str_node *temp = dynamic_cast<str_node*>(ptr);
-			if(stab.storval.contains(temp->str) && stab.storval[temp->str]->type == "STRING" &&
+			if(stab.storval.contains(temp->str) && (stab.storval[temp->str]->type == "NUMERIC" || stab.storval[temp->str]->type == "LOGIC") &&
 			 stab.storval[temp->str]->size == 1)
 			{
-				Bool_Value *temp_2 = dynamic_cast<Bool_Value*>(stab.storval[temp->str]);
+				Int_Value *temp_2 = dynamic_cast<Int_Value*>(stab.storval[temp->str]);
+				std::cout << temp->str << " " <<  *(temp_2->val) << "\n";
 				return *(temp_2->val);
+			}
+		}
+		else if (ptr->operation == ARRASSIGNN)
+		{
+			arr_node *temp = dynamic_cast<arr_node*>(ptr);
+			std::string name;
+			if (temp->name->operation == STRN)
+			{
+				str_node *nm = dynamic_cast<str_node*>(temp->name);
+				name = nm->str;
+			}
+			else
+			{
+					throw(std::runtime_error("wrong array name"));
+			}
+			int index = parse_int(temp->index, stab);
+			if(stab.storval.contains(name) && stab.storval[name]->type == "NUMERIC" &&
+			 index < stab.storval[name]->size )
+			{
+				Int_Value *temp_2 = dynamic_cast<Int_Value*>(stab.storval[name]);
+				return temp_2->val[index];
 			}
 		}
         else

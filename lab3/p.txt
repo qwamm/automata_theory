@@ -1,11 +1,24 @@
-NUMERIC x = 0
+NUMERIC x = 11
+NUMERIC result = 0
 
-PROC func NUMERIC x & BLOCK
-{x < 3} BLOCK
-x = x + 1
-NUMERIC y = 7
-@ func y | 
+PROC g NUMERIC f, NUMERIC res & BLOCK
+NUMERIC c = 0
+NUMERIC a
+NUMERIC b
+NUMERIC res1
+NUMERIC res2
+{((f ? 1)+(f ? 2))*(c ? 0)} BLOCK
+        res = 1
+        c = c + 1
+UNBLOCK
+{(c ? 0) * (f > 0)} BLOCK
+a = f - 1
+b = f - 2
+@ g a, res1 |
+@ g b, res2 |
+res = res1 + res2
+c = c+1
 UNBLOCK
 UNBLOCK
-@ func x |
+@ g x, result |
 

@@ -19,6 +19,7 @@ class symbol_table
 		}
 		Value* find_var (std::string name)
 		{
+			//std::cout << "TRY TO FIND " << name << "\n";
 			if (storval.contains(name))
 			{
 				return storval[name];
@@ -41,6 +42,7 @@ class symbol_table
 		}
 		bool add(std::string name, Value *val)
 		{
+				//std::cout << "TRY TO ADD " << name << "\n";
                 if(storval.contains(name))
                 {
                         return false;

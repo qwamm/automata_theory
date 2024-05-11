@@ -5,14 +5,14 @@
 class record_node : public node
 {
 	public:
-		node *сhild, *from, *to;
-		std::string type_name;
-        record_node(std::string type_name, node *child, node *from, node *to, int operation) : node(operation)
+		node *сhild;
+		std::string type_name, from_type, to_type;
+        record_node(std::string type_name, node *child, std::string from_type, std::string to_type, int operation) : node(operation)
         {
                 this->type_name = type_name;
 				this->сhild = child;
-				this->from = from;
-				this->to = to;
+				this->from_type = from_type;
+				this->to_type = to_type;
         }
         void print_val() override
         {
