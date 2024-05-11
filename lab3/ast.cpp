@@ -15,30 +15,17 @@ void ast::del_root()
 
 void ast::add(node *new_node)
 {
-	/*if (root != nullptr && root->left == nullptr)
-	{
-		root->left = new_node;
-	}
-	else if (root != nullptr && root->right == nullptr)
-	{
-		root->right = new_node;
-	}*/
-	//else
-	//{
 		if(root == nullptr)
 		{
 			root = new_node;
 		}
 		else
 		{
-			//std::cout << "MARKER\n";
 			node *new_root = new_node;
 			node *old = root;
 			root = new_root;
 			root->left = old;
-			//this->put_tree(old, 0);
 		}
-	//}
 }
 
 void ast::put_tree(node *ptr, int level)

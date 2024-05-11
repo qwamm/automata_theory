@@ -60,29 +60,30 @@ program:
 		tree_parser x;
 		std::cout << "SYNTAX TREE:\n";
 		syntax_tree->put_tree(syntax_tree->root, 0);
-		x.parse(syntax_tree->root);
+		x.parse(syntax_tree->root, x.global);
 	}
 	| program block '\n' {
 		std::cout << "HERE BLOCK\n";
 		tree_parser x;
 		std::cout << "SYNTAX TREE:\n";
 		syntax_tree->put_tree(syntax_tree->root, 0);
-		x.parse(syntax_tree->root);
+		x.parse(syntax_tree->root, x.global);
 	}
 	| program proc '\n' {
 		std::cout << "HERE PROC\n";
-		tree_parser x;
 		std::cout << "SYNTAX TREE:\n";
+		if ($2.tree) {syntax_tree->add($2.tree);}
 		syntax_tree->put_tree(syntax_tree->root, 0);
-		x.parse(syntax_tree->root);
+		tree_parser x;
+		x.parse(syntax_tree->root, x.global);
 	}
 	| program sentence '\n' {
 		std::cout << "HERE SENTENCE\n";
 		std::cout << "SYNTAX TREE:\n";
-		syntax_tree->put_tree($2.tree, 0);
 		if ($2.tree) {syntax_tree->add($2.tree);}
+		syntax_tree->put_tree(syntax_tree->root, 0);
 		tree_parser x;
-		x.parse(syntax_tree->root);
+		x.parse(syntax_tree->root, x.global);
 	}
 	| {
 		syntax_tree = new ast();
@@ -107,42 +108,18 @@ record:
 	}
 	;
 block:
-	BLOCK sentence UNBLOCK
+	BLOCK '\n' sentence UNBLOCK
 	{
-		$$.tree = new block_node($2.tree, BLOCKN);
+		$$.tree = new block_node($3.tree, BLOCKN);
 		//if ($$.tree) {syntax_tree->add($$.tree);}
 	}
 	;
 
 proc:
-	PROC SVAL group_comma '&' block
+	PROC SVAL group_comma '&' block 
 	{
-		$$.tree = new proc_node(std::string($2.text), $3.tree, $5.tree, PROCN);
-		if ($$.tree)
-		{
-			syntax_tree->del_root();
-		}
-		if ($3.one && $$.tree)
-		{
-			syntax_tree->del_root();
-		}
-                if ($$.tree)
-                {
-                        syntax_tree->add($$.tree);
-                }
+			$$.tree = new proc_node(std::string($2.text), $3.tree, $5.tree, PROCN);
 	}
-    | PROC SVAL group_comma '&' sentence
-    {
-            $$.tree = new proc_node(std::string($2.text), $3.tree, $5.tree, PROCN);
-            if ($3.one && $$.tree)
-            {
-                    syntax_tree->del_root();
-            }
-            if ($$.tree)
-            {
-                    syntax_tree->add($$.tree);
-            }
-    }
 	;
 
 declaration:
@@ -163,6 +140,7 @@ sentence:
 	| expr '\n' sentence {$3.tree->set_left($1.tree); $$ = $3; std::cout << "EXPR AND GROUP SET\n"; syntax_tree->put_tree($$.tree, 0);}
 	| cond '\n' sentence {$3.tree->set_left($1.tree); $$ = $3; std::cout << "BLOCK AND GROUP SET\n"; syntax_tree->put_tree($$.tree, 0);}
 	;
+
 cond:
 	'{' expr '}' block
 	{
@@ -172,13 +150,12 @@ cond:
 
 group_comma:
 	declaration {$$ = $1;}
-	| declaration ',' group_comma {std::cout << "GROUP COMMA\n";}
+	| declaration ',' group_comma {$3.tree->set_left($1.tree); $$ = $3; std::cout << "DECLARATION GROUP COMMA\n"; syntax_tree->put_tree($$.tree, 0);}
 	;
 
 arg_set:
-	'\n' {printf("emprty string\n");}
-	| expr { $$ = $1; std::cout << $1.text  << "\n";}
-	| expr ',' arg_set {std::cout << "HERE\n";}
+	expr { $$ = $1;}
+	| expr ',' arg_set {$3.tree->set_left($1.tree); $$ = $3; std::cout << "EXPR AND ARG_SET\n"; syntax_tree->put_tree($$.tree, 0);}
 	;
 
 expr:
@@ -210,10 +187,6 @@ expr:
 	{
 	    		std::cout << "CALL HERE!\n";
 	            $$.tree = new proc_node(std::string($2.text), $3.tree, nullptr, CALLN);
-	            if ($$.tree)
-	            {
-	                    syntax_tree->add($$.tree);
-	            }
 	}
 	| MOVE '[' expr ']'
 	{
@@ -302,5 +275,9 @@ void yyerror(const char *s)
 int main(void)
 {
 	yyparse();
+	std::cout << "GLOBAL\n";
+	tree_parser x;
+	x.parse(syntax_tree->root, x.global);
+	x.global.print();
 	return 0;
 }

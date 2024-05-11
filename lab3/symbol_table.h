@@ -12,9 +12,31 @@ class symbol_table
 		{
 			for (auto &c : storval)
 			{
-				std::cout << c.first << " ";
+				std::cout << c.first << "\n";
 				c.second->print();
 				std::cout << "\n";
+			}
+		}
+		Value* find_var (std::string name)
+		{
+			if (storval.contains(name))
+			{
+				return storval[name];
+			}
+			else
+			{
+				return nullptr;
+			}
+		}
+		Value* is_func_in(std::string name)
+		{
+			if (storval.contains(name) && storval[name]->operation == PROCV)
+			{
+				return storval[name];
+			}
+			else
+			{
+				throw(std::runtime_error("function name wasn't defined"));
 			}
 		}
 		bool add(std::string name, Value *val)
@@ -33,9 +55,9 @@ class symbol_table
 		{
 			if (!storval.contains(name_1))
 			{
-				std::cout << "CUR:\n";
-				std::cout << name_1 << "\n";
-				print();
+				// std::cout << "CUR:\n";
+				// std::cout << name_1 << "\n";
+				// print();
 				return false;
 			}
 			else
@@ -83,9 +105,10 @@ class symbol_table
 			{
 				return false;
 			}
-			else 
+			else
 			{
 				Value *cur = storval[name_1], *val = storval[name_2];
+				//std::cout << cur->size << " " << val->size << "\n";
 				if (cur->type == val->type && ind_1 < cur->size && ind_2 < val->size && ind_1 >= 0 && ind_2 >= 0)
 				{
 					if (cur->type == "NUMERIC")

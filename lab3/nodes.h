@@ -2,7 +2,6 @@
 #include <cstring>
 #include <cstdlib>
 #include "ast.h"
-
 class record_node : public node
 {
 	public:
@@ -100,9 +99,9 @@ class move_node : public node
 
 class proc_node : public node //procedures declaration and calling
 {
-	std::string name;
-	node *parameters, *body;
 	public:
+		std::string name;
+		node *parameters, *body;
 		proc_node(std::string name, node *parameters, node *body, int operation) : node (operation)
 		{
 			this->name = name;

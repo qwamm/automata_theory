@@ -1,8 +1,11 @@
-NUMERIC i = 2
-NUMERIC arr[10]
-arr[0] = 0
-arr[1] = 1
-{i < 10} BLOCK arr[i] = arr[i - 1] + arr[i - 2]
-i = i + 1
+NUMERIC x = 0
+
+PROC func NUMERIC x & BLOCK
+{x < 3} BLOCK
+x = x + 1
+NUMERIC y = 7
+@ func y | 
 UNBLOCK
+UNBLOCK
+@ func x |
 
