@@ -19,12 +19,24 @@ void ast::add(node *new_node)
 		{
 			root = new_node;
 		}
-		else
+		else if (new_node->left == nullptr)
 		{
 			node *new_root = new_node;
 			node *old = root;
 			root = new_root;
 			root->left = old;
+		}
+		else
+		{
+			node *new_root = new_node;
+			node *old = root;
+			root = new_root;
+			node *ptr = root;
+			while (ptr->left)
+			{
+				ptr = ptr->left;
+			}
+			ptr->left = old;
 		}
 }
 

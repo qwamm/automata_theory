@@ -32,7 +32,8 @@
 #define VISIONN 31
 #define LITERALN 32
 #define RECORDN 33
-
+#define CONVPROCN 34
+#define STRUCTREFN 35
 class node
 {
 	public:

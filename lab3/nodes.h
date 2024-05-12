@@ -2,17 +2,51 @@
 #include <cstring>
 #include <cstdlib>
 #include "ast.h"
+
+class struct_ref_node : public node
+{
+	public:
+		std::string struct_name, struct_field;
+		struct_ref_node(std::string struct_name, std::string struct_field, int operation) : node(operation)
+		{
+			this->struct_name = struct_name;
+			this->struct_field = struct_field;
+		}
+		void print_val() override
+		{
+			std::cout << "STRUCT_REF";
+		}
+		~struct_ref_node() {}
+};
+
+class conv_node : public node
+{
+	public:
+		std::string type;
+		node *body;
+		conv_node(std::string type, node *body, int operation) : node(operation)
+		{
+			this->type = type;
+			this->body = body;
+		}
+		void print_val() override 
+		{
+			std::cout << "CONV " << type;
+		}
+		~conv_node() {}
+};
+
 class record_node : public node
 {
 	public:
-		node *сhild;
-		std::string type_name, from_type, to_type;
-        record_node(std::string type_name, node *child, std::string from_type, std::string to_type, int operation) : node(operation)
+		std::string type_name;
+		node *сhild, *conv_from, *conv_to;
+        record_node(std::string type_name, node *child, node *conv_from, node *conv_to, int operation) : node(operation)
         {
                 this->type_name = type_name;
 				this->сhild = child;
-				this->from_type = from_type;
-				this->to_type = to_type;
+				this->conv_from = conv_from;
+				this->conv_to = conv_to;
         }
         void print_val() override
         {
@@ -39,8 +73,8 @@ class arr_node : public node
 
 class voice_node : public node
 {
-        node *child;
         public:
+ 				node *child;
                 voice_node(node *child, int operation) : node(operation)
                 {
                         this->child = child;
@@ -54,8 +88,8 @@ class voice_node : public node
 
 class vision_node : public node
 {
-        node *child;
         public:
+        		node *child;
                 vision_node(node *child, int operation) : node(operation)
                 {
                         this->child = child;
@@ -69,8 +103,8 @@ class vision_node : public node
 
 class ping_node : public node
 {
-        node *child;
         public:
+ 				node *child;
                 ping_node(node *child, int operation) : node(operation)
                 {
                         this->child = child;
@@ -84,8 +118,8 @@ class ping_node : public node
 
 class move_node : public node
 {
-	node *child;
 	public:
+		node *child;
 		move_node(node *child, int operation) : node(operation)
 		{
 			this->child = child;

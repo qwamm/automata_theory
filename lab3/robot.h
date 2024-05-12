@@ -5,34 +5,34 @@
 #define OBST 2
 #define EXIT 3
 
-class robot_interface
-{
-	public:
-		virtual UP(...) {}
-		virtual DOWN(...) {}
-		...
-		virtual VOICE(...) {}
-};
+// class robot_interface
+// {
+// 	public:
+// 		virtual UP(...) {}
+// 		virtual DOWN(...) {}
+// 		...
+// 		virtual VOICE(...) {}
+// };
 
-class cell_robot : public interface
-{
+// class cell_robot : public interface
+// {
 
-};
+// };
 
-//dfs для программы поиска выхода из произвольного лабиринта
+// dfs для программы поиска выхода из произвольного лабиринта
 
-class maze_interface //по желанию
-{
+// class maze_interface по желанию
+// {
 
-};
+// };
 
-class maze
-{
-	public:
-		void look_for_obstacle_between_two_points() {
+// class maze
+// {
+// 	public:
+// 		void look_for_obstacle_between_two_points() {
 
-		}
-};
+// 		}
+// };
 
 class cell
 {

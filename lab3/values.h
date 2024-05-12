@@ -25,6 +25,27 @@ class Value
 		virtual void print() = 0;
 };
 
+class Record_Value : public Value
+{
+	public:
+		std::unordered_map<std::string, Value*> fields;
+		std::string from, to;
+		Record_Value(std::unordered_map<std::string, Value*> fields, bool defined, int operation) : Value("RECORD", 1, defined, operation)
+		{
+				this->fields = fields;
+		}
+		void print()
+		{
+			for (auto &c : fields)
+			{
+				std::cout << c.first << " ";
+				c.second->print();
+				std::cout << "\n";
+			}
+		}
+		~Record_Value() {}
+};
+
 class Proc_Value : public Value
 {
 	public:
@@ -105,9 +126,16 @@ class Char_Value : public Value
             }
 			void print() override
 			{
-				for (int i = 0; i < size; i++)
+				if (defined)
 				{
-					std::cout << "ind: " <<  i << " val: " << val[i] << "\n";
+					for (int i = 0; i < size; i++)
+					{
+						std::cout << "ind: " <<  i << " val: " << val[i] << "\n";
+					}
+				}	
+				else
+				{
+					std::cout << "UNDEF\n";
 				}
 			}
             ~Char_Value() override

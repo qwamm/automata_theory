@@ -17,4 +17,5 @@ class tree_parser
 		int parse_bool(node *ptr, symbol_table& stab);
 		void check_height(node *func_params, node *call_params);
 		void assign_params (node *func_params, node *call_params, symbol_table &local, symbol_table &lglobal);
+		void get_fields(node *child, std::unordered_map<std::string, Value*>& struct_fields);
 };
