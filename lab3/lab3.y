@@ -289,7 +289,7 @@ int main(void)
 		}
 		in.close();
 	}
-	robot r(v);
+	cell_robot r(v);
 	std::cout << "BEFORE\n";
 	r.print_field();
 	if (syntax_tree->root)

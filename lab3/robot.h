@@ -5,14 +5,17 @@
 #define OBST 2
 #define EXIT 3
 
-// class robot_interface
-// {
-// 	public:
-// 		virtual UP(...) {}
-// 		virtual DOWN(...) {}
-// 		...
-// 		virtual VOICE(...) {}
-// };
+class robot
+{
+	public:
+		virtual int UP() = 0;
+		virtual int DOWN() = 0;
+		virtual int RIGHT() = 0;
+		virtual int LEFT() = 0;
+		virtual std::vector<std::string> VISION() = 0;
+		virtual std::string VOICE() = 0;
+		virtual void print_field() = 0;
+};
 
 // class cell_robot : public interface
 // {
@@ -46,12 +49,18 @@ class cell
 		~cell() {}
 };
 
-class robot
+class cell_robot : public robot
 {
 	public:
 		std::vector<std::vector<cell*>> maze;
 		std::pair<int,int> coordinats;
-		robot(std::vector<std::string> maze)
+		int UP() override {}
+		int DOWN() override {}
+		int RIGHT() override {}
+		int LEFT() override {}
+		std::vector<std::string> VISION() override {}
+		std::string VOICE() override {}
+		cell_robot(std::vector<std::string> maze)
 		{
 			std::pair<int,int> exit_coordinats;
 			for (int i = 0; i < maze.size(); i++)
@@ -96,7 +105,7 @@ class robot
 				}
 			}
 		}
-		~robot() {}
+		~cell_robot() {}
 		void print_field()
 		{
 			for (int i = 0; i < maze.size(); i++)

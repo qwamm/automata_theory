@@ -1,6 +1,12 @@
 RECORD person DATA [NUMERIC pupa, NUMERIC lupa, NUMERIC hren]
 
-person.pupa = 5
-person.lupa = 7
-person.hren = person.lupa + person.pupa
+NUMERIC arr[5]
+NUMERIC i = 0
+person.pupa = 0
+person.lupa = 2
+person.hren = 7
+{i < 10} BLOCK
+person.pupa = person.pupa + 1
+i = i + 1
+UNBLOCK
 
