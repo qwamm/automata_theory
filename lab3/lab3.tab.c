@@ -568,7 +568,7 @@ static const yytype_uint8 yyrline[] =
      137,   138,   142,   149,   150,   154,   155,   158,   159,   163,
      164,   165,   166,   168,   169,   170,   171,   172,   173,   174,
      175,   176,   177,   178,   179,   180,   183,   187,   188,   193,
-     214,   235,   239
+     215,   236,   240
 };
 #endif
 
@@ -1476,15 +1476,15 @@ yyreduce:
   case 49: /* expr: MOVE '[' expr ']'  */
         {
 		int op;
-		if (strcpy(yyvsp[-3].text, "MOVERIGHT") == 0)
+		if (strcmp(yyvsp[-3].text, "MOVERIGHT") == 0)
 		{
 			op = MOVERIGHT;
 		}
-		else if (strcpy(yyvsp[-3].text, "MOVELEFT") == 0)
+		else if (strcmp(yyvsp[-3].text, "MOVELEFT") == 0)
 		{
 			op = MOVELEFT;
 		}
-		else if (strcpy(yyvsp[-3].text, "MOVEUP") == 0)
+		else if (strcmp(yyvsp[-3].text, "MOVEUP") == 0)
 		{
 			op = MOVEUP;
 		}
@@ -1492,6 +1492,7 @@ yyreduce:
 		{
 			op = MOVEDOWN;
 		}
+		std::cout << yyvsp[-3].text << "\n";
 		yyval.tree = new move_node(yyvsp[-1].tree, op);
 	}
     break;
@@ -1499,15 +1500,15 @@ yyreduce:
   case 50: /* expr: PING '[' expr ']'  */
         {
                 int op;
-                if (strcpy(yyvsp[-3].text, "PINGRIGHT") == 0)
+                if (strcmp(yyvsp[-3].text, "PINGRIGHT") == 0)
                 {
                         op = PINGRIGHT;
                 }
-                else if (strcpy(yyvsp[-3].text, "PINGLEFT") == 0)
+                else if (strcmp(yyvsp[-3].text, "PINGLEFT") == 0)
                 {
                         op = PINGLEFT;
                 }
-                else if (strcpy(yyvsp[-3].text, "PINGUP") == 0)
+                else if (strcmp(yyvsp[-3].text, "PINGUP") == 0)
                 {
                         op = PINGUP;
                 }

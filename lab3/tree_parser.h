@@ -12,7 +12,7 @@ class tree_parser
 		symbol_table functions;
 		tree_parser() {}
 		~tree_parser() {}
-		void parse(node *ptr, symbol_table& stab, robot &r);
+		void parse(node *ptr, symbol_table& stab, cell_robot &r);
 		int parse_int(node *ptr, symbol_table& stab);
 		int parse_bool(node *ptr, symbol_table& stab);
 		void check_height(node *func_params, node *call_params);

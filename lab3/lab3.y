@@ -193,15 +193,15 @@ expr:
 	| MOVE '[' expr ']'
 	{
 		int op;
-		if (strcpy($1.text, "MOVERIGHT") == 0)
+		if (strcmp($1.text, "MOVERIGHT") == 0)
 		{
 			op = MOVERIGHT;
 		}
-		else if (strcpy($1.text, "MOVELEFT") == 0)
+		else if (strcmp($1.text, "MOVELEFT") == 0)
 		{
 			op = MOVELEFT;
 		}
-		else if (strcpy($1.text, "MOVEUP") == 0)
+		else if (strcmp($1.text, "MOVEUP") == 0)
 		{
 			op = MOVEUP;
 		}
@@ -209,20 +209,21 @@ expr:
 		{
 			op = MOVEDOWN;
 		}
+		std::cout << $1.text << "\n";
 		$$.tree = new move_node($3.tree, op);
 	}
 	| PING '[' expr ']'
 	{
                 int op;
-                if (strcpy($1.text, "PINGRIGHT") == 0)
+                if (strcmp($1.text, "PINGRIGHT") == 0)
                 {
                         op = PINGRIGHT;
                 }
-                else if (strcpy($1.text, "PINGLEFT") == 0)
+                else if (strcmp($1.text, "PINGLEFT") == 0)
                 {
                         op = PINGLEFT;
                 }
-                else if (strcpy($1.text, "PINGUP") == 0)
+                else if (strcmp($1.text, "PINGUP") == 0)
                 {
                         op = PINGUP;
                 }

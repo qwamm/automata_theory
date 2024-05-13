@@ -921,13 +921,14 @@ case 14:
 YY_RULE_SETUP
 #line 91 "lab3.l"
 {
-	yylval.text = yytext;
+        yylval.text = (char*)malloc(strlen(yytext) + 1);
+        strcpy(yylval.text, yytext);
 	return MOVE;
 }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 96 "lab3.l"
+#line 97 "lab3.l"
 {
 	yylval.text = yytext;
 	return PING;
@@ -935,7 +936,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 101 "lab3.l"
+#line 102 "lab3.l"
 {
 	yylval.text = yytext;
 	return UNDEF;
@@ -944,7 +945,7 @@ YY_RULE_SETUP
 case 17:
 /* rule 17 can match eol */
 YY_RULE_SETUP
-#line 106 "lab3.l"
+#line 107 "lab3.l"
 {
 	std::cout << "SYMBOL CAPTURED " << yytext << "\n";
         return *yytext;
@@ -952,7 +953,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 111 "lab3.l"
+#line 112 "lab3.l"
 {
 	yylval.text = (char*)malloc(strlen(yytext) + 1);
 	strcpy(yylval.text, yytext);
@@ -962,7 +963,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 117 "lab3.l"
+#line 118 "lab3.l"
 {
         yylval.text = (char*)malloc(strlen(yytext) + 1);
 	int i = 0;
@@ -978,27 +979,27 @@ YY_RULE_SETUP
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 130 "lab3.l"
+#line 131 "lab3.l"
 ;	/* skip tabs and whitespaces */
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 132 "lab3.l"
+#line 133 "lab3.l"
 {
 	printf("%s\n", yytext);
 	yyerror("Unknown character");
 }
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
-#line 137 "lab3.l"
+#line 138 "lab3.l"
 {return EF;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 139 "lab3.l"
+#line 140 "lab3.l"
 ECHO;
 	YY_BREAK
-#line 1002 "lex.yy.c"
+#line 1003 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2001,7 +2002,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 139 "lab3.l"
+#line 140 "lab3.l"
 
 
 int yywrap(void)

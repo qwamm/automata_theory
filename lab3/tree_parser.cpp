@@ -1,7 +1,7 @@
 #include <cmath>
 #include "tree_parser.h"
 
-void tree_parser::parse(node *ptr, symbol_table& stab, robot &r)
+int tree_parser::parse(node *ptr, symbol_table& stab, cell_robot &r)
 {
 	if (ptr->left)
 		parse(ptr->left, stab, r);
@@ -182,26 +182,34 @@ void tree_parser::parse(node *ptr, symbol_table& stab, robot &r)
 		{
 				str_node *r_temp = dynamic_cast<str_node*>(r);
 				Value *t = new Char_Value("STRING", 1, r_temp->str , true, VAR);
-	            if (!stab.assign_val(name, ind_1, t))
-	            {
-	                     throw(std::runtime_error("variadble wasn't declared or index out of range"));
-	            }
+			            if (!stab.assign_val(name, ind_1, t))
+			            {
+			                     throw(std::runtime_error("variadble wasn't declared or index out of range"));
+			            }
 		}
 		else if (r->operation == INTN || (r->operation >= 4 && r->operation <= 13))
 		{
 				Value *t = new Int_Value("NUMERIC", 1, parse_int(r, stab) , true, VAR);
-	            if (!stab.assign_val(name, ind_1, t))
-	            {
-	                     throw(std::runtime_error("variadble wasn't declared or index out of range"));
-	            }
+			            if (!stab.assign_val(name, ind_1, t))
+			            {
+			                     throw(std::runtime_error("variadble wasn't declared or index out of range"));
+			            }
 		}
 		else if (r->operation == BOOLN)
 		{
-				Value *t = new Bool_Value("LOGIC", 1, parse_bool(r, stab) , true, VAR);
-	            if (!stab.assign_val(name, ind_1, t))
-	            {
-	                     throw(std::runtime_error("variadble wasn't declared or index out of range"));
-	            }
+			    Value *t = new Bool_Value("LOGIC", 1, parse_bool(r, stab) , true, VAR);
+		            if (!stab.assign_val(name, ind_1, t))
+		            {
+		                     throw(std::runtime_error("variadble wasn't declared or index out of range"));
+		            }
+		}
+		else if (r->operation == MOVEN)
+		{
+					Value *t = new Int_Value("NUMERIC", 1, parse_int(r, stab) , true, VAR);
+			            if (!stab.assign_val(name, ind_1, t))
+			            {
+			                     throw(std::runtime_error("variadble wasn't declared or index out of range"));
+			            }
 		}
 	
 	}
@@ -221,7 +229,7 @@ void tree_parser::parse(node *ptr, symbol_table& stab, robot &r)
 	{
 		proc_node *temp = dynamic_cast<proc_node*>(ptr);
 		Value *store = new Proc_Value(temp->parameters, temp->body, true, PROCV);
-        if (!functions.add(temp->name, store))
+	        if (!functions.add(temp->name, store))
 		{
 		       	throw(std::runtime_error("multiple definition of function"));
 		}
@@ -245,7 +253,7 @@ void tree_parser::parse(node *ptr, symbol_table& stab, robot &r)
 		get_fields(record->сhild, struct_fields);
 		Record_Value *store = new Record_Value(struct_fields, true, VAR);
 		std::cout << "RECORD NAME: " << record->type_name << "\n";
-        if (!stab.add(record->type_name, store))
+	        if (!stab.add(record->type_name, store))
 		{
 		       	throw(std::runtime_error("multiple definition of records"));
 		}
@@ -258,8 +266,26 @@ void tree_parser::parse(node *ptr, symbol_table& stab, robot &r)
 			throw(std::runtime_error("parameter of MOVE functions must be a number"));
 		}
 		int steps = parse_int(move->child, stab);
-		//r.move(steps, ptr->operation)
+		std::cout << ptr->operation << "\n";
+		int res;
+		switch(ptr->operation)
+		{
+			case(22):
+				res = r.MRIGHT(steps);
+				break;
+			case(23):
+				res = r.MLEFT(steps);
+				break;
+			case(24):
+				res = r.MUP(steps);
+				break;
+			case(25):
+				res = r.MDOWN(steps);
+				break;
+		}
+		return res;
 	}
+	return 0;
 }
 
 void tree_parser::get_fields(node *child, std::unordered_map<std::string, Value*>& struct_fields)

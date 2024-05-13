@@ -89,7 +89,8 @@ UNBLOCK {
 }
 
 MOVEUP|MOVEDOWN|MOVERIGHT|MOVELEFT {
-	yylval.text = yytext;
+        yylval.text = (char*)malloc(strlen(yytext) + 1);
+        strcpy(yylval.text, yytext);
 	return MOVE;
 }
 
