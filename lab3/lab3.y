@@ -209,7 +209,6 @@ expr:
 		{
 			op = MOVEDOWN;
 		}
-		std::cout << $1.text << "\n";
 		$$.tree = new move_node($3.tree, op);
 	}
 	| PING '[' expr ']'
@@ -290,9 +289,9 @@ int main(void)
 		}
 		in.close();
 	}
-	cell_robot r(v);
-	std::cout << "BEFORE\n";
-	r.print_field();
+	robot *r = new cell_robot(v);
+	//std::cout << "BEFORE\n";
+	//r.print_field();
 	if (syntax_tree->root)
 	{
 		std::cout << "GLOBAL\n";
@@ -300,7 +299,7 @@ int main(void)
 		x.parse(syntax_tree->root, x.global, r);
 		x.global.print();
 	}
-	std::cout << "AFTER\n";
-	r.print_field();
+	//std::cout << "AFTER\n";
+	//r.print_field();
 	return 0;
 }

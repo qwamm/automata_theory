@@ -568,7 +568,7 @@ static const yytype_uint8 yyrline[] =
      137,   138,   142,   149,   150,   154,   155,   158,   159,   163,
      164,   165,   166,   168,   169,   170,   171,   172,   173,   174,
      175,   176,   177,   178,   179,   180,   183,   187,   188,   193,
-     215,   236,   240
+     214,   235,   239
 };
 #endif
 
@@ -1492,7 +1492,6 @@ yyreduce:
 		{
 			op = MOVEDOWN;
 		}
-		std::cout << yyvsp[-3].text << "\n";
 		yyval.tree = new move_node(yyvsp[-1].tree, op);
 	}
     break;
@@ -1771,9 +1770,9 @@ int main(void)
 		}
 		in.close();
 	}
-	cell_robot r(v);
-	std::cout << "BEFORE\n";
-	r.print_field();
+	robot *r = new cell_robot(v);
+	//std::cout << "BEFORE\n";
+	//r.print_field();
 	if (syntax_tree->root)
 	{
 		std::cout << "GLOBAL\n";
@@ -1781,7 +1780,7 @@ int main(void)
 		x.parse(syntax_tree->root, x.global, r);
 		x.global.print();
 	}
-	std::cout << "AFTER\n";
-	r.print_field();
+	//std::cout << "AFTER\n";
+	//r.print_field();
 	return 0;
 }

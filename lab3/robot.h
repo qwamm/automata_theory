@@ -60,42 +60,57 @@ class cell_robot : public robot
 		std::pair<int,int> coordinats;
 		int MUP(int steps) override
 		{
-			std::cout << "HEREREHHRHEH\n";
-			std::cout << coordinats.first << " " << coordinats.second << "\n";
-			while (maze[coordinats.first - 1][coordinats.second]->type != OBST && coordinats.first - 1 >= 0 && steps > 0)
-                        {
-                                coordinats.first -= 1;
-                                steps--;
-                        }
-			std::cout << coordinats.first << " " << coordinats.second << "\n";
+			while (coordinats.first - 1 >= 0 && maze[coordinats.first - 1][coordinats.second]->type != OBST && steps > 0)
+            {
+                    coordinats.first -= 1;
+                    steps--;
+            }
+			if (maze[coordinats.first][coordinats.second]->type == EXIT)
+           	{
+           		std::cout << "Congratulations! You have escaped backrooms!\n";
+           	}
 			return steps;
 		}
 		int MDOWN(int steps) override
 		{
-                        while (coordinats.first + 1 < maze.size() && maze[coordinats.first + 1][coordinats.second]->type != OBST && steps > 0)
+            while (coordinats.first + 1 < maze.size() && maze[coordinats.first + 1][coordinats.second]->type != OBST && steps > 0)
 			{
 				coordinats.first += 1;
 				steps--;
 			}
-                        return steps;
+           	if (maze[coordinats.first][coordinats.second]->type == EXIT)
+           	{
+           		std::cout << "Congratulations! You have escaped backrooms!\n";
+           	}
+            return steps;
 		}
 		int MRIGHT(int steps) override
 		{
-			while(maze[coordinats.first][coordinats.second + 1]->type != OBST && coordinats.second + 1 < maze[coordinats.first].size() && steps > 0)
+			while(coordinats.second + 1 < maze[coordinats.first].size() && maze[coordinats.first][coordinats.second + 1]->type != OBST && steps > 0)
 			{
 				coordinats.second += 1;
 				steps--;
 			}
+           	if (maze[coordinats.first][coordinats.second]->type == EXIT)
+           	{
+           		std::cout << "Congratulations! You have escaped backrooms!\n";
+           	}
 			return steps;
 		}
 		int MLEFT(int steps) override
  		{
- 			while(maze[coordinats.first][coordinats.second - 1]->type != OBST && coordinats.second - 1 >= 0 && steps > 0)
-                        {
-                                coordinats.second -= 1;
-                                steps--;
-                       	}
-                        return steps;
+ 			std::cout << coordinats.first << " " << coordinats.second << "\n";
+			while(coordinats.second - 1 >= 0 && maze[coordinats.first][coordinats.second - 1]->type != OBST && steps > 0)
+            {
+                    coordinats.second -= 1;
+                    steps--;
+           	}
+           	std::cout << coordinats.first << " " << coordinats.second << "\n";
+           	if (maze[coordinats.first][coordinats.second]->type == EXIT)
+           	{
+           		std::cout << "Congratulations! You have escaped backrooms!\n";
+           	}
+            return steps;
 		}
 		std::vector<std::string> VISION() override {}
 		void VOICE(const std::string &str) override

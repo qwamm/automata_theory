@@ -1,10 +1,17 @@
 #include <cmath>
 #include "tree_parser.h"
 
-int tree_parser::parse(node *ptr, symbol_table& stab, cell_robot &r)
+void tree_parser::parse(node *ptr, symbol_table& stab, robot *rob)
 {
 	if (ptr->left)
-		parse(ptr->left, stab, r);
+		parse(ptr->left, stab, rob);
+	// if (ptr->operation == CALLN)
+	// {
+	// 	stab.print();
+	// 	std::cout << "\n";
+	// 	rob.print_field();
+	// 	std::cout << "\n";
+	// }
 	if(ptr->operation == VARN)
 	{
 			 decl_node *temp = dynamic_cast<decl_node*>(ptr);
@@ -14,17 +21,17 @@ int tree_parser::parse(node *ptr, symbol_table& stab, cell_robot &r)
 			 {
 					 if (type == "NUMERIC")
 					 {
-						int val = parse_int(temp->child, stab);
+						int val = parse_int(temp->child, stab, rob);
 						Value *store = new Int_Value(type, 1, val, true, VAR);
 						if (!stab.add(var_name, store))
 						{
-							std::cout << var_name << "\n";
+							//std::cout << var_name << "\n";
 							throw(std::runtime_error("multiple definition of variable"));
 						}
 					 }
 					 else if(type == "LOGIC")
 					 {
-						bool val = parse_bool(temp->child, stab);
+						bool val = parse_bool(temp->child, stab, rob);
 						Value *store = new Bool_Value(type, 1, val, true, VAR);
                         if (!stab.add(var_name, store))
                         {
@@ -54,7 +61,7 @@ int tree_parser::parse(node *ptr, symbol_table& stab, cell_robot &r)
 		 std::string var_name = temp->var_name;
 		 int size;
 		 if (temp->size != nullptr)
-		 	size = parse_int(temp->size, stab);
+		 	size = parse_int(temp->size, stab, rob);
 		 else
 		 	size = 1;
 		 if (type == "NUMERIC")
@@ -106,7 +113,7 @@ int tree_parser::parse(node *ptr, symbol_table& stab, cell_robot &r)
 			{
 				throw(std::runtime_error("wrong array name"));
 			}
-			ind_1 = parse_int(l_temp->index, stab);	
+			ind_1 = parse_int(l_temp->index, stab, rob);	
 		}
 		else if (l->operation == STRUCTREFN)
 		{
@@ -132,7 +139,7 @@ int tree_parser::parse(node *ptr, symbol_table& stab, cell_robot &r)
 			}
 			else if (r->operation == INTN || (r->operation >= 4 && r->operation <= 13))
 			{
-					Value *t = new Int_Value("NUMERIC", 1, parse_int(r, stab) , true, VAR);
+					Value *t = new Int_Value("NUMERIC", 1, parse_int(r, stab, rob) , true, VAR);
 		            if (!stab.assign_val_to_struct(name, field_name, ind_1, t))
 		            {
 		                     throw(std::runtime_error("variadble wasn't declared or index out of range"));
@@ -140,9 +147,9 @@ int tree_parser::parse(node *ptr, symbol_table& stab, cell_robot &r)
 			}
 			else if (r->operation == BOOLN)
 			{
-					Value *t = new Bool_Value("LOGIC", 1, parse_bool(r, stab) , true, VAR);
+					Value *t = new Bool_Value("LOGIC", 1, parse_bool(r, stab, rob) , true, VAR);
 		            if (!stab.assign_val_to_struct(name, field_name, ind_1, t))
-		            {
+		         	{
 		                     throw(std::runtime_error("variadble wasn't declared or index out of range"));
 		            }
 			}
@@ -169,11 +176,11 @@ int tree_parser::parse(node *ptr, symbol_table& stab, cell_robot &r)
 				arr_node *r_temp = dynamic_cast<arr_node*>(r);
 				if (r_temp->name->operation == STRN)
 				{
-					int ind_2 = parse_int(r_temp->index, stab);
+					int ind_2 = parse_int(r_temp->index, stab, rob);
 					str_node *t = dynamic_cast<str_node*>(r_temp->name);
 		            if (!stab.assign_var(name, ind_1, t->str, ind_2))
 		            {
-		            		 std::cout << "HERE " << ind_1 << " " << ind_2 << " " << name << " " << t->str << "\n";
+		            		 //std::cout << "HERE " << ind_1 << " " << ind_2 << " " << name << " " << t->str << "\n";
 		                     throw(std::runtime_error("variadble wasn't declared or index out of range"));
 		            }
 				}
@@ -189,27 +196,33 @@ int tree_parser::parse(node *ptr, symbol_table& stab, cell_robot &r)
 		}
 		else if (r->operation == INTN || (r->operation >= 4 && r->operation <= 13))
 		{
-				Value *t = new Int_Value("NUMERIC", 1, parse_int(r, stab) , true, VAR);
-			            if (!stab.assign_val(name, ind_1, t))
-			            {
-			                     throw(std::runtime_error("variadble wasn't declared or index out of range"));
-			            }
+				Value *t = new Int_Value("NUMERIC", 1, parse_int(r, stab, rob) , true, VAR);
+	            if (!stab.assign_val(name, ind_1, t))
+	            {
+	            	// std::cout << "UJSHGUIOSHRG\n";
+	            	// std::cout << l->operation << " " << parse_int(r, stab, rob) << "\n";
+	            	// ast x;
+	            	// x.put_tree(l, 0);
+	            	// x.put_tree(r, 0);
+	                     throw(std::runtime_error("variadble wasn't declared or index out of range"));
+	            }
 		}
 		else if (r->operation == BOOLN)
 		{
-			    Value *t = new Bool_Value("LOGIC", 1, parse_bool(r, stab) , true, VAR);
+			    Value *t = new Bool_Value("LOGIC", 1, parse_bool(r, stab, rob) , true, VAR);
+	            if (!stab.assign_val(name, ind_1, t))
+	            {
+	                     throw(std::runtime_error("variadble wasn't declared or index out of range"));
+	            }
+		}
+		else if (r->operation >= 22 && r->operation <= 25)
+		{
+					int res = parse_move(r, rob, stab);
+					Value *t = new Int_Value("NUMERIC", 1, res , true, VAR);
 		            if (!stab.assign_val(name, ind_1, t))
 		            {
 		                     throw(std::runtime_error("variadble wasn't declared or index out of range"));
 		            }
-		}
-		else if (r->operation == MOVEN)
-		{
-					Value *t = new Int_Value("NUMERIC", 1, parse_int(r, stab) , true, VAR);
-			            if (!stab.assign_val(name, ind_1, t))
-			            {
-			                     throw(std::runtime_error("variadble wasn't declared or index out of range"));
-			            }
 		}
 	
 	}
@@ -218,18 +231,18 @@ int tree_parser::parse(node *ptr, symbol_table& stab, cell_robot &r)
 		cond_node *temp = dynamic_cast<cond_node*>(ptr);
 		ast t;
 		//t.put_tree(temp->condition, 0);
-		std::cout << "BOOL PARSE RESULT\n" << parse_bool(temp->condition, stab) << "\n";
-		while (parse_bool(temp->condition, stab))
+		//std::cout << "BOOL PARSE RESULT\n" << parse_bool(temp->condition, stab, rob) << "\n";
+		while (parse_bool(temp->condition, stab, rob))
 		{
 			block_node *b = dynamic_cast<block_node*>(temp->block);
-			parse(b->child, stab, r);
+			parse(b->child, stab, rob);
 		}
 	}
 	else if (ptr->operation == PROCN)
 	{
 		proc_node *temp = dynamic_cast<proc_node*>(ptr);
 		Value *store = new Proc_Value(temp->parameters, temp->body, true, PROCV);
-	        if (!functions.add(temp->name, store))
+	    if (!functions.add(temp->name, store))
 		{
 		       	throw(std::runtime_error("multiple definition of function"));
 		}
@@ -244,7 +257,15 @@ int tree_parser::parse(node *ptr, symbol_table& stab, cell_robot &r)
 		symbol_table local;
 		check_height(func_params, call->parameters);
 		assign_params(func_params, call->parameters, local, stab);
-		parse(b->child, local, r);
+		// local.print();
+		// std::cout << "\n";
+		// rob.print_field();
+		// std::cout << "\n";
+		parse(b->child, local, rob);
+		local.print();
+		std::cout << "\n";
+		rob->print_field();
+		std::cout << "\n";
 	}
 	else if(ptr->operation == RECORDN)
 	{
@@ -260,32 +281,66 @@ int tree_parser::parse(node *ptr, symbol_table& stab, cell_robot &r)
 	}
 	else if (ptr->operation >= 22 && ptr->operation <= 25) //MOVE
 	{
-		move_node *move = dynamic_cast<move_node*>(ptr);
-		if (move->child->operation != INTN)
-		{
-			throw(std::runtime_error("parameter of MOVE functions must be a number"));
-		}
-		int steps = parse_int(move->child, stab);
-		std::cout << ptr->operation << "\n";
-		int res;
-		switch(ptr->operation)
-		{
-			case(22):
-				res = r.MRIGHT(steps);
-				break;
-			case(23):
-				res = r.MLEFT(steps);
-				break;
-			case(24):
-				res = r.MUP(steps);
-				break;
-			case(25):
-				res = r.MDOWN(steps);
-				break;
-		}
-		return res;
+		std::cout << "MOVE!!!! " << ptr->operation << "\n";
+		int res = parse_move(ptr, rob, stab);
+		rob->print_field();
 	}
-	return 0;
+
+}
+
+bool tree_parser::parse_ping(node *ptr, robot *r, symbol_table &stab)
+{
+	ping_node *ping = dynamic_cast<ping_node*>(ptr);
+	if (ping->child->operation != INTN)
+	{
+		throw(std::runtime_error("parameter of PING functions must be a number"));
+	}
+	int steps = parse_int(ping->child, stab, r);
+	bool res;
+	switch(ptr->operation)
+	{
+		case(26):
+			res = r->PUP(steps);
+			break;
+		case(27):
+			res = r->PRIGHT(steps);
+			break;
+		case(28):
+			res = r->PLEFT(steps);
+			break;
+		case(29):
+			res = r->PDOWN(steps);
+			break;
+	}
+	return res;
+}
+
+int tree_parser::parse_move(node *ptr, robot *r, symbol_table &stab)
+{
+	move_node *move = dynamic_cast<move_node*>(ptr);
+	if (move->child->operation != INTN && move->child->operation != STRN)
+	{
+		throw(std::runtime_error("parameter of MOVE functions must be a number"));
+	}
+	int steps = parse_int(move->child, stab, r);
+	//std::cout << ptr->operation << "\n";
+	int res;
+	switch(ptr->operation)
+	{
+		case(22):
+			res = r->MRIGHT(steps);
+			break;
+		case(23):
+			res = r->MLEFT(steps);
+			break;
+		case(24):
+			res = r->MUP(steps);
+			break;
+		case(25):
+			res = r->MDOWN(steps);
+			break;
+	}
+	return res;
 }
 
 void tree_parser::get_fields(node *child, std::unordered_map<std::string, Value*>& struct_fields)
@@ -334,15 +389,29 @@ void tree_parser::assign_params (node *func_params, node *call_params, symbol_ta
 	{
 		assign_params(func_params->left, call_params->left, local, lglobal);
 	}
-	if (call_params->operation != STRN) {throw (std::runtime_error("parameter of function must be a reference on global variable"));}
-	str_node *s = dynamic_cast<str_node*>(call_params);
 	decl_node *f = dynamic_cast<decl_node*>(func_params);
-	Value *v;
-	if (!(v = lglobal.find_var(s->str)))
+	//std::cout << (f == nullptr) << "\n";
+	//if (call_params->operation != STRN)
+	// {throw (std::runtime_error("parameter of function must be a reference on global variable"));}
+	if (call_params->operation == STRN)
 	{
-		throw (std::runtime_error("global variable put as func parameter wasn't found"));
+		str_node *s = dynamic_cast<str_node*>(call_params);
+		Value *v;
+		if (!(v = lglobal.find_var(s->str)))
+		{
+			throw (std::runtime_error("global variable put as func parameter wasn't found"));
+		}
+		local.add(f->var_name, v);
 	}
-	local.add(f->var_name, v);
+	else
+	{
+		if (call_params->operation == INTN)
+		{
+			int_node *s = dynamic_cast<int_node*>(call_params);
+			Value *v = new Int_Value("NUMERIC", 1, s->value, true, VAR);
+			local.add(f->var_name, v);
+		}
+	}
 }
 
 void tree_parser::check_height(node *func_params, node *call_params)
@@ -358,7 +427,7 @@ void tree_parser::check_height(node *func_params, node *call_params)
 	}
 }
 
-int tree_parser::parse_bool(node *ptr, symbol_table& stab)
+int tree_parser::parse_bool(node *ptr, symbol_table& stab, robot *rob)
 {
         if (ptr->operation == BOOLN)
         {
@@ -381,37 +450,37 @@ int tree_parser::parse_bool(node *ptr, symbol_table& stab)
                 switch(ptr->operation)
                 {
                         case(4):
-                                return parse_bool(ptr->left, stab) ^ parse_bool(ptr->right, stab);
+                                return parse_bool(ptr->left, stab, rob) ^ parse_bool(ptr->right, stab, rob);
                                 break;
                         case(5):
-                                return parse_bool(ptr->left, stab) || parse_bool(ptr->right, stab);
+                                return parse_bool(ptr->left, stab, rob) || parse_bool(ptr->right, stab, rob);
                                 break;
                         case(6):
-                                return parse_bool(ptr->left, stab) && parse_bool(ptr->right, stab);
+                                return parse_bool(ptr->left, stab, rob) && parse_bool(ptr->right, stab, rob);
                                 break;
                         case(7):
-                                return !(parse_bool(ptr->left, stab) && parse_bool(ptr->right, stab));
+                                return !(parse_bool(ptr->left, stab, rob) && parse_bool(ptr->right, stab, rob));
                                 break;
                         case(8):
-                               return parse_bool(ptr->left, stab) == parse_bool(ptr->right, stab);
+                               return parse_bool(ptr->left, stab, rob) == parse_bool(ptr->right, stab, rob);
                                break;
                         case(9):
-	                        	return parse_bool(ptr->left, stab) != parse_bool(ptr->right, stab);
+	                        	return parse_bool(ptr->left, stab, rob) != parse_bool(ptr->right, stab, rob);
 	                        	break;
                         case(10):
-	                        	return !(parse_bool(ptr->left, stab) || parse_bool(ptr->right, stab));
+	                        	return !(parse_bool(ptr->left, stab, rob) || parse_bool(ptr->right, stab, rob));
 	                        	break;
                         case(11):
-	                        	return parse_bool(ptr->left, stab) < parse_bool(ptr->right, stab);
+	                        	return parse_bool(ptr->left, stab, rob) < parse_bool(ptr->right, stab, rob);
 	                        	break;
                         case(12):
-	                        	return parse_bool(ptr->left, stab) > parse_bool(ptr->right, stab);
+	                        	return parse_bool(ptr->left, stab, rob) > parse_bool(ptr->right, stab, rob);
 	                        	break;
                 }
         }
         else if (ptr->operation == 13)
         {
-        	return !parse_bool(ptr->left, stab);
+        	return !parse_bool(ptr->left, stab, rob);
         }
 		else if (ptr->operation == STRN)
 		{
@@ -419,9 +488,16 @@ int tree_parser::parse_bool(node *ptr, symbol_table& stab)
 			if(stab.storval.contains(temp->str) && (stab.storval[temp->str]->type == "NUMERIC" || stab.storval[temp->str]->type == "LOGIC") &&
 			 stab.storval[temp->str]->size == 1)
 			{
-				Int_Value *temp_2 = dynamic_cast<Int_Value*>(stab.storval[temp->str]);
-				std::cout << temp->str << " " <<  *(temp_2->val) << "\n";
-				return *(temp_2->val);
+				if (stab.storval[temp->str]->type == "NUMERIC")
+				{
+					Int_Value *temp_2 = dynamic_cast<Int_Value*>(stab.storval[temp->str]);
+					return *(temp_2->val);
+				}
+				else if (stab.storval[temp->str]->type == "LOGIC")
+				{
+					Bool_Value *temp_2 = dynamic_cast<Bool_Value*>(stab.storval[temp->str]);
+					return *(temp_2->val);
+				}
 			}
 		}
 		else if (ptr->operation == ARRASSIGNN)
@@ -437,7 +513,7 @@ int tree_parser::parse_bool(node *ptr, symbol_table& stab)
 			{
 					throw(std::runtime_error("wrong array name"));
 			}
-			int index = parse_int(temp->index, stab);
+			int index = parse_int(temp->index, stab, rob);
 			if(stab.storval.contains(name) && stab.storval[name]->type == "NUMERIC" &&
 			 index < stab.storval[name]->size )
 			{
@@ -461,6 +537,14 @@ int tree_parser::parse_bool(node *ptr, symbol_table& stab)
 				return temp_2->val[0];
 			}
 		}
+		else if (ptr->operation >= 22 && ptr->operation <= 25)
+		{
+			return parse_move(ptr, rob, stab);
+		}
+		else if (ptr->operation >= 26 && ptr->operation <= 29)
+		{
+			return parse_ping(ptr, rob,stab);
+		}
         else
         {
                 throw (std::runtime_error("wrong expression from the right side of ="));
@@ -468,7 +552,7 @@ int tree_parser::parse_bool(node *ptr, symbol_table& stab)
         return 0;
 }
 
-int tree_parser::parse_int(node *ptr, symbol_table& stab)
+int tree_parser::parse_int(node *ptr, symbol_table& stab, robot *rob)
 {
 	if (ptr->operation == INTN)
 	{
@@ -483,37 +567,37 @@ int tree_parser::parse_int(node *ptr, symbol_table& stab)
 			switch(ptr->operation)
 			{
 				case(4):
-					return parse_int(ptr->left, stab) - parse_int(ptr->right, stab);
+					return parse_int(ptr->left, stab, rob) - parse_int(ptr->right, stab, rob);
 					break;
 				case(5):
-	                return parse_int(ptr->left, stab) + parse_int(ptr->right, stab);
+	                return parse_int(ptr->left, stab, rob) + parse_int(ptr->right, stab, rob);
 	                break;
 				case(6):
-	                return parse_int(ptr->left, stab) * parse_int(ptr->right, stab);
+	                return parse_int(ptr->left, stab, rob) * parse_int(ptr->right, stab, rob);
 	                break;
 	            case(7):
-	                return parse_int(ptr->left, stab) / parse_int(ptr->right, stab);
+	                return parse_int(ptr->left, stab, rob) / parse_int(ptr->right, stab, rob);
 	                break;
 	            case(8):
-	            	return pow(parse_int(ptr->left, stab), parse_int(ptr->right, stab));
+	            	return pow(parse_int(ptr->left, stab, rob), parse_int(ptr->right, stab, rob));
 	            	break;
 	            case(9):
-	            	return parse_int(ptr->left, stab) != parse_int(ptr->right, stab);
+	            	return parse_int(ptr->left, stab, rob) != parse_int(ptr->right, stab, rob);
 	            	break;
 	            case(10):
-	            	return parse_int(ptr->left, stab) == parse_int(ptr->right, stab);
+	            	return parse_int(ptr->left, stab, rob) == parse_int(ptr->right, stab, rob);
 	            	break;
 	            case(11):
-	            	return parse_int(ptr->left, stab) < parse_int(ptr->right, stab);
+	            	return parse_int(ptr->left, stab, rob) < parse_int(ptr->right, stab, rob);
 	            	break;
 	            case(12):
-	            	return parse_int(ptr->left, stab) > parse_int(ptr->right, stab);
+	            	return parse_int(ptr->left, stab, rob) > parse_int(ptr->right, stab, rob);
 	            	break;
 			}
 	}
  	else if (ptr->operation == 13)
     {
-    	return -parse_int(ptr->left, stab);
+    	return -parse_int(ptr->left, stab, rob);
     }
 	else if (ptr->operation == STRN)
 	{
@@ -538,7 +622,7 @@ int tree_parser::parse_int(node *ptr, symbol_table& stab)
 		{
 				throw(std::runtime_error("wrong array name"));
 		}
-		int index = parse_int(temp->index, stab);
+		int index = parse_int(temp->index, stab, rob);
 		if(stab.storval.contains(name) && stab.storval[name]->type == "NUMERIC" &&
 		 index < stab.storval[name]->size)
 		{
@@ -561,6 +645,14 @@ int tree_parser::parse_int(node *ptr, symbol_table& stab)
 			Int_Value *temp_2 = dynamic_cast<Int_Value*>(record->fields[field_name]);
 			return temp_2->val[0];
 		}
+	}
+	else if (ptr->operation >= 22 && ptr->operation <= 25)
+	{
+		return parse_move(ptr, rob, stab);
+	}
+	else if (ptr->operation >= 26 && ptr->operation <= 29)
+	{
+		return parse_ping(ptr, rob,stab);
 	}
 	else
 	{
