@@ -82,6 +82,8 @@ class symbol_table
 			}
 			else
 			{
+				std::cout << name << "\n";
+				this->print();
 				Record_Value *record = dynamic_cast<Record_Value*>(storval[name]);
 				if (!record->fields.contains(field_name))
 				{
@@ -225,11 +227,11 @@ class symbol_table
 					{
 						Int_Value *v1 = dynamic_cast<Int_Value*>(cur);
 						Int_Value *v2 = dynamic_cast<Int_Value*>(val);
-				        v1->val[ind_1] = v2->val[0];
-				        storval[name_1] = v1;
-				       	if(!storval[name_1]->defined)
+					        v1->val[ind_1] = v2->val[0];
+					        storval[name_1] = v1;
+					       	if(!storval[name_1]->defined)
 							storval[name_1]->defined = true;
-				        return true;
+				        	return true;
 					}
 					else if (cur->type == "LOGIC")
 					{

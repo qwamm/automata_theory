@@ -51,6 +51,52 @@ void tree_parser::parse(node *ptr, symbol_table& stab, robot *rob)
 					                throw(std::runtime_error("multiple definition of variable"));
 					            }
 					 }
+					else if (types.storval.contains(type))
+					 {
+					 		std::cout << "OOOOOOOO\n";
+					 		Record_Value *rec = dynamic_cast<Record_Value*>(types.storval[type]);
+					 		std::unordered_map<std::string, Value*> cur_struct_fields = copy_fields(rec->fields);
+							    Record_Value *store = new Record_Value(type, cur_struct_fields, true, VAR);
+						            if (!stab.add(var_name, store))
+						            {
+						                     throw(std::runtime_error("multiple definition of variable"));
+						            }
+						            std::string r_type;
+						            if (temp->child->operation == INTN)
+						            {
+						            	r_type = "NUMERIC";
+						            }
+						            else if (temp->child->operation == BOOLN)
+						            {
+						            	r_type = "LOGIC";
+						            }
+						            else if (temp->child->operation == STRN)
+						            {
+						            	r_type = "STRING";
+						            }
+						        std::string s = "CONVERT_" + stab.storval[var_name]->type + "_FROM_" + r_type;
+							std::cout << s << "\n";
+							if (functions.storval.contains(s))
+							{
+								if (r_type == "NUMERIC")
+								{
+									proc_node *func = dynamic_cast<proc_node*>(functions.storval[s]);
+									decl_node *ut = new decl_node("NUMERIC", "from", nullptr, temp->child, VARN);
+									str_node *u = new str_node("from", STRN);
+									parse(ut, stab, rob);
+									//stab.print();
+									std::cout <<"VAR_NAME: " << var_name << "\n";
+									str_node *v = new str_node(var_name, STRN);
+									Record_Value *r_t = store;
+									u->set_left(v);
+									node *t = new proc_node(s, u, nullptr,  CALLN);
+									parse(t, stab, rob);
+									Int_Value *res = dynamic_cast<Int_Value*>(stab.storval["from"]);
+									int result = res->val[0];
+									stab.storval.erase("from");
+								}
+							}         
+					 }
 			}	
 	}	
 	else if (ptr->operation == UNDEFVARN)
@@ -132,42 +178,98 @@ void tree_parser::parse(node *ptr, symbol_table& stab, robot *rob)
 			if (r->operation == STRN)
 			{
 				str_node *r_temp = dynamic_cast<str_node*>(r);
-	            if (!stab.assign_var_to_struct(name, field_name, 0, r_temp->str, 0))
-	            {
-	                     throw(std::runtime_error("variadble wasn't declared or index out of range or types dismatch"));
-	            }
+			            if (!stab.assign_var_to_struct(name, field_name, 0, r_temp->str, 0))
+			            {
+			                     throw(std::runtime_error("variadble wasn't declared or index out of range or types dismatch"));
+			            }
 			}
 			else if (r->operation == LITERALN)
 			{
 					str_node *r_temp = dynamic_cast<str_node*>(r);
 					Value *t = new Char_Value("STRING", 1, r_temp->str , true, VAR);
-		            if (!stab.assign_val_to_struct(name, field_name, ind_1, t))
-		            {
-		                     throw(std::runtime_error("variadble wasn't declared or index out of range"));
-		            }
+				            if (!stab.assign_val_to_struct(name, field_name, ind_1, t))
+				            {
+				                     throw(std::runtime_error("variadble wasn't declared or index out of range"));
+				            }
 			}
 			else if (r->operation == INTN || (r->operation >= 4 && r->operation <= 13))
 			{
 					Value *t = new Int_Value("NUMERIC", 1, parse_int(r, stab, rob) , true, VAR);
-		            if (!stab.assign_val_to_struct(name, field_name, ind_1, t))
-		            {
-		                     throw(std::runtime_error("variadble wasn't declared or index out of range"));
-		            }
+				            if (!stab.assign_val_to_struct(name, field_name, ind_1, t))
+				            {
+				                     throw(std::runtime_error("variadble wasn't declared or index out of range"));
+				            }
 			}
 			else if (r->operation == BOOLN)
 			{
 					Value *t = new Bool_Value("LOGIC", 1, parse_bool(r, stab, rob) , true, VAR);
-		            if (!stab.assign_val_to_struct(name, field_name, ind_1, t))
-		         	{
-		                     throw(std::runtime_error("variadble wasn't declared or index out of range"));
-		            }
+				            if (!stab.assign_val_to_struct(name, field_name, ind_1, t))
+				         	{
+				                     throw(std::runtime_error("variadble wasn't declared or index out of range"));
+				            }
 			}
 			return;
 		}
 		if (r->operation == STRN)
 		{
-				str_node *r_temp = dynamic_cast<str_node*>(r);
-		            if (!stab.assign_var(name, ind_1, r_temp->str, 0))
+			    str_node *r_temp = dynamic_cast<str_node*>(r), *temp = r_temp;
+			    if (stab.storval.contains(r_temp->str))
+			    {
+			    	Value *c = stab.storval[r_temp->str];
+			    	if(types.storval.contains(c->type))
+			    	{
+		    			std::string type = stab.storval[name]->type;
+		    			std::string s = "CONVERT_" + stab.storval[temp->str]->type + "_TO_" + type;
+					std::cout << s << "\n";
+					if ( functions.storval.contains(s))
+					{
+						std::cout << "IIIIIIIIIIII\n";
+						std::cout << type << "\n";
+						if (type == "NUMERIC")
+						{
+							std::cout << "IIIIIIIIIIII\n";
+							proc_node *func = dynamic_cast<proc_node*>(functions.storval[s]);
+							decl_node *ut = new decl_node("NUMERIC", "to", nullptr, nullptr, UNDEFVARN);
+							str_node *u = new str_node("to", STRN);
+							parse(ut, stab, rob);
+							std::cout <<"TEMP->STR: " << temp->str << "\n";
+							str_node *v = new str_node(temp->str, STRN);
+							Record_Value *r_t = dynamic_cast<Record_Value*>(stab.storval[temp->str]);
+							u->set_left(v);
+							node *t = new proc_node(s, u, nullptr,  CALLN);
+							parse(t, stab, rob);
+							Int_Value *res = dynamic_cast<Int_Value*>(stab.storval["to"]);
+							int result = res->val[0];
+							stab.storval.erase("to");
+							stab.assign_val(name, ind_1, res);
+						}
+						else if (type == "LOGIC")
+						{
+							std::cout << "IIIIIIIIIIII\n";
+							proc_node *func = dynamic_cast<proc_node*>(functions.storval[s]);
+							decl_node *ut = new decl_node("NUMERIC", "to", nullptr, nullptr, UNDEFVARN);
+							str_node *u = new str_node("to", STRN);
+							parse(ut, stab, rob);
+							std::cout <<"TEMP->STR: " << temp->str << "\n";
+							str_node *v = new str_node(temp->str, STRN);
+							Record_Value *r_t = dynamic_cast<Record_Value*>(stab.storval[temp->str]);
+							u->set_left(v);
+							node *t = new proc_node(s, u, nullptr,  CALLN);
+							parse(t, stab, rob);
+							Int_Value *res = dynamic_cast<Int_Value*>(stab.storval["to"]);
+							int result = res->val[0];
+							stab.storval.erase("to");
+							dynamic_cast<Bool_Value*>(stab.storval[name])->val[0] = result;
+							//stab.assign_val(name, ind_1, res);							
+						}
+					}
+					else
+					{
+						throw(std::runtime_error("CONVERTION WASN'T DEFINED"));
+					}				
+			    	}
+			    }
+		            else if (!stab.assign_var(name, ind_1, r_temp->str, 0))
 		            {
 		                     throw(std::runtime_error("variadble wasn't declared or index out of range"));
 		            }
@@ -307,7 +409,20 @@ void tree_parser::parse(node *ptr, symbol_table& stab, robot *rob)
 		}
 		if (record->conv_from)
 		{
-
+			conv_node *convert = dynamic_cast<conv_node*>(record->conv_from);
+			Value *store;
+			decl_node *p_2 = new decl_node(record->type_name, "to", nullptr, nullptr, UNDEFVARN);
+			decl_node *p_1 = new decl_node(convert->type, "from", nullptr, nullptr
+			, UNDEFVARN);
+			p_1->set_left(p_2);
+			store = new Proc_Value(p_1, convert->body, true, PROCV);
+			std::string f_name = "CONVERT_" + record->type_name + "_FROM_" + convert->type;
+			std::cout << "HEREKSDHGKJSNDBGSSBGU\n";
+			std::cout << f_name << "\n";
+		        if (!functions.add(f_name, store))
+			{
+			       	throw(std::runtime_error("multiple definition of function"));
+			}
 		}
 	}
 	else if (ptr->operation >= 22 && ptr->operation <= 25) //MOVE
@@ -557,6 +672,8 @@ int tree_parser::parse_bool(node *ptr, symbol_table& stab, robot *rob)
 		else if (ptr->operation == STRN)
 		{
 			str_node *temp = dynamic_cast<str_node*>(ptr);
+			std::string s = "CONVERT_" + stab.storval[temp->str]->type + "_TO_LOGIC";
+			std::cout << s << "\n";
 			if(stab.storval.contains(temp->str) && (stab.storval[temp->str]->type == "NUMERIC" || stab.storval[temp->str]->type == "LOGIC") &&
 			 stab.storval[temp->str]->size == 1)
 			{
@@ -570,6 +687,23 @@ int tree_parser::parse_bool(node *ptr, symbol_table& stab, robot *rob)
 					Bool_Value *temp_2 = dynamic_cast<Bool_Value*>(stab.storval[temp->str]);
 					return *(temp_2->val);
 				}
+			}
+			else if (stab.storval.contains(temp->str) && functions.storval.contains(s))
+			{
+				proc_node *func = dynamic_cast<proc_node*>(functions.storval[s]);
+				decl_node *ut = new decl_node("NUMERIC", "to", nullptr, nullptr, UNDEFVARN);
+				str_node *u = new str_node("to", STRN);
+				parse(ut, stab, rob);
+				std::cout <<"TEMP->STR: " << temp->str << "\n";
+				str_node *v = new str_node(temp->str, STRN);
+				Record_Value *r_t = dynamic_cast<Record_Value*>(stab.storval[temp->str]);
+				u->set_left(v);
+				node *t = new proc_node(s, u, nullptr,  CALLN);
+				parse(t, stab, rob);
+				Int_Value *res = dynamic_cast<Int_Value*>(stab.storval["to"]);
+				int result = res->val[0];
+				stab.storval.erase("to");
+				return result;
 			}
 		}
 		else if (ptr->operation == ARRASSIGNN)
@@ -695,7 +829,9 @@ int tree_parser::parse_int(node *ptr, symbol_table& stab, robot *rob)
 			node *t = new proc_node(s, u, nullptr,  CALLN);
 			parse(t, stab, rob);
 			Int_Value *res = dynamic_cast<Int_Value*>(stab.storval["to"]);
-			return res->val[0];
+			int result = res->val[0];
+			stab.storval.erase("to");
+			return result;
 		}
 	}
 	else if (ptr->operation == ARRASSIGNN)

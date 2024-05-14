@@ -1,10 +1,11 @@
 RECORD Point DATA [NUMERIC x, NUMERIC y]
-CONVERSION TO NUMERIC BLOCK
-        to = from.x
+CONVERSION FROM NUMERIC BLOCK
+        to.x = from
+        to.y = from*3
 UNBLOCK
+CONVERSION TO LOGIC BLOCK
+        to = from.x
+UNBLOCK 
 
-Point t
-t.x = 3
-t.y = 5
-NUMERIC x = t 
+Point t = 5
 

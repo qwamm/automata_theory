@@ -87,7 +87,7 @@ program:
 	}
 	;
 record:
-	RECORD SVAL DATA '[' group_comma ']' '\n' CONVERSION FROM conv_proc_set CONVERSION TO conv_proc_set
+	RECORD SVAL DATA '[' group_comma ']' '\n' CONVERSION FROM conv_proc_set  CONVERSION TO conv_proc_set
 	{
 		$$.tree = new record_node(std::string($2.text), $5.tree, $10.tree, $13.tree , RECORDN);
 	}
@@ -125,8 +125,8 @@ declaration:
 	syntax_tree->put_tree($$.tree, 0);}
 	| TYPE SVAL {$$.tree = new decl_node(std::string($1.text), std::string($2.text), nullptr, nullptr, UNDEFVARN);
 	syntax_tree->put_tree($$.tree, 0);}
-	| TYPE SVAL '=' expr	{$$.tree = new decl_node(std::string($1.text), std::string($2.text), nullptr, $4.tree, VARN);
-	 printf("NAME: %s\n", $2.text); printf("TYPE: %s\n", $1.text); syntax_tree->put_tree($$.tree, 0);}
+	| TYPE SVAL '=' expr	{$$.tree = new decl_node(std::string($1.text), std::string($2.text), nullptr, $4.tree, VARN);  printf("NAME: %s\n", $2.text); printf("TYPE: %s\n", $1.text); syntax_tree->put_tree($$.tree, 0);}
+	| SVAL SVAL '=' expr	{$$.tree = new decl_node(std::string($1.text), std::string($2.text), nullptr, $4.tree, VARN);  printf("NAME: %s\n", $2.text); printf("TYPE: %s\n", $1.text); syntax_tree->put_tree($$.tree, 0);}
 	| TYPE SVAL '[' expr ']' {
 		$$.tree = new decl_node(std::string($1.text), std::string($2.text), $4.tree, nullptr, UNDEFVARN); syntax_tree->put_tree($$.tree, 0);  
 	}

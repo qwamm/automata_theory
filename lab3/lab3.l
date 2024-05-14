@@ -78,6 +78,7 @@ TO {
 
 FROM {
 	yylval.text = yytext;
+	std::cout << "FROM CAPTURED\n";
 	return FROM;
 }
 
