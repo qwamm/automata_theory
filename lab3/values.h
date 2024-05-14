@@ -30,7 +30,7 @@ class Record_Value : public Value
 	public:
 		std::unordered_map<std::string, Value*> fields;
 		std::string from, to;
-		Record_Value(std::unordered_map<std::string, Value*> fields, bool defined, int operation) : Value("RECORD", 1, defined, operation)
+		Record_Value(std::string name, std::unordered_map<std::string, Value*> fields, bool defined, int operation) : Value(name, 1, defined, operation)
 		{
 				this->fields = fields;
 		}

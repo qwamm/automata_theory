@@ -41,18 +41,18 @@ class record_node : public node
 	public:
 		std::string type_name;
 		node *сhild, *conv_from, *conv_to;
-        record_node(std::string type_name, node *child, node *conv_from, node *conv_to, int operation) : node(operation)
-        {
-                this->type_name = type_name;
-				this->сhild = child;
-				this->conv_from = conv_from;
-				this->conv_to = conv_to;
-        }
-        void print_val() override
-        {
-                std::cout << "RECORD";
-        }
-        ~record_node() {}
+	        record_node(std::string type_name, node *child, node *conv_from, node *conv_to, int operation) : node(operation)
+	        {
+	                this->type_name = type_name;
+					this->сhild = child;
+					this->conv_from = conv_from;
+					this->conv_to = conv_to;
+	        }
+	        void print_val() override
+	        {
+	                std::cout << "RECORD";
+	        }
+	        ~record_node() {}
 };
 
 class arr_node : public node
@@ -142,14 +142,14 @@ class proc_node : public node //procedures declaration and calling
 			this->body = body;
 			this->parameters = parameters;
 		}
-        void print_val() override
-        {
-			if (operation == PROCN)
-            	std::cout << "PROC";
-			else if (operation == CALLN)
-				std::cout << "CALL";
-        }
-        ~proc_node() {}
+	        void print_val() override
+	        {
+				if (operation == PROCN)
+	            	std::cout << "PROC";
+				else if (operation == CALLN)
+					std::cout << "CALL";
+	        }
+	        ~proc_node() {}
 };
 
 class cond_node : public node

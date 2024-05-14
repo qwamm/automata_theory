@@ -54,7 +54,8 @@ PROC {
 }
 
 RECORD {
-	yylval.text = yytext;
+        yylval.text = (char*)malloc(strlen(yytext) + 1);
+        strcpy(yylval.text, yytext);
 	return RECORD;
 }
 
@@ -65,11 +66,13 @@ DATA {
 
 CONVERSION {
 	yylval.text = yytext;
+	std::cout << "CONVERSION CAPTURED\n";
 	return CONVERSION;
 }
 
 TO {
 	yylval.text = yytext;
+	std::cout << "TO CAPTURED\n";
 	return TO;
 }
 
@@ -80,11 +83,13 @@ FROM {
 
 BLOCK {
 	yylval.text = yytext;
+	std::cout << "BLOCK CAPTURED\n";
 	return BLOCK;
 }
 
 UNBLOCK {
 	yylval.text = yytext;
+	std::cout << "UNBLOCK CAPTURED\n";
 	return UNBLOCK;
 }
 

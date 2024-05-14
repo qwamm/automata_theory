@@ -97,6 +97,7 @@ record:
 	}
 	| 	RECORD SVAL DATA '[' group_comma ']' '\n' CONVERSION TO conv_proc_set
 	{
+		std::cout <<"$2 TEXT: " << $2.text << "\n";
 		$$.tree = new record_node(std::string($2.text), $5.tree, nullptr, $10.tree , RECORDN);
 	}
 	|	RECORD SVAL DATA '[' group_comma ']' '\n'
@@ -153,8 +154,9 @@ group_comma:
 	;
 
 conv_proc_set:
-	TYPE BLOCK '\n' {$$.tree = new conv_node(std::string($1.text), $2.tree, CONVPROCN);}
-	| TYPE BLOCK '\n' conv_proc_set {$3.tree->set_left($1.tree); $$ = $3; std::cout << "CONV_PROC AND CONV_PROC SET\n"; syntax_tree->put_tree($$.tree, 0);}
+	TYPE block '\n' {$$.tree = new conv_node(std::string($1.text), $2.tree, CONVPROCN);}
+	| TYPE block '\n' conv_proc_set {$3.tree->set_left($1.tree); $$ = $3; std::cout << "CONV_PROC AND CONV_PROC SET\n"; syntax_tree->put_tree($$.tree, 0);}
+	;
 
 arg_set:
 	expr { $$ = $1;}

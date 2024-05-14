@@ -25,6 +25,9 @@ class symbol_table
 		{
 			if(!storval.contains(name) || !storval.contains(var_name))
 			{
+				std::cout << name << " " << var_name << "\n";
+				this->print();
+				std::cout <<"ISDFHJSDGJDSHV\n";
 				return false;
 			}
 			else
@@ -41,31 +44,31 @@ class symbol_table
 					{
 						Int_Value *v1 = dynamic_cast<Int_Value*>(cur);
 						Int_Value *v2 = dynamic_cast<Int_Value*>(val);
-				        v1->val[ind_1] = v2->val[ind_2];
-				        storval[var_name] = v1;
-				       	if(!storval[var_name]->defined)
-							storval[var_name]->defined = true;
-				        return true;
+					        v1->val[ind_1] = v2->val[ind_2];
+					        storval[var_name] = v1;
+					       	if(!storval[var_name]->defined)
+								storval[var_name]->defined = true;
+					        return true;
 					}
 					else if (cur->type == "LOGIC")
 					{
 						Bool_Value *v1 = dynamic_cast<Bool_Value*>(cur);
 						Bool_Value *v2 = dynamic_cast<Bool_Value*>(val);
-				        v1->val[ind_1] = v2->val[ind_2];
-				       	storval[var_name] = v1;
-				       	if(!storval[var_name]->defined)
-							storval[var_name]->defined = true;
-				        return true;
+					        v1->val[ind_1] = v2->val[ind_2];
+					       	storval[var_name] = v1;
+					       	if(!storval[var_name]->defined)
+								storval[var_name]->defined = true;
+					        return true;
 					}	
 					else if (cur->type == "STRING")
 					{
 						Char_Value *v1 = dynamic_cast<Char_Value*>(cur);
 						Char_Value *v2 = dynamic_cast<Char_Value*>(val);
-				        v1->val[ind_1] = v2->val[ind_2];
-				         storval[var_name] = v1;
-				       	if(!storval[var_name]->defined)
-							storval[var_name]->defined = true;
-				        return true;
+					        v1->val[ind_1] = v2->val[ind_2];
+					         storval[var_name] = v1;
+					       	if(!storval[var_name]->defined)
+								storval[var_name]->defined = true;
+					        return true;
 					}	
 				}
 			}
@@ -91,30 +94,30 @@ class symbol_table
 					{
 						Int_Value *v1 = dynamic_cast<Int_Value*>(cur);
 						Int_Value *v2 = dynamic_cast<Int_Value*>(val);
-				        v1->val[ind_1] = v2->val[ind_2];
-				        record->fields[field_name] = v1;
-				       	if(!record->fields[field_name]->defined)
-							record->fields[field_name]->defined = true;
+					        v1->val[ind_1] = v2->val[ind_2];
+					        record->fields[field_name] = v1;
+					       	if(!record->fields[field_name]->defined)
+								record->fields[field_name]->defined = true;
 				        return true;
 					}
 					else if (cur->type == "LOGIC")
 					{
 						Bool_Value *v1 = dynamic_cast<Bool_Value*>(cur);
 						Bool_Value *v2 = dynamic_cast<Bool_Value*>(val);
-				        v1->val[ind_1] = v2->val[ind_2];
-				        record->fields[field_name] = v1;
-				       	if(!record->fields[field_name]->defined)
-							record->fields[field_name]->defined = true;
+					        v1->val[ind_1] = v2->val[ind_2];
+					        record->fields[field_name] = v1;
+					       	if(!record->fields[field_name]->defined)
+								record->fields[field_name]->defined = true;
 				        return true;
 					}	
 					else if (cur->type == "STRING")
 					{
 						Char_Value *v1 = dynamic_cast<Char_Value*>(cur);
 						Char_Value *v2 = dynamic_cast<Char_Value*>(val);
-				        v1->val[ind_1] = v2->val[ind_2];
-				         record->fields[field_name] = v1;
-				       	if(!record->fields[field_name]->defined)
-							record->fields[field_name]->defined = true;
+					        v1->val[ind_1] = v2->val[ind_2];
+					         record->fields[field_name] = v1;
+					       	if(!record->fields[field_name]->defined)
+								record->fields[field_name]->defined = true;
 				        return true;
 					}	
 				}
@@ -197,15 +200,15 @@ class symbol_table
 		bool add(std::string name, Value *val)
 		{
 				//std::cout << "TRY TO ADD " << name << "\n";
-                if(storval.contains(name))
-                {
-                        return false;
-                }
-                else
-                {
-                        storval[name] = val;
-						return true;
-                }
+		                if(storval.contains(name))
+		                {
+		                        return false;
+		                }
+		                else
+		                {
+		                        storval[name] = val;
+					return true;
+		                }
 		}
 		bool assign_val(std::string name_1, int ind_1, Value *val)
 		{

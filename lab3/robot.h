@@ -1,6 +1,8 @@
 #include <iostream>
 #include <vector>
 #include <utility>
+#include <chrono>
+#include <thread>
 #define FREE 1
 #define OBST 2
 #define EXIT 3
@@ -197,6 +199,7 @@ class cell_robot : public robot
 		~cell_robot() {}
 		void print_field()
 		{
+			system("clear");
 			for (int i = 0; i < maze.size(); i++)
 			{
 				for (int j = 0; j < maze[i].size(); j++)
@@ -220,5 +223,6 @@ class cell_robot : public robot
 				}
 				std::cout << "\n";
 			}
+			std::this_thread::sleep_for(std::chrono::seconds(1));
 		}
 };
