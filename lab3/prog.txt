@@ -1,0 +1,73 @@
+NUMERIC operation = 0
+NUMERIC direction = 5
+
+LOGIC reached = FALSE
+
+PROC find NUMERIC direction, LOGIC reached & BLOCK
+	NUMERIC c = 0
+	NUMERIC c1 = 0
+	NUMERIC c2 = 0
+	NUMERIC c3 = 0
+	{(PINGUP[0] ? 1)*(c ? 0)} BLOCK
+		reached = TRUE
+		c = 1
+	UNBLOCK
+	c1 = 0
+	{((reached ? 0)*(c1 ? 0))*(direction ! 3)} BLOCK
+		c2 = 0
+		{(MOVELEFT[1] ! 1)*(c2 ? 0)} BLOCK
+		@ find 4, reached |
+		c2 = 1
+		UNBLOCK
+		c3 = 0
+		{(reached ? 0)*(c3 ? 0)} BLOCK
+		reached = PINGUP[0]
+		c3 = 1
+		UNBLOCK
+		c1 = 1
+	UNBLOCK
+        c1 = 0
+        {((reached ? 0)*(c1 ? 0))*(direction ! 4)} BLOCK
+		c2 = 0
+                {(MOVERIGHT[1] ! 1)*(c2 ? 0)} BLOCK
+                @ find 3, reached |
+		c2 = 1
+                UNBLOCK
+                c3 = 0
+                {(reached ? 0)*(c3 ? 0)} BLOCK
+                reached = PINGUP[0]
+                c3 = 1
+                UNBLOCK
+                c1 = 1
+        UNBLOCK
+        c1 = 0
+        {((reached ? 0)*(c1 ? 0))*(direction ! 2)} BLOCK
+		c2 = 0
+                {(MOVEUP[1] ! 1)*(c2 ? 0)} BLOCK
+                @ find 1, reached |
+		c2 = 1
+                UNBLOCK
+                c3 = 0
+                {(reached ? 0)*(c3 ? 0)} BLOCK
+                reached = PINGUP[0]
+                c3 = 1
+                UNBLOCK
+                c1 = 1
+        UNBLOCK
+        c1 = 0
+        {((reached ? 0)*(c1 ? 0))*(direction ! 1)} BLOCK
+		c2 = 0
+                {(MOVEDOWN[1] ! 1)*(c2 ? 0)} BLOCK
+                @ find 2, reached |
+		c2 = 1
+                UNBLOCK
+                c3 = 0
+                {(reached ? 0)*(c3 ? 0)} BLOCK
+                reached = PINGUP[0]
+                c3 = 1
+                UNBLOCK
+                c1 = 1
+        UNBLOCK
+UNBLOCK
+@ find direction, reached |
+

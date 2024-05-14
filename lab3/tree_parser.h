@@ -10,6 +10,7 @@ class tree_parser
 	public:
 		symbol_table global;
 		symbol_table functions;
+		symbol_table types;
 		tree_parser() {}
 		~tree_parser() {}
 		void parse(node *ptr, symbol_table& stab, robot *rob);
@@ -18,6 +19,7 @@ class tree_parser
 		void check_height(node *func_params, node *call_params);
 		void assign_params (node *func_params, node *call_params, symbol_table &local, symbol_table &lglobal);
 		void get_fields(node *child, std::unordered_map<std::string, Value*>& struct_fields);
+		std::unordered_map<std::string, Value*> copy_fields(std::unordered_map<std::string, Value*> &fields);
 		int parse_move(node *ptr, robot *r, symbol_table &stab);
 		bool parse_ping(node *ptr, robot *r, symbol_table &stab);
 };

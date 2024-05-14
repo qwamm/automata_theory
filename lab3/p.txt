@@ -1,77 +1,14 @@
-NUMERIC operation = 0
-NUMERIC direction = 5
+RECORD Point DATA [NUMERIC x, NUMERIC y]
 
-LOGIC reached = FALSE
+Point A
+A.x = 0
+A.y = 0
+Point B
+B.x = 3
+B.y = 0
+Point C
+C.x = 0
+C.y = 4
 
-PROC find NUMERIC direction, LOGIC reached & BLOCK
-	NUMERIC c = 0
-	NUMERIC c1 = 0
-	NUMERIC c2 = 0
-	NUMERIC c3 = 0
-	{(PINGUP[0] ? 1)*(c ? 0)} BLOCK
-		reached = TRUE
-		c = 1
-	UNBLOCK
-	c1 = 0
-	{((reached ? 0)*(c1 ? 0))*(direction ! 3)} BLOCK
-		c2 = 0
-		{(MOVELEFT[1] ! 1)*(c2 ? 0)} BLOCK
-		@ find 4, reached |
-		MOVERIGHT[1]
-		c2 = 1
-		UNBLOCK
-		c3 = 0
-		{(reached ? 0)*(c3 ? 0)} BLOCK
-		reached = PINGUP[0]
-		c3 = 1
-		UNBLOCK
-		c1 = 1
-	UNBLOCK
-        c1 = 0
-        {((reached ? 0)*(c1 ? 0))*(direction ! 4)} BLOCK
-		c2 = 0
-                {(MOVERIGHT[1] ! 1)*(c2 ? 0)} BLOCK
-                @ find 3, reached |
-		MOVELEFT[1]
-		c2 = 1
-                UNBLOCK
-                c3 = 0
-                {(reached ? 0)*(c3 ? 0)} BLOCK
-                reached = PINGUP[0]
-                c3 = 1
-                UNBLOCK
-                c1 = 1
-        UNBLOCK
-        c1 = 0
-        {((reached ? 0)*(c1 ? 0))*(direction ! 2)} BLOCK
-		c2 = 0
-                {(MOVEUP[1] ! 1)*(c2 ? 0)} BLOCK
-                @ find 1, reached |
-		MOVEDOWN[1]
-		c2 = 1
-                UNBLOCK
-                c3 = 0
-                {(reached ? 0)*(c3 ? 0)} BLOCK
-                reached = PINGUP[0]
-                c3 = 1
-                UNBLOCK
-                c1 = 1
-        UNBLOCK
-        c1 = 0
-        {((reached ? 0)*(c1 ? 0))*(direction ! 1)} BLOCK
-		c2 = 0
-                {(MOVEDOWN[1] ! 1)*(c2 ? 0)} BLOCK
-		MOVEUP[1]
-                @ find 2, reached |
-		c2 = 1
-                UNBLOCK
-                c3 = 0
-                {(reached ? 0)*(c3 ? 0)} BLOCK
-                reached = PINGUP[0]
-                c3 = 1
-                UNBLOCK
-                c1 = 1
-        UNBLOCK
-UNBLOCK
-@ find direction, reached |
+NUMERIC len = (B.x- C.x)*(B.x- C.x) + (B.y - C.y)*(B.y - C.y) 
 

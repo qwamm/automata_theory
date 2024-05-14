@@ -99,13 +99,13 @@ class cell_robot : public robot
 		}
 		int MLEFT(int steps) override
  		{
- 			std::cout << coordinats.first << " " << coordinats.second << "\n";
+ 			//std::cout << coordinats.first << " " << coordinats.second << "\n";
 			while(coordinats.second - 1 >= 0 && maze[coordinats.first][coordinats.second - 1]->type != OBST && steps > 0)
             {
                     coordinats.second -= 1;
                     steps--;
            	}
-           	std::cout << coordinats.first << " " << coordinats.second << "\n";
+           	//std::cout << coordinats.first << " " << coordinats.second << "\n";
            	if (maze[coordinats.first][coordinats.second]->type == EXIT)
            	{
            		std::cout << "Congratulations! You have escaped backrooms!\n";

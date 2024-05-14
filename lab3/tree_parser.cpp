@@ -88,6 +88,16 @@ void tree_parser::parse(node *ptr, symbol_table& stab, robot *rob)
 	                     throw(std::runtime_error("multiple definition of variable"));
 	            }
 		 }
+		 else if (types.storval.contains(type))
+		 {
+		 		Record_Value *rec = dynamic_cast<Record_Value*>(types.storval[type]);
+		 		std::unordered_map<std::string, Value*> cur_struct_fields = copy_fields(rec->fields);
+			    Record_Value *store = new Record_Value(cur_struct_fields, true, VAR);
+	            if (!stab.add(var_name, store))
+	            {
+	                     throw(std::runtime_error("multiple definition of variable"));
+	            }
+		 }
 	}
 	else if (ptr->operation == ASSIGNN)
 	{
@@ -257,15 +267,15 @@ void tree_parser::parse(node *ptr, symbol_table& stab, robot *rob)
 		symbol_table local;
 		check_height(func_params, call->parameters);
 		assign_params(func_params, call->parameters, local, stab);
-		// local.print();
-		// std::cout << "\n";
-		// rob.print_field();
-		// std::cout << "\n";
-		parse(b->child, local, rob);
 		local.print();
 		std::cout << "\n";
 		rob->print_field();
 		std::cout << "\n";
+		parse(b->child, local, rob);
+		// local.print();
+		// std::cout << "\n";
+		// rob->print_field();
+		// std::cout << "\n";
 	}
 	else if(ptr->operation == RECORDN)
 	{
@@ -274,18 +284,61 @@ void tree_parser::parse(node *ptr, symbol_table& stab, robot *rob)
 		get_fields(record->сhild, struct_fields);
 		Record_Value *store = new Record_Value(struct_fields, true, VAR);
 		std::cout << "RECORD NAME: " << record->type_name << "\n";
-	        if (!stab.add(record->type_name, store))
+	    if (!types.add(record->type_name, store))
 		{
 		       	throw(std::runtime_error("multiple definition of records"));
+		}
+		if (record->to)
+		{
+			conv_node *convert = dynamic_cast<conv_node*>(record->to);
+			Value *store;
+			if (convert->type == "NUMERIC")
+			{
+				decl_node *p_1 = new decl_node(convert->type, "TO", nullptr, nullptr);
+				decl_node *p_2 = new decl_node(record->type_name, record->type_name, nullptr, nullptr);
+				p_1.set_left(p_2);
+				store = new Proc_Value(p_1, convert->body, true, PROCV);
+			} 
+		}
+		if (reocrd->from)
+		{
+
 		}
 	}
 	else if (ptr->operation >= 22 && ptr->operation <= 25) //MOVE
 	{
-		std::cout << "MOVE!!!! " << ptr->operation << "\n";
+		//std::cout << "MOVE!!!! " << ptr->operation << "\n";
 		int res = parse_move(ptr, rob, stab);
-		rob->print_field();
+		//rob->print_field();
 	}
 
+}
+
+std::unordered_map<std::string, Value*> tree_parser::copy_fields(std::unordered_map<std::string, Value*> &fields)
+{
+	std::unordered_map<std::string, Value*> m;
+	for (auto &c : fields)
+	{
+		if (c.second->type == "NUMERIC")
+		{
+			Int_Value *temp = dynamic_cast<Int_Value*>(c.second);
+			Int_Value *n = new Int_Value("NUMERIC", temp->size, temp->val[0], false, VAR);
+			m[c.first] = n;
+		}
+		else if (c.second->type == "STRING")
+		{
+			Char_Value *temp = dynamic_cast<Char_Value*>(c.second);
+			Char_Value *n = new Char_Value("STRING", temp->size, temp->val[0], false, VAR);
+			m[c.first] = n;
+		}
+		else if (c.second->type == "LOGIC")
+		{
+			Bool_Value *temp = dynamic_cast<Bool_Value*>(c.second);
+			Bool_Value *n = new Bool_Value("LOGIC", temp->size, temp->val[0], false, VAR);
+			m[c.first] = n;
+		}
+	}
+	return m;
 }
 
 bool tree_parser::parse_ping(node *ptr, robot *r, symbol_table &stab)
