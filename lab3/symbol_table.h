@@ -25,9 +25,9 @@ class symbol_table
 		{
 			if(!storval.contains(name) || !storval.contains(var_name))
 			{
-				std::cout << name << " " << var_name << "\n";
-				this->print();
-				std::cout <<"ISDFHJSDGJDSHV\n";
+				//std::cout << name << " " << var_name << "\n";
+				//this->print();
+				//std::cout <<"ISDFHJSDGJDSHV\n";
 				return false;
 			}
 			else
@@ -82,22 +82,31 @@ class symbol_table
 			}
 			else
 			{
-				std::cout << name << "\n";
-				this->print();
+				//std::cout << name << "\n";
+				//this->print();
 				Record_Value *record = dynamic_cast<Record_Value*>(storval[name]);
 				if (!record->fields.contains(field_name))
 				{
 					throw(std::runtime_error("struct doesn't contain field"));
 				}
 				Value *cur = record->fields[field_name], *val = storval[var_name];
-				if (cur->type == val->type && ind_1 < cur->size && ind_2 < val->size && ind_1 >= 0 && ind_2 >= 0)
+				if ((cur->type == val->type || (cur->type == "LOGIC" && val->type == "NUMERIC") || (cur->type == "NUMERIC" && val->type == "LOGIC"))
+				 && ind_1 < cur->size && ind_2 < val->size && ind_1 >= 0 && ind_2 >= 0)
 				{
 					if (cur->type == "NUMERIC")
 					{
 						Int_Value *v1 = dynamic_cast<Int_Value*>(cur);
-						Int_Value *v2 = dynamic_cast<Int_Value*>(val);
+						if (val->type == "NUMERIC")
+						{
+							Int_Value *v2 = dynamic_cast<Int_Value*>(val);
 					        v1->val[ind_1] = v2->val[ind_2];
-					        record->fields[field_name] = v1;
+						}
+						else if (val->type == "LOGIC")
+						{
+							Bool_Value *v2 = dynamic_cast<Bool_Value*>(val);
+					        v1->val[ind_1] = v2->val[ind_2];
+					    }
+					    record->fields[field_name] = v1;
 					       	if(!record->fields[field_name]->defined)
 								record->fields[field_name]->defined = true;
 				        return true;
@@ -105,11 +114,19 @@ class symbol_table
 					else if (cur->type == "LOGIC")
 					{
 						Bool_Value *v1 = dynamic_cast<Bool_Value*>(cur);
-						Bool_Value *v2 = dynamic_cast<Bool_Value*>(val);
+						if (val->type == "NUMERIC")
+						{
+							Int_Value *v2 = dynamic_cast<Int_Value*>(val);
 					        v1->val[ind_1] = v2->val[ind_2];
-					        record->fields[field_name] = v1;
-					       	if(!record->fields[field_name]->defined)
-								record->fields[field_name]->defined = true;
+						}
+						else if (val->type == "LOGIC")
+						{
+							Bool_Value *v2 = dynamic_cast<Bool_Value*>(val);
+					        v1->val[ind_1] = v2->val[ind_2];
+					    }
+				        record->fields[field_name] = v1;
+				       	if(!record->fields[field_name]->defined)
+							record->fields[field_name]->defined = true;
 				        return true;
 					}	
 					else if (cur->type == "STRING")
@@ -140,7 +157,8 @@ class symbol_table
 					throw(std::runtime_error("struct doesn't contain field"));
 				}
 				Value *cur = record->fields[field_name];
-				if (cur->type == val->type && ind_1 < cur->size && ind_1 >= 0)
+				if ((cur->type == val->type || (cur->type == "LOGIC" && val->type == "NUMERIC") || (cur->type == "NUMERIC" && val->type == "LOGIC"))
+				 && ind_1 < cur->size && ind_1 >= 0)
 				{
 					if (cur->type == "NUMERIC")
 					{

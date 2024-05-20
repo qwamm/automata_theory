@@ -1,3 +1,4 @@
+%locations
 %{
 	#ifndef AST
 	#define AST
@@ -9,10 +10,12 @@
 	struct val
 	{
 		char *text;
+		int line;
 		bool one = true;
 		node *tree;
 	};
 	ast *syntax_tree;
+	bool error = true;
 	#include <iostream>
 	#include <string>
 	#include <fstream>
@@ -81,6 +84,7 @@ program:
 		if ($2.tree) {syntax_tree->add($2.tree);}
 		syntax_tree->put_tree(syntax_tree->root, 0);
 	}
+	| program EF {printf("Programm finished successfully!\n"); error = false; return 0;}
 	| {
 		syntax_tree = new ast();
 		printf("enter a expression:\n");
@@ -169,7 +173,6 @@ expr:
 	| INTNUM {$$.tree = new int_node(atoi($1.text), INTN); printf("INTNUM %d\n", atoi($1.text));}
 	| BOOLNUM {bool buf; if (strcmp($1.text, "TRUE") == 0) {buf = true;} else {buf = false;} $$.tree = new bool_node(buf,
 	 BOOLN); printf("BOOLNUM %d\n", buf);}
-	| EF {printf("Programm finished successfully!\n");}
 	| '(' expr ')' {$$.tree = $2.tree;}
 	| expr '<' expr {$$.tree = new operation_node($1.tree, $3.tree, LESSN); }
 	| expr '>' expr {$$.tree = new operation_node($1.tree, $3.tree, GREATERN); }
@@ -251,11 +254,6 @@ expr:
 
 #include <stdbool.h>
 
-void yyerror(const char *s)
-{
-	fprintf(stderr, "%s\n", s);
-}
-
 /*int yylex(void)
 {
 	int c;
@@ -281,29 +279,32 @@ void yyerror(const char *s)
 int main(void)
 {
 	yyparse();
-	std::string line;
-	std::vector<std::string> v;
-	std::ifstream in;
-	in.open("maze.txt");
-	if (in.is_open())
+	if (!error)
 	{
-		while(std::getline(in,line))
+		std::string line;
+		std::vector<std::string> v;
+		std::ifstream in;
+		in.open("maze.txt");
+		if (in.is_open())
 		{
-			v.push_back(line);
+			while(std::getline(in,line))
+			{
+				v.push_back(line);
+			}
+			in.close();
 		}
-		in.close();
+		robot *r = new cell_robot(v);
+		//std::cout << "BEFORE\n";
+		//r.print_field();
+		if (syntax_tree->root)
+		{
+			std::cout << "GLOBAL\n";
+			tree_parser x;
+			x.parse(syntax_tree->root, x.global, r);
+			x.global.print();
+		}
+		//std::cout << "AFTER\n";
+		//r.print_field();
 	}
-	robot *r = new cell_robot(v);
-	//std::cout << "BEFORE\n";
-	//r.print_field();
-	if (syntax_tree->root)
-	{
-		std::cout << "GLOBAL\n";
-		tree_parser x;
-		x.parse(syntax_tree->root, x.global, r);
-		x.global.print();
-	}
-	//std::cout << "AFTER\n";
-	//r.print_field();
 	return 0;
 }

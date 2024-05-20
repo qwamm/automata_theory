@@ -1,11 +1,14 @@
 RECORD Point DATA [NUMERIC x, NUMERIC y]
 CONVERSION FROM NUMERIC BLOCK
         to.x = from
-        to.y = from*3
 UNBLOCK
-CONVERSION TO LOGIC BLOCK
+CONVERSION TO NUMERIC BLOCK
         to = from.x
 UNBLOCK 
 
-Point t = 5
+12 12
+
+NUMERIC x = 2
+Point t = 3
+NUMERIC z = t*15 + 4
 

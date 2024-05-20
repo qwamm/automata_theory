@@ -162,8 +162,27 @@ extern FILE *yyin, *yyout;
 #define EOB_ACT_END_OF_FILE 1
 #define EOB_ACT_LAST_MATCH 2
     
-    #define YY_LESS_LINENO(n)
-    #define YY_LINENO_REWIND_TO(ptr)
+    /* Note: We specifically omit the test for yy_rule_can_match_eol because it requires
+     *       access to the local variable yy_act. Since yyless() is a macro, it would break
+     *       existing scanners that call yyless() from OUTSIDE yylex.
+     *       One obvious solution it to make yy_act a global. I tried that, and saw
+     *       a 5% performance hit in a non-yylineno scanner, because yy_act is
+     *       normally declared as a register variable-- so it is not worth it.
+     */
+    #define  YY_LESS_LINENO(n) \
+            do { \
+                int yyl;\
+                for ( yyl = n; yyl < yyleng; ++yyl )\
+                    if ( yytext[yyl] == '\n' )\
+                        --yylineno;\
+            }while(0)
+    #define YY_LINENO_REWIND_TO(dst) \
+            do {\
+                const char *p;\
+                for ( p = yy_cp-1; p >= (dst); --p)\
+                    if ( *p == '\n' )\
+                        --yylineno;\
+            }while(0)
     
 /* Return all but the first "n" matched characters back to the input stream. */
 #define yyless(n) \
@@ -499,6 +518,12 @@ static const flex_int16_t yy_chk[173] =
       124,  124
     } ;
 
+/* Table of booleans, true if rule could match eol. */
+static const flex_int32_t yy_rule_can_match_eol[23] =
+    {   0,
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 
+    0, 0, 0,     };
+
 static yy_state_type yy_last_accepting_state;
 static char *yy_last_accepting_cpos;
 
@@ -519,20 +544,21 @@ char *yytext;
 	#define AST
 	#include "nodes.h"
 	#endif
-        struct val
-        {
-                char *text;
+    struct val
+    {
+        char *text;
 		bool one = true;
+		int line;
 		node *tree;
-        };
-        #define YYSTYPE val
+    };
+    #define YYSTYPE val
 	#include "lab3.tab.h"
 	#include <cstdlib>
 	#include <cstring>
 	#include <cmath>
 	void yyerror(const char*);
-#line 535 "lex.yy.c"
-#line 536 "lex.yy.c"
+#line 561 "lex.yy.c"
+#line 562 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -749,10 +775,10 @@ YY_DECL
 		}
 
 	{
-#line 20 "lab3.l"
+#line 23 "lab3.l"
 
 
-#line 756 "lex.yy.c"
+#line 782 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -798,6 +824,16 @@ yy_find_action:
 
 		YY_DO_BEFORE_ACTION;
 
+		if ( yy_act != YY_END_OF_BUFFER && yy_rule_can_match_eol[yy_act] )
+			{
+			int yyl;
+			for ( yyl = 0; yyl < yyleng; ++yyl )
+				if ( yytext[yyl] == '\n' )
+					
+    yylineno++;
+;
+			}
+
 do_action:	/* This label is used only to access EOF actions. */
 
 		switch ( yy_act )
@@ -811,165 +847,183 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 22 "lab3.l"
+#line 25 "lab3.l"
 {
 	std::cout << "INTNUM CAPTURED " << yytext << "\n";
 	yylval.text = new char[strlen(yytext) + 1];
 	strcpy(yylval.text, yytext);
+	yylval.line = yylineno;
 	return INTNUM;
 }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 29 "lab3.l"
+#line 33 "lab3.l"
 {
 	yylval.text = yytext;
+	yylval.line = yylineno;
 	return BOOLNUM;
 }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 34 "lab3.l"
+#line 39 "lab3.l"
 {
 	yylval.text = (char*)malloc(strlen(yytext) + 1);
 	strcpy(yylval.text, yytext);
 	printf("TYPE CAPTURED: %s\n", yytext);
+	yylval.line = yylineno;
 	return TYPE;
 }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 41 "lab3.l"
+#line 47 "lab3.l"
 {
 	yylval.text = yytext;
+	yylval.line = yylineno;
 	return VISION;
 }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 46 "lab3.l"
+#line 53 "lab3.l"
 {
         yylval.text = yytext;
+        yylval.line = yylineno;
         return VOICE;
 }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 51 "lab3.l"
+#line 59 "lab3.l"
 {
 	yylval.text = yytext;
+	yylval.line = yylineno;
 	return PROC;
 }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 56 "lab3.l"
+#line 65 "lab3.l"
 {
-        yylval.text = (char*)malloc(strlen(yytext) + 1);
-        strcpy(yylval.text, yytext);
+    yylval.text = (char*)malloc(strlen(yytext) + 1);
+    strcpy(yylval.text, yytext);
+    yylval.line = yylineno;
 	return RECORD;
 }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 62 "lab3.l"
+#line 72 "lab3.l"
 {
 	yylval.text = yytext;
+	yylval.line = yylineno;
 	return DATA;
 }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 67 "lab3.l"
+#line 78 "lab3.l"
 {
 	yylval.text = yytext;
 	std::cout << "CONVERSION CAPTURED\n";
+	yylval.line = yylineno;
 	return CONVERSION;
 }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 73 "lab3.l"
+#line 85 "lab3.l"
 {
 	yylval.text = yytext;
 	std::cout << "TO CAPTURED\n";
+	yylval.line = yylineno;
 	return TO;
 }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 79 "lab3.l"
+#line 92 "lab3.l"
 {
 	yylval.text = yytext;
 	std::cout << "FROM CAPTURED\n";
+	yylval.line = yylineno;
 	return FROM;
 }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 85 "lab3.l"
+#line 99 "lab3.l"
 {
 	yylval.text = yytext;
 	std::cout << "BLOCK CAPTURED\n";
+	yylval.line = yylineno;
 	return BLOCK;
 }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 91 "lab3.l"
+#line 106 "lab3.l"
 {
 	yylval.text = yytext;
 	std::cout << "UNBLOCK CAPTURED\n";
+	yylval.line = yylineno;
 	return UNBLOCK;
 }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 97 "lab3.l"
+#line 113 "lab3.l"
 {
-        yylval.text = (char*)malloc(strlen(yytext) + 1);
-        strcpy(yylval.text, yytext);
+    yylval.text = (char*)malloc(strlen(yytext) + 1);
+    strcpy(yylval.text, yytext);
+    yylval.line = yylineno;
 	return MOVE;
 }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 103 "lab3.l"
+#line 120 "lab3.l"
 {
 	yylval.text = yytext;
+	yylval.line = yylineno;
 	return PING;
 }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 108 "lab3.l"
+#line 126 "lab3.l"
 {
 	yylval.text = yytext;
+	yylval.line = yylineno;
 	return UNDEF;
 }
 	YY_BREAK
 case 17:
 /* rule 17 can match eol */
 YY_RULE_SETUP
-#line 113 "lab3.l"
+#line 132 "lab3.l"
 {
 	std::cout << "SYMBOL CAPTURED " << yytext << "\n";
-        return *yytext;
+	yylval.line = yylineno;
+    return *yytext;
 }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 118 "lab3.l"
+#line 138 "lab3.l"
 {
 	yylval.text = (char*)malloc(strlen(yytext) + 1);
 	strcpy(yylval.text, yytext);
 	printf("SVAL CAPTURED: %s\n", yytext);
+	yylval.line = yylineno;
 	return SVAL;
 }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 124 "lab3.l"
+#line 145 "lab3.l"
 {
         yylval.text = (char*)malloc(strlen(yytext) + 1);
 	int i = 0;
@@ -979,33 +1033,34 @@ YY_RULE_SETUP
 	}
 	yylval.text[i-1] = '\0';
 	printf("%d\n", i);
-        printf("LITERAL CAPTURED: %s\n", yytext);
-        return LITERAL;
+    printf("LITERAL CAPTURED: %s\n", yytext);
+    yylval.line = yylineno;
+    return LITERAL;
 }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 137 "lab3.l"
+#line 159 "lab3.l"
 ;	/* skip tabs and whitespaces */
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 139 "lab3.l"
+#line 161 "lab3.l"
 {
 	printf("%s\n", yytext);
 	yyerror("Unknown character");
 }
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
-#line 144 "lab3.l"
+#line 166 "lab3.l"
 {return EF;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 146 "lab3.l"
+#line 168 "lab3.l"
 ECHO;
 	YY_BREAK
-#line 1009 "lex.yy.c"
+#line 1064 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -1371,6 +1426,10 @@ static int yy_get_next_buffer (void)
 
 	*--yy_cp = (char) c;
 
+    if ( c == '\n' ){
+        --yylineno;
+    }
+
 	(yytext_ptr) = yy_bp;
 	(yy_hold_char) = *yy_cp;
 	(yy_c_buf_p) = yy_cp;
@@ -1447,6 +1506,11 @@ static int yy_get_next_buffer (void)
 	c = *(unsigned char *) (yy_c_buf_p);	/* cast for 8-bit char's */
 	*(yy_c_buf_p) = '\0';	/* preserve yytext */
 	(yy_hold_char) = *++(yy_c_buf_p);
+
+	if ( c == '\n' )
+		
+    yylineno++;
+;
 
 	return c;
 }
@@ -1914,6 +1978,9 @@ static int yy_init_globals (void)
      * This function is called from yylex_destroy(), so don't allocate here.
      */
 
+    /* We do not touch yylineno unless the option is enabled. */
+    yylineno =  1;
+    
     (yy_buffer_stack) = NULL;
     (yy_buffer_stack_top) = 0;
     (yy_buffer_stack_max) = 0;
@@ -2008,8 +2075,14 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 146 "lab3.l"
+#line 168 "lab3.l"
 
+
+void yyerror(const char *s)
+{
+	std::cout << "Error in line " << yylineno << "\n";
+	fprintf(stderr, "%s\n", s);
+}
 
 int yywrap(void)
 {

@@ -3,14 +3,15 @@
 	#define AST
 	#include "nodes.h"
 	#endif
-    struct val
-    {
-        char *text;
-		bool one = true;
+        struct val
+        {
+                char *text;
 		int line;
+		bool error;
+		bool one = true;
 		node *tree;
-    };
-    #define YYSTYPE val
+        };
+        #define YYSTYPE val
 	#include "lab3.tab.h"
 	#include <cstdlib>
 	#include <cstring>
@@ -26,13 +27,11 @@
 	std::cout << "INTNUM CAPTURED " << yytext << "\n";
 	yylval.text = new char[strlen(yytext) + 1];
 	strcpy(yylval.text, yytext);
-	yylval.line = yylineno;
 	return INTNUM;
 }
 
 TRUE|FALSE {
 	yylval.text = yytext;
-	yylval.line = yylineno;
 	return BOOLNUM;
 }
 
@@ -40,106 +39,90 @@ NUMERIC|LOGIC|STRING {
 	yylval.text = (char*)malloc(strlen(yytext) + 1);
 	strcpy(yylval.text, yytext);
 	printf("TYPE CAPTURED: %s\n", yytext);
-	yylval.line = yylineno;
 	return TYPE;
 }
 
 VISION {
 	yylval.text = yytext;
-	yylval.line = yylineno;
 	return VISION;
 }
 
 VOICE {
         yylval.text = yytext;
-        yylval.line = yylineno;
         return VOICE;
 }
 
 PROC {
 	yylval.text = yytext;
-	yylval.line = yylineno;
 	return PROC;
 }
 
 RECORD {
-    yylval.text = (char*)malloc(strlen(yytext) + 1);
-    strcpy(yylval.text, yytext);
-    yylval.line = yylineno;
+        yylval.text = (char*)malloc(strlen(yytext) + 1);
+        strcpy(yylval.text, yytext);
 	return RECORD;
 }
 
 DATA {
 	yylval.text = yytext;
-	yylval.line = yylineno;
 	return DATA;
 }
 
 CONVERSION {
 	yylval.text = yytext;
 	std::cout << "CONVERSION CAPTURED\n";
-	yylval.line = yylineno;
 	return CONVERSION;
 }
 
 TO {
 	yylval.text = yytext;
 	std::cout << "TO CAPTURED\n";
-	yylval.line = yylineno;
 	return TO;
 }
 
 FROM {
 	yylval.text = yytext;
 	std::cout << "FROM CAPTURED\n";
-	yylval.line = yylineno;
 	return FROM;
 }
 
 BLOCK {
 	yylval.text = yytext;
 	std::cout << "BLOCK CAPTURED\n";
-	yylval.line = yylineno;
 	return BLOCK;
 }
 
 UNBLOCK {
 	yylval.text = yytext;
 	std::cout << "UNBLOCK CAPTURED\n";
-	yylval.line = yylineno;
 	return UNBLOCK;
 }
 
 MOVEUP|MOVEDOWN|MOVERIGHT|MOVELEFT {
-    yylval.text = (char*)malloc(strlen(yytext) + 1);
-    strcpy(yylval.text, yytext);
-    yylval.line = yylineno;
+        yylval.text = (char*)malloc(strlen(yytext) + 1);
+        strcpy(yylval.text, yytext);
 	return MOVE;
 }
 
 PINGUP|PINGDOWN|PINGLEFT|PINGRIGHT {
 	yylval.text = yytext;
-	yylval.line = yylineno;
 	return PING;
 }
 
 UNDEF {
 	yylval.text = yytext;
-	yylval.line = yylineno;
 	return UNDEF;
 }
 
 [-&+*/^?!<>\n\"()=\[\],.{}@|] {
 	std::cout << "SYMBOL CAPTURED " << yytext << "\n";
-	yylval.line = yylineno;
-    return *yytext;
+        return *yytext;
 }
 
 [a-zA-Z]([a-zA-Z0-9])* {
 	yylval.text = (char*)malloc(strlen(yytext) + 1);
 	strcpy(yylval.text, yytext);
 	printf("SVAL CAPTURED: %s\n", yytext);
-	yylval.line = yylineno;
 	return SVAL;
 }
 \"[a-zA-Z]([a-zA-Z0-9])*\" {
@@ -151,9 +134,8 @@ UNDEF {
 	}
 	yylval.text[i-1] = '\0';
 	printf("%d\n", i);
-    printf("LITERAL CAPTURED: %s\n", yytext);
-    yylval.line = yylineno;
-    return LITERAL;
+        printf("LITERAL CAPTURED: %s\n", yytext);
+        return LITERAL;
 }
 
 [ \t]	;	/* skip tabs and whitespaces */
@@ -170,6 +152,7 @@ UNDEF {
 void yyerror(const char *s)
 {
 	std::cout << "Error in line " << yylineno << "\n";
+	//error = true;
 	fprintf(stderr, "%s\n", s);
 }
 
