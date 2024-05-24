@@ -7,7 +7,7 @@ class struct_ref_node : public node
 {
 	public:
 		std::string struct_name, struct_field;
-		struct_ref_node(std::string struct_name, std::string struct_field, int operation) : node(operation)
+		struct_ref_node(std::string struct_name, std::string struct_field, int operation, int line) : node(operation, line)
 		{
 			this->struct_name = struct_name;
 			this->struct_field = struct_field;
@@ -24,7 +24,7 @@ class conv_node : public node
 	public:
 		std::string type;
 		node *body;
-		conv_node(std::string type, node *body, int operation) : node(operation)
+		conv_node(std::string type, node *body, int operation, int line) : node(operation, line)
 		{
 			this->type = type;
 			this->body = body;
@@ -41,7 +41,7 @@ class record_node : public node
 	public:
 		std::string type_name;
 		node *сhild, *conv_from, *conv_to;
-	        record_node(std::string type_name, node *child, node *conv_from, node *conv_to, int operation) : node(operation)
+	        record_node(std::string type_name, node *child, node *conv_from, node *conv_to, int operation, int line) : node(operation, line)
 	        {
 	                this->type_name = type_name;
 					this->сhild = child;
@@ -59,7 +59,7 @@ class arr_node : public node
 {
         public:
 			node *name, *index;
-            arr_node(node *name, node *index, int operation) : node(operation)
+            arr_node(node *name, node *index, int operation, int line) : node(operation, line)
             {
                     this->name = name;
 					this->index = index;
@@ -75,7 +75,7 @@ class voice_node : public node
 {
         public:
  				node *child;
-                voice_node(node *child, int operation) : node(operation)
+                voice_node(node *child, int operation, int line) : node(operation, line)
                 {
                         this->child = child;
                 }
@@ -90,7 +90,7 @@ class vision_node : public node
 {
         public:
         		node *child;
-                vision_node(node *child, int operation) : node(operation)
+                vision_node(node *child, int operation, int line) : node(operation, line)
                 {
                         this->child = child;
                 }
@@ -105,7 +105,7 @@ class ping_node : public node
 {
         public:
  				node *child;
-                ping_node(node *child, int operation) : node(operation)
+                ping_node(node *child, int operation, int line) : node(operation, line)
                 {
                         this->child = child;
                 }
@@ -120,7 +120,7 @@ class move_node : public node
 {
 	public:
 		node *child;
-		move_node(node *child, int operation) : node(operation)
+		move_node(node *child, int operation, int line) : node(operation, line)
 		{
 			this->child = child;
 		}
@@ -136,7 +136,7 @@ class proc_node : public node //procedures declaration and calling
 	public:
 		std::string name;
 		node *parameters, *body;
-		proc_node(std::string name, node *parameters, node *body, int operation) : node (operation)
+		proc_node(std::string name, node *parameters, node *body, int operation, int line) : node (operation, line)
 		{
 			this->name = name;
 			this->body = body;
@@ -156,7 +156,7 @@ class cond_node : public node
 {
 	public:
 		node *block, *condition;
-		cond_node(node *condition, node *block, int operation) : node(operation)
+		cond_node(node *condition, node *block, int operation, int line) : node(operation, line)
 		{
 			this->block = block;
 			this->condition = condition;
@@ -172,7 +172,7 @@ class block_node : public node
 {
 	public:
 		node *child;
-		block_node(node *child, int operation) : node(operation)
+		block_node(node *child, int operation, int line) : node(operation, line)
 		{
 			this->child = child;
 		}
@@ -187,7 +187,7 @@ class str_node : public node
 {
 	public:
 		std::string str;
-		str_node(std::string str, int operation) : node(operation)
+		str_node(std::string str, int operation, int line) : node(operation, line)
 		{
 			this->str = str;
 		}
@@ -198,23 +198,12 @@ class str_node : public node
 		~str_node(){}
 };
 
-class undef_node : public node
-{
-	public:
-		undef_node() : node(UNDEFVARN) {}
-		void print_val() override
-		{
-			std::cout << "UNDEF\n";
-		}
-		~undef_node(){}
-};
-
 class assign_node : public node
 {
 	public:
 		node *left_op;
 		node *child;
-		assign_node(node *left_op, node *child, int operation) : node(operation)
+		assign_node(node *left_op, node *child, int operation, int line) : node(operation, line)
 		{
 			this->left_op = left_op;
 			this->child = child;
@@ -234,7 +223,7 @@ class decl_node : public node
 		std::string var_name;
 		node *size;
 		node *child;
-		decl_node(std::string type, std::string var_name, node *size, node *child, int operation) : node(operation)
+		decl_node(std::string type, std::string var_name, node *size, node *child, int operation, int line) : node(operation, line)
 		{
 			this->size = size;
 			this->type = type;
@@ -260,7 +249,7 @@ class int_node : public node
 {
 	public:
 		int value;
-		int_node(int value, int operation) : node(operation)
+		int_node(int value, int operation, int line) : node(operation, line)
 		{
 			this->value = value;
 		}
@@ -275,7 +264,7 @@ class bool_node : public node
 {
 	public:
 		bool value;
-		bool_node(bool value, int operation) : node(operation)
+		bool_node(bool value, int operation, int line) : node(operation, line)
 		{
 			this->value = value;
 		}
@@ -289,7 +278,7 @@ class bool_node : public node
 class unary_node : public node
 {
 	public:
-		unary_node(node *child, int operation) : node (operation)
+		unary_node(node *child, int operation, int line) : node (operation, line)
 		{
 			this->left = child;
 		}
@@ -302,7 +291,7 @@ class unary_node : public node
 class operation_node : public node
 {
 	public:
-		operation_node (node *left, node *right, int operation) : node(operation)
+		operation_node (node *left, node *right, int operation, int line) : node(operation, line)
 		{
 			this->left = left;
 			this->right = right;
@@ -343,16 +332,3 @@ class operation_node : public node
 		~operation_node() {}
 };
 
-class null_node : public node
-{
-	public:
-		null_node() : node(0)
- 		{
-
-		}
-		void print_val() override
-		{
-
-		}
-		~null_node() {}
-};

@@ -38,10 +38,12 @@ class node
 {
 	public:
 		int operation;
+                int line;
 		node *left, *right;
                 bool inside;
-		node(int operation)
+		node(int operation, int line)
 		{
+                        this->line = line;
 			this->operation = operation;
 			left = nullptr;
 			right = nullptr;

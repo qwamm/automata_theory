@@ -93,26 +93,26 @@ program:
 record:
 	RECORD SVAL DATA '[' group_comma ']' '\n' CONVERSION FROM conv_proc_set  CONVERSION TO conv_proc_set
 	{
-		$$.tree = new record_node(std::string($2.text), $5.tree, $10.tree, $13.tree , RECORDN);
+		$$.tree = new record_node(std::string($2.text), $5.tree, $10.tree, $13.tree , RECORDN, $1.line);
 	}
 	|	RECORD SVAL DATA '[' group_comma ']' '\n' CONVERSION FROM conv_proc_set
 	{
-		$$.tree = new record_node(std::string($2.text), $5.tree, $10.tree, nullptr, RECORDN);
+		$$.tree = new record_node(std::string($2.text), $5.tree, $10.tree, nullptr, RECORDN, $1.line);
 	}
 	| 	RECORD SVAL DATA '[' group_comma ']' '\n' CONVERSION TO conv_proc_set
 	{
 		std::cout <<"$2 TEXT: " << $2.text << "\n";
-		$$.tree = new record_node(std::string($2.text), $5.tree, nullptr, $10.tree , RECORDN);
+		$$.tree = new record_node(std::string($2.text), $5.tree, nullptr, $10.tree , RECORDN, $1.line);
 	}
 	|	RECORD SVAL DATA '[' group_comma ']' '\n'
 	{
-		$$.tree = new record_node(std::string($2.text), $5.tree, nullptr, nullptr , RECORDN);
+		$$.tree = new record_node(std::string($2.text), $5.tree, nullptr, nullptr , RECORDN, $1.line);
 	}
 	;
 block:
 	BLOCK '\n' sentence UNBLOCK
 	{
-		$$.tree = new block_node($3.tree, BLOCKN);
+		$$.tree = new block_node($3.tree, BLOCKN, $3.line);
 		//if ($$.tree) {syntax_tree->add($$.tree);}
 	}
 	;
@@ -120,19 +120,19 @@ block:
 proc:
 	PROC SVAL group_comma '&' block 
 	{
-			$$.tree = new proc_node(std::string($2.text), $3.tree, $5.tree, PROCN);
+			$$.tree = new proc_node(std::string($2.text), $3.tree, $5.tree, PROCN, $1.line);
 	}
 	;
 
 declaration:
-	SVAL SVAL {$$.tree = new decl_node(std::string($1.text), std::string($2.text), nullptr, nullptr, UNDEFVARN);
+	SVAL SVAL {$$.tree = new decl_node(std::string($1.text), std::string($2.text), nullptr, nullptr, UNDEFVARN, $1.line);
 	syntax_tree->put_tree($$.tree, 0);}
-	| TYPE SVAL {$$.tree = new decl_node(std::string($1.text), std::string($2.text), nullptr, nullptr, UNDEFVARN);
+	| TYPE SVAL {$$.tree = new decl_node(std::string($1.text), std::string($2.text), nullptr, nullptr, UNDEFVARN, $1.line);
 	syntax_tree->put_tree($$.tree, 0);}
-	| TYPE SVAL '=' expr	{$$.tree = new decl_node(std::string($1.text), std::string($2.text), nullptr, $4.tree, VARN);  printf("NAME: %s\n", $2.text); printf("TYPE: %s\n", $1.text); syntax_tree->put_tree($$.tree, 0);}
-	| SVAL SVAL '=' expr	{$$.tree = new decl_node(std::string($1.text), std::string($2.text), nullptr, $4.tree, VARN);  printf("NAME: %s\n", $2.text); printf("TYPE: %s\n", $1.text); syntax_tree->put_tree($$.tree, 0);}
+	| TYPE SVAL '=' expr	{$$.tree = new decl_node(std::string($1.text), std::string($2.text), nullptr, $4.tree, VARN, $1.line);  printf("NAME: %s\n", $2.text); printf("TYPE: %s\n", $1.text); syntax_tree->put_tree($$.tree, 0);}
+	| SVAL SVAL '=' expr	{$$.tree = new decl_node(std::string($1.text), std::string($2.text), nullptr, $4.tree, VARN, $1.line);  printf("NAME: %s\n", $2.text); printf("TYPE: %s\n", $1.text); syntax_tree->put_tree($$.tree, 0);}
 	| TYPE SVAL '[' expr ']' {
-		$$.tree = new decl_node(std::string($1.text), std::string($2.text), $4.tree, nullptr, UNDEFVARN); syntax_tree->put_tree($$.tree, 0);  
+		$$.tree = new decl_node(std::string($1.text), std::string($2.text), $4.tree, nullptr, UNDEFVARN, $1.line); syntax_tree->put_tree($$.tree, 0);  
 	}
 	;
 
@@ -148,7 +148,7 @@ sentence:
 cond:
 	'{' expr '}' block
 	{
-		$$.tree = new cond_node($2.tree, $4.tree, CONDN);
+		$$.tree = new cond_node($2.tree, $4.tree, CONDN, $1.line);
 	}
 	;
 
@@ -158,7 +158,7 @@ group_comma:
 	;
 
 conv_proc_set:
-	TYPE block '\n' {$$.tree = new conv_node(std::string($1.text), $2.tree, CONVPROCN);}
+	TYPE block '\n' {$$.tree = new conv_node(std::string($1.text), $2.tree, CONVPROCN, $1.line);}
 	| TYPE block '\n' conv_proc_set {$3.tree->set_left($1.tree); $$ = $3; std::cout << "CONV_PROC AND CONV_PROC SET\n"; syntax_tree->put_tree($$.tree, 0);}
 	;
 
@@ -168,34 +168,34 @@ arg_set:
 	;
 
 expr:
-	SVAL {$$.tree = new str_node(std::string($1.text), STRN); printf("SVAL WITH VAL = \"%s\"\n", $1.text);}
-	| LITERAL {$$.tree = new str_node(std::string($1.text), LITERALN);  printf("LITERAL WITH VAL = \"%s\"\n", $1.text);}
-	| INTNUM {$$.tree = new int_node(atoi($1.text), INTN); printf("INTNUM %d\n", atoi($1.text));}
+	SVAL {$$.tree = new str_node(std::string($1.text), STRN, $1.line); printf("SVAL WITH VAL = \"%s\"\n", $1.text);}
+	| LITERAL {$$.tree = new str_node(std::string($1.text), LITERALN, $1.line);  printf("LITERAL WITH VAL = \"%s\"\n", $1.text);}
+	| INTNUM {$$.tree = new int_node(atoi($1.text), INTN, $1.line); printf("INT WITH NUM:\n") printf("INTNUM %d\n", atoi($1.text));}
 	| BOOLNUM {bool buf; if (strcmp($1.text, "TRUE") == 0) {buf = true;} else {buf = false;} $$.tree = new bool_node(buf,
-	 BOOLN); printf("BOOLNUM %d\n", buf);}
+	 BOOLN, $1.line); printf("BOOLNUM %d\n", buf);}
 	| '(' expr ')' {$$.tree = $2.tree;}
-	| expr '<' expr {$$.tree = new operation_node($1.tree, $3.tree, LESSN); }
-	| expr '>' expr {$$.tree = new operation_node($1.tree, $3.tree, GREATERN); }
-	| expr '+' expr {$$.tree = new operation_node($1.tree, $3.tree, PLUSN); }
-	| expr '-' expr {$$.tree = new operation_node($1.tree, $3.tree, NEGN); }
-	| expr '?' expr {$$.tree = new operation_node($1.tree, $3.tree, EQUN); }
-	| expr '!' expr {$$.tree = new operation_node($1.tree, $3.tree, NOTEQUN); }
-	| expr '*' expr {$$.tree = new operation_node($1.tree, $3.tree, MULN); }
-	| expr '/' expr {$$.tree = new operation_node($1.tree, $3.tree, DIVN); }
-	| expr '^' expr {$$.tree = new operation_node($1.tree, $3.tree, EXPN); }
-	| '-' expr %prec UMINUS {$$.tree = new unary_node($1.tree, UMINN);}
+	| expr '<' expr {$$.tree = new operation_node($1.tree, $3.tree, LESSN, $1.line); }
+	| expr '>' expr {$$.tree = new operation_node($1.tree, $3.tree, GREATERN, $1.line); }
+	| expr '+' expr {$$.tree = new operation_node($1.tree, $3.tree, PLUSN, $1.line); }
+	| expr '-' expr {$$.tree = new operation_node($1.tree, $3.tree, NEGN, $1.line); }
+	| expr '?' expr {$$.tree = new operation_node($1.tree, $3.tree, EQUN, $1.line); }
+	| expr '!' expr {$$.tree = new operation_node($1.tree, $3.tree, NOTEQUN, $1.line); }
+	| expr '*' expr {$$.tree = new operation_node($1.tree, $3.tree, MULN, $1.line); }
+	| expr '/' expr {$$.tree = new operation_node($1.tree, $3.tree, DIVN, $1.line); }
+	| expr '^' expr {$$.tree = new operation_node($1.tree, $3.tree, EXPN, $1.line); }
+	| '-' expr %prec UMINUS {$$.tree = new unary_node($1.tree, UMINN, $1.line);}
 	| expr '[' expr ']' {
-		$$.tree = new arr_node($1.tree, $3.tree, ARRASSIGNN);
+		$$.tree = new arr_node($1.tree, $3.tree, ARRASSIGNN, $1.line);
 	}
 	| expr '=' expr {
-            $$.tree = new assign_node($1.tree, $3.tree, ASSIGNN);
+            $$.tree = new assign_node($1.tree, $3.tree, ASSIGNN, $1.line);
              syntax_tree->put_tree($$.tree, 0); 
 	}
-	| SVAL '.' SVAL {$$.tree = new struct_ref_node(std::string($1.text), std::string ($3.text), STRUCTREFN);}
+	| SVAL '.' SVAL {$$.tree = new struct_ref_node(std::string($1.text), std::string ($3.text), STRUCTREFN, $1.line);}
 	| '@' SVAL arg_set '|'
 	{
 	    		std::cout << "CALL HERE!\n";
-	            $$.tree = new proc_node(std::string($2.text), $3.tree, nullptr, CALLN);
+	            $$.tree = new proc_node(std::string($2.text), $3.tree, nullptr, CALLN, $1.line);
 	}
 	| MOVE '[' expr ']'
 	{
@@ -216,7 +216,7 @@ expr:
 		{
 			op = MOVEDOWN;
 		}
-		$$.tree = new move_node($3.tree, op);
+		$$.tree = new move_node($3.tree, op, $1.line);
 	}
 	| PING '[' expr ']'
 	{
@@ -237,15 +237,15 @@ expr:
                 {
                         op = PINGDOWN;
                 }
-                $$.tree = new ping_node($3.tree, op);
+                $$.tree = new ping_node($3.tree, op, $1.line);
 	}
 	| VISION '[' expr ']'
 	{
-                $$.tree = new vision_node($3.tree, VISIONN);
+                $$.tree = new vision_node($3.tree, VISIONN, $1.line);
 	}
     | VOICE '[' expr ']'
     {
-            $$.tree = new voice_node($3.tree, VOICEN);
+            $$.tree = new voice_node($3.tree, VOICEN, $1.line);
     }
 	;
 	 

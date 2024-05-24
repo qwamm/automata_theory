@@ -6,7 +6,7 @@ CONVERSION TO NUMERIC BLOCK
         to = from.x
 UNBLOCK 
 
-12 12
+2 = 1 + 2
 
 NUMERIC x = 2
 Point t = 3

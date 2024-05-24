@@ -1404,63 +1404,63 @@ yyreduce:
 
   case 8: /* record: RECORD SVAL DATA '[' group_comma ']' '\n' CONVERSION FROM conv_proc_set CONVERSION TO conv_proc_set  */
         {
-		yyval.tree = new record_node(std::string(yyvsp[-11].text), yyvsp[-8].tree, yyvsp[-3].tree, yyvsp[0].tree , RECORDN);
+		yyval.tree = new record_node(std::string(yyvsp[-11].text), yyvsp[-8].tree, yyvsp[-3].tree, yyvsp[0].tree , RECORDN, yyvsp[-12].line);
 	}
     break;
 
   case 9: /* record: RECORD SVAL DATA '[' group_comma ']' '\n' CONVERSION FROM conv_proc_set  */
         {
-		yyval.tree = new record_node(std::string(yyvsp[-8].text), yyvsp[-5].tree, yyvsp[0].tree, nullptr, RECORDN);
+		yyval.tree = new record_node(std::string(yyvsp[-8].text), yyvsp[-5].tree, yyvsp[0].tree, nullptr, RECORDN, yyvsp[-9].line);
 	}
     break;
 
   case 10: /* record: RECORD SVAL DATA '[' group_comma ']' '\n' CONVERSION TO conv_proc_set  */
         {
 		std::cout <<"$2 TEXT: " << yyvsp[-8].text << "\n";
-		yyval.tree = new record_node(std::string(yyvsp[-8].text), yyvsp[-5].tree, nullptr, yyvsp[0].tree , RECORDN);
+		yyval.tree = new record_node(std::string(yyvsp[-8].text), yyvsp[-5].tree, nullptr, yyvsp[0].tree , RECORDN, yyvsp[-9].line);
 	}
     break;
 
   case 11: /* record: RECORD SVAL DATA '[' group_comma ']' '\n'  */
         {
-		yyval.tree = new record_node(std::string(yyvsp[-5].text), yyvsp[-2].tree, nullptr, nullptr , RECORDN);
+		yyval.tree = new record_node(std::string(yyvsp[-5].text), yyvsp[-2].tree, nullptr, nullptr , RECORDN, yyvsp[-6].line);
 	}
     break;
 
   case 12: /* block: BLOCK '\n' sentence UNBLOCK  */
         {
-		yyval.tree = new block_node(yyvsp[-1].tree, BLOCKN);
+		yyval.tree = new block_node(yyvsp[-1].tree, BLOCKN, yyvsp[-1].line);
 		//if ($$.tree) {syntax_tree->add($$.tree);}
 	}
     break;
 
   case 13: /* proc: PROC SVAL group_comma '&' block  */
         {
-			yyval.tree = new proc_node(std::string(yyvsp[-3].text), yyvsp[-2].tree, yyvsp[0].tree, PROCN);
+			yyval.tree = new proc_node(std::string(yyvsp[-3].text), yyvsp[-2].tree, yyvsp[0].tree, PROCN, yyvsp[-4].line);
 	}
     break;
 
   case 14: /* declaration: SVAL SVAL  */
-                  {yyval.tree = new decl_node(std::string(yyvsp[-1].text), std::string(yyvsp[0].text), nullptr, nullptr, UNDEFVARN);
+                  {yyval.tree = new decl_node(std::string(yyvsp[-1].text), std::string(yyvsp[0].text), nullptr, nullptr, UNDEFVARN, yyvsp[-1].line);
 	syntax_tree->put_tree(yyval.tree, 0);}
     break;
 
   case 15: /* declaration: TYPE SVAL  */
-                    {yyval.tree = new decl_node(std::string(yyvsp[-1].text), std::string(yyvsp[0].text), nullptr, nullptr, UNDEFVARN);
+                    {yyval.tree = new decl_node(std::string(yyvsp[-1].text), std::string(yyvsp[0].text), nullptr, nullptr, UNDEFVARN, yyvsp[-1].line);
 	syntax_tree->put_tree(yyval.tree, 0);}
     break;
 
   case 16: /* declaration: TYPE SVAL '=' expr  */
-                                {yyval.tree = new decl_node(std::string(yyvsp[-3].text), std::string(yyvsp[-2].text), nullptr, yyvsp[0].tree, VARN);  printf("NAME: %s\n", yyvsp[-2].text); printf("TYPE: %s\n", yyvsp[-3].text); syntax_tree->put_tree(yyval.tree, 0);}
+                                {yyval.tree = new decl_node(std::string(yyvsp[-3].text), std::string(yyvsp[-2].text), nullptr, yyvsp[0].tree, VARN, yyvsp[-3].line);  printf("NAME: %s\n", yyvsp[-2].text); printf("TYPE: %s\n", yyvsp[-3].text); syntax_tree->put_tree(yyval.tree, 0);}
     break;
 
   case 17: /* declaration: SVAL SVAL '=' expr  */
-                                {yyval.tree = new decl_node(std::string(yyvsp[-3].text), std::string(yyvsp[-2].text), nullptr, yyvsp[0].tree, VARN);  printf("NAME: %s\n", yyvsp[-2].text); printf("TYPE: %s\n", yyvsp[-3].text); syntax_tree->put_tree(yyval.tree, 0);}
+                                {yyval.tree = new decl_node(std::string(yyvsp[-3].text), std::string(yyvsp[-2].text), nullptr, yyvsp[0].tree, VARN, yyvsp[-3].line);  printf("NAME: %s\n", yyvsp[-2].text); printf("TYPE: %s\n", yyvsp[-3].text); syntax_tree->put_tree(yyval.tree, 0);}
     break;
 
   case 18: /* declaration: TYPE SVAL '[' expr ']'  */
                                  {
-		yyval.tree = new decl_node(std::string(yyvsp[-4].text), std::string(yyvsp[-3].text), yyvsp[-1].tree, nullptr, UNDEFVARN); syntax_tree->put_tree(yyval.tree, 0);  
+		yyval.tree = new decl_node(std::string(yyvsp[-4].text), std::string(yyvsp[-3].text), yyvsp[-1].tree, nullptr, UNDEFVARN, yyvsp[-4].line); syntax_tree->put_tree(yyval.tree, 0);  
 	}
     break;
 
@@ -1490,7 +1490,7 @@ yyreduce:
 
   case 25: /* cond: '{' expr '}' block  */
         {
-		yyval.tree = new cond_node(yyvsp[-2].tree, yyvsp[0].tree, CONDN);
+		yyval.tree = new cond_node(yyvsp[-2].tree, yyvsp[0].tree, CONDN, yyvsp[-3].line);
 	}
     break;
 
@@ -1503,7 +1503,7 @@ yyreduce:
     break;
 
   case 28: /* conv_proc_set: TYPE block '\n'  */
-                        {yyval.tree = new conv_node(std::string(yyvsp[-2].text), yyvsp[-1].tree, CONVPROCN);}
+                        {yyval.tree = new conv_node(std::string(yyvsp[-2].text), yyvsp[-1].tree, CONVPROCN, yyvsp[-2].line);}
     break;
 
   case 29: /* conv_proc_set: TYPE block '\n' conv_proc_set  */
@@ -1519,20 +1519,20 @@ yyreduce:
     break;
 
   case 32: /* expr: SVAL  */
-             {yyval.tree = new str_node(std::string(yyvsp[0].text), STRN); printf("SVAL WITH VAL = \"%s\"\n", yyvsp[0].text);}
+             {yyval.tree = new str_node(std::string(yyvsp[0].text), STRN, yyvsp[0].line); printf("SVAL WITH VAL = \"%s\"\n", yyvsp[0].text);}
     break;
 
   case 33: /* expr: LITERAL  */
-                  {yyval.tree = new str_node(std::string(yyvsp[0].text), LITERALN);  printf("LITERAL WITH VAL = \"%s\"\n", yyvsp[0].text);}
+                  {yyval.tree = new str_node(std::string(yyvsp[0].text), LITERALN, yyvsp[0].line);  printf("LITERAL WITH VAL = \"%s\"\n", yyvsp[0].text);}
     break;
 
   case 34: /* expr: INTNUM  */
-                 {yyval.tree = new int_node(atoi(yyvsp[0].text), INTN); printf("INTNUM %d\n", atoi(yyvsp[0].text));}
+                 {yyval.tree = new int_node(atoi(yyvsp[0].text), INTN, yyvsp[0].line); printf("INTNUM %d\n", atoi(yyvsp[0].text));}
     break;
 
   case 35: /* expr: BOOLNUM  */
                   {bool buf; if (strcmp(yyvsp[0].text, "TRUE") == 0) {buf = true;} else {buf = false;} yyval.tree = new bool_node(buf,
-	 BOOLN); printf("BOOLNUM %d\n", buf);}
+	 BOOLN, yyvsp[0].line); printf("BOOLNUM %d\n", buf);}
     break;
 
   case 36: /* expr: '(' expr ')'  */
@@ -1540,66 +1540,66 @@ yyreduce:
     break;
 
   case 37: /* expr: expr '<' expr  */
-                        {yyval.tree = new operation_node(yyvsp[-2].tree, yyvsp[0].tree, LESSN); }
+                        {yyval.tree = new operation_node(yyvsp[-2].tree, yyvsp[0].tree, LESSN, yyvsp[-2].line); }
     break;
 
   case 38: /* expr: expr '>' expr  */
-                        {yyval.tree = new operation_node(yyvsp[-2].tree, yyvsp[0].tree, GREATERN); }
+                        {yyval.tree = new operation_node(yyvsp[-2].tree, yyvsp[0].tree, GREATERN, yyvsp[-2].line); }
     break;
 
   case 39: /* expr: expr '+' expr  */
-                        {yyval.tree = new operation_node(yyvsp[-2].tree, yyvsp[0].tree, PLUSN); }
+                        {yyval.tree = new operation_node(yyvsp[-2].tree, yyvsp[0].tree, PLUSN, yyvsp[-2].line); }
     break;
 
   case 40: /* expr: expr '-' expr  */
-                        {yyval.tree = new operation_node(yyvsp[-2].tree, yyvsp[0].tree, NEGN); }
+                        {yyval.tree = new operation_node(yyvsp[-2].tree, yyvsp[0].tree, NEGN, yyvsp[-2].line); }
     break;
 
   case 41: /* expr: expr '?' expr  */
-                        {yyval.tree = new operation_node(yyvsp[-2].tree, yyvsp[0].tree, EQUN); }
+                        {yyval.tree = new operation_node(yyvsp[-2].tree, yyvsp[0].tree, EQUN, yyvsp[-2].line); }
     break;
 
   case 42: /* expr: expr '!' expr  */
-                        {yyval.tree = new operation_node(yyvsp[-2].tree, yyvsp[0].tree, NOTEQUN); }
+                        {yyval.tree = new operation_node(yyvsp[-2].tree, yyvsp[0].tree, NOTEQUN, yyvsp[-2].line); }
     break;
 
   case 43: /* expr: expr '*' expr  */
-                        {yyval.tree = new operation_node(yyvsp[-2].tree, yyvsp[0].tree, MULN); }
+                        {yyval.tree = new operation_node(yyvsp[-2].tree, yyvsp[0].tree, MULN, yyvsp[-2].line); }
     break;
 
   case 44: /* expr: expr '/' expr  */
-                        {yyval.tree = new operation_node(yyvsp[-2].tree, yyvsp[0].tree, DIVN); }
+                        {yyval.tree = new operation_node(yyvsp[-2].tree, yyvsp[0].tree, DIVN, yyvsp[-2].line); }
     break;
 
   case 45: /* expr: expr '^' expr  */
-                        {yyval.tree = new operation_node(yyvsp[-2].tree, yyvsp[0].tree, EXPN); }
+                        {yyval.tree = new operation_node(yyvsp[-2].tree, yyvsp[0].tree, EXPN, yyvsp[-2].line); }
     break;
 
   case 46: /* expr: '-' expr  */
-                                {yyval.tree = new unary_node(yyvsp[-1].tree, UMINN);}
+                                {yyval.tree = new unary_node(yyvsp[-1].tree, UMINN, yyvsp[-1].line);}
     break;
 
   case 47: /* expr: expr '[' expr ']'  */
                             {
-		yyval.tree = new arr_node(yyvsp[-3].tree, yyvsp[-1].tree, ARRASSIGNN);
+		yyval.tree = new arr_node(yyvsp[-3].tree, yyvsp[-1].tree, ARRASSIGNN, yyvsp[-3].line);
 	}
     break;
 
   case 48: /* expr: expr '=' expr  */
                         {
-            yyval.tree = new assign_node(yyvsp[-2].tree, yyvsp[0].tree, ASSIGNN);
+            yyval.tree = new assign_node(yyvsp[-2].tree, yyvsp[0].tree, ASSIGNN, yyvsp[-2].line);
              syntax_tree->put_tree(yyval.tree, 0); 
 	}
     break;
 
   case 49: /* expr: SVAL '.' SVAL  */
-                        {yyval.tree = new struct_ref_node(std::string(yyvsp[-2].text), std::string (yyvsp[0].text), STRUCTREFN);}
+                        {yyval.tree = new struct_ref_node(std::string(yyvsp[-2].text), std::string (yyvsp[0].text), STRUCTREFN, yyvsp[-2].line);}
     break;
 
   case 50: /* expr: '@' SVAL arg_set '|'  */
         {
 	    		std::cout << "CALL HERE!\n";
-	            yyval.tree = new proc_node(std::string(yyvsp[-2].text), yyvsp[-1].tree, nullptr, CALLN);
+	            yyval.tree = new proc_node(std::string(yyvsp[-2].text), yyvsp[-1].tree, nullptr, CALLN, yyvsp[-3].line);
 	}
     break;
 
@@ -1622,7 +1622,7 @@ yyreduce:
 		{
 			op = MOVEDOWN;
 		}
-		yyval.tree = new move_node(yyvsp[-1].tree, op);
+		yyval.tree = new move_node(yyvsp[-1].tree, op, yyvsp[-3].line);
 	}
     break;
 
@@ -1645,19 +1645,19 @@ yyreduce:
                 {
                         op = PINGDOWN;
                 }
-                yyval.tree = new ping_node(yyvsp[-1].tree, op);
+                yyval.tree = new ping_node(yyvsp[-1].tree, op, yyvsp[-3].line);
 	}
     break;
 
   case 53: /* expr: VISION '[' expr ']'  */
         {
-                yyval.tree = new vision_node(yyvsp[-1].tree, VISIONN);
+                yyval.tree = new vision_node(yyvsp[-1].tree, VISIONN, yyvsp[-3].line);
 	}
     break;
 
   case 54: /* expr: VOICE '[' expr ']'  */
     {
-            yyval.tree = new voice_node(yyvsp[-1].tree, VOICEN);
+            yyval.tree = new voice_node(yyvsp[-1].tree, VOICEN, yyvsp[-3].line);
     }
     break;
 
