@@ -1,3 +1,8 @@
-NUMERIC x = 1
-2 = 2 + 1
+12 abc
+34 def
+WHILE x < 2 BLOCK
+	NUMERIC y = 0
+UNBLOCK
+CALL f 2 |
+u = 8
 

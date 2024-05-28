@@ -78,12 +78,13 @@
 	struct val
 	{
 		char *text;
-		int line;
 		bool one = true;
+		int line;
+		int err_type;
 		node *tree;
 	};
 	ast *syntax_tree;
-	bool error = true;
+	bool error = false;
 	#include <iostream>
 	#include <string>
 	#include <fstream>
@@ -142,42 +143,44 @@ enum yysymbol_kind_t
   YYSYMBOL_PING = 18,                      /* PING  */
   YYSYMBOL_VISION = 19,                    /* VISION  */
   YYSYMBOL_VOICE = 20,                     /* VOICE  */
-  YYSYMBOL_EF = 21,                        /* EF  */
-  YYSYMBOL_22_ = 22,                       /* '='  */
-  YYSYMBOL_23_ = 23,                       /* '@'  */
-  YYSYMBOL_24_ = 24,                       /* ','  */
-  YYSYMBOL_25_ = 25,                       /* '>'  */
-  YYSYMBOL_26_ = 26,                       /* '<'  */
-  YYSYMBOL_27_ = 27,                       /* '+'  */
-  YYSYMBOL_28_ = 28,                       /* '-'  */
-  YYSYMBOL_29_ = 29,                       /* '?'  */
-  YYSYMBOL_30_ = 30,                       /* '!'  */
-  YYSYMBOL_31_ = 31,                       /* '*'  */
-  YYSYMBOL_32_ = 32,                       /* '/'  */
-  YYSYMBOL_33_ = 33,                       /* '^'  */
-  YYSYMBOL_34_ = 34,                       /* '['  */
-  YYSYMBOL_35_ = 35,                       /* ']'  */
-  YYSYMBOL_UMINUS = 36,                    /* UMINUS  */
-  YYSYMBOL_37_n_ = 37,                     /* '\n'  */
-  YYSYMBOL_38_ = 38,                       /* '&'  */
-  YYSYMBOL_39_ = 39,                       /* '{'  */
-  YYSYMBOL_40_ = 40,                       /* '}'  */
-  YYSYMBOL_41_ = 41,                       /* '('  */
-  YYSYMBOL_42_ = 42,                       /* ')'  */
-  YYSYMBOL_43_ = 43,                       /* '.'  */
-  YYSYMBOL_44_ = 44,                       /* '|'  */
-  YYSYMBOL_YYACCEPT = 45,                  /* $accept  */
-  YYSYMBOL_program = 46,                   /* program  */
-  YYSYMBOL_record = 47,                    /* record  */
-  YYSYMBOL_block = 48,                     /* block  */
-  YYSYMBOL_proc = 49,                      /* proc  */
-  YYSYMBOL_declaration = 50,               /* declaration  */
-  YYSYMBOL_sentence = 51,                  /* sentence  */
-  YYSYMBOL_cond = 52,                      /* cond  */
-  YYSYMBOL_group_comma = 53,               /* group_comma  */
-  YYSYMBOL_conv_proc_set = 54,             /* conv_proc_set  */
-  YYSYMBOL_arg_set = 55,                   /* arg_set  */
-  YYSYMBOL_expr = 56                       /* expr  */
+  YYSYMBOL_CALL = 21,                      /* CALL  */
+  YYSYMBOL_WHILE = 22,                     /* WHILE  */
+  YYSYMBOL_EF = 23,                        /* EF  */
+  YYSYMBOL_24_ = 24,                       /* '='  */
+  YYSYMBOL_25_ = 25,                       /* '@'  */
+  YYSYMBOL_26_ = 26,                       /* ','  */
+  YYSYMBOL_27_ = 27,                       /* '>'  */
+  YYSYMBOL_28_ = 28,                       /* '<'  */
+  YYSYMBOL_29_ = 29,                       /* '+'  */
+  YYSYMBOL_30_ = 30,                       /* '-'  */
+  YYSYMBOL_31_ = 31,                       /* '?'  */
+  YYSYMBOL_32_ = 32,                       /* '!'  */
+  YYSYMBOL_33_ = 33,                       /* '*'  */
+  YYSYMBOL_34_ = 34,                       /* '/'  */
+  YYSYMBOL_35_ = 35,                       /* '^'  */
+  YYSYMBOL_36_ = 36,                       /* '['  */
+  YYSYMBOL_37_ = 37,                       /* ']'  */
+  YYSYMBOL_UMINUS = 38,                    /* UMINUS  */
+  YYSYMBOL_39_n_ = 39,                     /* '\n'  */
+  YYSYMBOL_40_ = 40,                       /* '&'  */
+  YYSYMBOL_41_ = 41,                       /* '{'  */
+  YYSYMBOL_42_ = 42,                       /* '}'  */
+  YYSYMBOL_43_ = 43,                       /* '('  */
+  YYSYMBOL_44_ = 44,                       /* ')'  */
+  YYSYMBOL_45_ = 45,                       /* '.'  */
+  YYSYMBOL_46_ = 46,                       /* '|'  */
+  YYSYMBOL_YYACCEPT = 47,                  /* $accept  */
+  YYSYMBOL_program = 48,                   /* program  */
+  YYSYMBOL_record = 49,                    /* record  */
+  YYSYMBOL_block = 50,                     /* block  */
+  YYSYMBOL_proc = 51,                      /* proc  */
+  YYSYMBOL_declaration = 52,               /* declaration  */
+  YYSYMBOL_sentence = 53,                  /* sentence  */
+  YYSYMBOL_cond = 54,                      /* cond  */
+  YYSYMBOL_group_comma = 55,               /* group_comma  */
+  YYSYMBOL_conv_proc_set = 56,             /* conv_proc_set  */
+  YYSYMBOL_arg_set = 57,                   /* arg_set  */
+  YYSYMBOL_expr = 58                       /* expr  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -294,7 +297,7 @@ typedef int yytype_uint16;
 
 
 /* Stored state numbers (used for stacks). */
-typedef yytype_int8 yy_state_t;
+typedef yytype_uint8 yy_state_t;
 
 /* State numbers in computations.  */
 typedef int yy_state_fast_t;
@@ -508,19 +511,19 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  2
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   306
+#define YYLAST   371
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  45
+#define YYNTOKENS  47
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  12
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  54
+#define YYNRULES  59
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  125
+#define YYNSTATES  135
 
 /* YYMAXUTOK -- Last valid token kind.  */
-#define YYMAXUTOK   277
+#define YYMAXUTOK   279
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
@@ -535,18 +538,18 @@ union yyalloc
 static const yytype_int8 yytranslate[] =
 {
        0,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      37,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      39,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,    30,     2,     2,     2,     2,    38,     2,
-      41,    42,    31,    27,    24,    28,    43,    32,     2,     2,
+       2,     2,     2,    32,     2,     2,     2,     2,    40,     2,
+      43,    44,    33,    29,    26,    30,    45,    34,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      26,    22,    25,    29,    23,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,    34,     2,    35,    33,     2,     2,     2,     2,     2,
+      28,    24,    27,    31,    25,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,    39,    44,    40,     2,     2,     2,     2,
+       2,    36,     2,    37,    35,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,    41,    46,    42,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -561,19 +564,19 @@ static const yytype_int8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
-      15,    16,    17,    18,    19,    20,    21,    36
+      15,    16,    17,    18,    19,    20,    21,    22,    23,    38
 };
 
 #if YYDEBUG
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
-static const yytype_uint8 yyrline[] =
+static const yytype_int16 yyrline[] =
 {
-       0,    64,    64,    70,    75,    81,    87,    88,    94,    98,
-     102,   107,   113,   121,   128,   130,   132,   133,   134,   140,
-     141,   142,   143,   144,   145,   149,   156,   157,   161,   162,
-     166,   167,   171,   172,   173,   174,   176,   177,   178,   179,
-     180,   181,   182,   183,   184,   185,   186,   187,   190,   194,
-     195,   200,   221,   242,   246
+       0,    67,    67,    80,    92,   105,   118,   123,   124,   130,
+     134,   138,   143,   149,   153,   160,   167,   169,   171,   172,
+     173,   179,   180,   181,   182,   183,   184,   188,   192,   200,
+     201,   205,   206,   210,   211,   212,   216,   217,   218,   219,
+     221,   222,   223,   224,   225,   226,   227,   228,   229,   230,
+     231,   232,   235,   239,   240,   245,   250,   271,   292,   296
 };
 #endif
 
@@ -592,11 +595,11 @@ static const char *const yytname[] =
   "\"end of file\"", "error", "\"invalid token\"", "INTNUM", "BOOLNUM",
   "TYPE", "UNDEF", "SVAL", "LITERAL", "RECORD", "DATA", "CONVERSION", "TO",
   "FROM", "PROC", "BLOCK", "UNBLOCK", "MOVE", "PING", "VISION", "VOICE",
-  "EF", "'='", "'@'", "','", "'>'", "'<'", "'+'", "'-'", "'?'", "'!'",
-  "'*'", "'/'", "'^'", "'['", "']'", "UMINUS", "'\\n'", "'&'", "'{'",
-  "'}'", "'('", "')'", "'.'", "'|'", "$accept", "program", "record",
-  "block", "proc", "declaration", "sentence", "cond", "group_comma",
-  "conv_proc_set", "arg_set", "expr", YY_NULLPTR
+  "CALL", "WHILE", "EF", "'='", "'@'", "','", "'>'", "'<'", "'+'", "'-'",
+  "'?'", "'!'", "'*'", "'/'", "'^'", "'['", "']'", "UMINUS", "'\\n'",
+  "'&'", "'{'", "'}'", "'('", "')'", "'.'", "'|'", "$accept", "program",
+  "record", "block", "proc", "declaration", "sentence", "cond",
+  "group_comma", "conv_proc_set", "arg_set", "expr", YY_NULLPTR
 };
 
 static const char *
@@ -606,7 +609,7 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
-#define YYPACT_NINF (-112)
+#define YYPACT_NINF (-100)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -620,19 +623,20 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
-    -112,    54,  -112,  -112,  -112,    16,    -1,  -112,    46,    48,
-     -12,    22,    26,    30,    36,  -112,    69,   106,   106,   106,
-      42,    44,    52,    53,    57,    59,   144,   -13,    79,    84,
-      92,    17,    80,   106,   106,   106,   106,   106,    61,  -112,
-     128,   110,  -112,  -112,  -112,    80,  -112,    80,   106,   106,
-     106,   106,   106,   106,   106,   106,   106,   106,   106,    80,
-     106,   106,   106,  -112,    71,    99,    83,    73,    96,   157,
-     171,   185,   199,    72,   241,   100,  -112,  -112,  -112,   264,
-     272,   272,    18,    18,   -19,   -19,   -26,   -26,    86,   213,
-    -112,   254,   227,   254,    17,    17,   100,  -112,  -112,  -112,
-    -112,  -112,  -112,   106,  -112,  -112,  -112,    82,  -112,  -112,
-    -112,    81,   111,    15,   122,   122,   100,  -112,   117,    93,
-     119,   122,   122,  -112,  -112
+    -100,    58,  -100,   -27,  -100,  -100,    12,     7,  -100,    24,
+      29,    16,    20,    21,    28,    32,    53,   145,  -100,    75,
+     145,   145,   145,    45,    46,    47,    48,    50,    52,   209,
+    -100,   -11,    74,    93,    92,    10,    89,   145,   145,   145,
+     145,   145,    59,   162,   145,  -100,   193,   175,  -100,  -100,
+    -100,   117,  -100,   117,   145,   145,   145,   145,   145,   145,
+     145,   145,   145,   145,   145,   117,   145,   145,   145,  -100,
+      67,   105,    87,    76,  -100,    99,   222,   236,   250,   264,
+      71,   306,  -100,    72,   108,  -100,  -100,  -100,   329,   149,
+     149,   335,   335,   -25,   -25,    -7,    -7,    90,   278,  -100,
+     319,   292,   319,    10,    10,   108,  -100,  -100,  -100,  -100,
+    -100,  -100,   145,  -100,  -100,  -100,  -100,    91,  -100,  -100,
+    -100,    88,   118,    22,   126,   126,   108,  -100,   122,   101,
+     129,   126,   126,  -100,  -100
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -640,147 +644,163 @@ static const yytype_int16 yypact[] =
    means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       7,     0,     1,    34,    35,     0,    32,    33,     0,     0,
-       0,     0,     0,     0,     0,     6,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,    15,    14,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,    32,    46,
-       0,     0,     2,     3,     4,    19,     5,    21,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,    20,
-       0,     0,     0,    49,     0,     0,    26,     0,     0,     0,
-       0,     0,     0,     0,    30,     0,    36,    22,    24,    48,
-      38,    37,    39,    40,    41,    42,    43,    44,    45,     0,
-      23,    16,     0,    17,     0,     0,     0,    12,    51,    52,
-      53,    54,    50,     0,    25,    47,    18,     0,    27,    13,
-      31,     0,    11,     0,     0,     0,     0,    10,     9,     0,
-       0,    28,     0,    29,     8
+       8,     0,     1,     0,    38,    39,     0,    36,    37,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     7,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       6,    17,    16,     0,     0,     0,     0,     0,     0,     0,
+       0,    35,    36,     0,    35,    50,     0,     0,     2,     3,
+       4,    21,     5,    23,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,    22,     0,     0,     0,    53,
+       0,     0,    29,     0,    14,     0,     0,     0,     0,     0,
+       0,    33,    28,     0,     0,    40,    24,    26,    52,    42,
+      41,    43,    44,    45,    46,    47,    48,    49,     0,    25,
+      18,     0,    19,     0,     0,     0,    13,    56,    57,    58,
+      59,    55,    35,    54,    27,    51,    20,     0,    30,    15,
+      34,     0,    12,     0,     0,     0,     0,    11,    10,     0,
+       0,    31,     0,    32,     9
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-    -112,  -112,  -112,   -70,  -112,   -28,    33,  -112,   -65,  -111,
-      43,   -17
+    -100,  -100,  -100,   -36,  -100,   -33,   -35,  -100,   -50,   -99,
+     -38,   -17
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-       0,     1,    20,    21,    22,    23,    24,    25,    67,   117,
-      73,    26
+       0,     1,    23,    24,    25,    26,    27,    28,    73,   127,
+      80,    29
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
    positive, shift that token.  If negative, reduce the rule whose
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
-static const yytype_int8 yytable[] =
+static const yytype_uint8 yytable[] =
 {
-      39,    40,    41,    66,   118,   104,    28,    57,    58,    60,
-     123,   124,    55,    56,    57,    58,    69,    70,    71,    72,
-      74,    61,     5,    27,    65,    32,   109,   114,   115,   107,
-     108,    79,    80,    81,    82,    83,    84,    85,    86,    87,
-      88,    89,    29,    91,    92,    93,   119,    53,    54,    55,
-      56,    57,    58,    30,     2,    31,    33,     3,     4,     5,
-      34,     6,     7,     8,    35,    68,    66,    66,     9,    10,
-      36,    11,    12,    13,    14,    15,    37,    16,    77,    42,
-      78,    43,    17,     3,     4,     5,    74,     6,     7,    44,
-      45,    63,    90,    18,    46,    19,    47,    11,    12,    13,
-      14,    62,    64,    16,    29,    94,    28,    95,    17,     3,
-       4,    96,    97,    38,     7,    10,   102,   111,   112,    18,
-      58,    19,   113,    11,    12,    13,    14,   116,   120,    16,
-     121,   122,    48,     0,    17,    49,    50,    51,    52,    53,
-      54,    55,    56,    57,    58,     0,   110,    19,     0,     0,
-      48,     0,    76,    49,    50,    51,    52,    53,    54,    55,
-      56,    57,    58,     0,     0,     0,    48,     0,    75,    49,
-      50,    51,    52,    53,    54,    55,    56,    57,    58,    48,
-       0,    59,    49,    50,    51,    52,    53,    54,    55,    56,
-      57,    58,    98,    48,     0,     0,    49,    50,    51,    52,
-      53,    54,    55,    56,    57,    58,    99,    48,     0,     0,
-      49,    50,    51,    52,    53,    54,    55,    56,    57,    58,
-     100,    48,     0,     0,    49,    50,    51,    52,    53,    54,
-      55,    56,    57,    58,   101,    48,     0,     0,    49,    50,
-      51,    52,    53,    54,    55,    56,    57,    58,   105,    48,
-       0,     0,    49,    50,    51,    52,    53,    54,    55,    56,
-      57,    58,   106,    48,     0,   103,    49,    50,    51,    52,
-      53,    54,    55,    56,    57,    58,    48,     0,     0,    49,
-      50,    51,    52,    53,    54,    55,    56,    57,    58,    49,
-      50,    51,    52,    53,    54,    55,    56,    57,    58,    51,
-      52,    53,    54,    55,    56,    57,    58
+      43,    75,    72,    45,    46,    47,    83,    82,    61,    62,
+      63,    64,    30,    66,    32,     6,    86,    71,    87,    31,
+      76,    77,    78,    79,    81,    67,   128,    81,    63,    64,
+      99,    34,   133,   134,   124,   125,    35,    88,    89,    90,
+      91,    92,    93,    94,    95,    96,    97,    98,   114,   100,
+     101,   102,    33,   117,   118,    36,    37,    38,     2,     3,
+      41,     4,     5,     6,    39,     7,     8,     9,    40,   119,
+      72,    72,    10,    11,   120,    12,    13,    14,    15,    16,
+      17,    18,    44,    19,    48,    49,    50,    51,    20,    52,
+     129,    53,     4,     5,     6,    81,     7,     8,    68,    21,
+      69,    22,    70,   103,    33,    74,    12,    13,    14,    15,
+      16,    17,    32,   104,    19,   106,   105,   111,   113,    20,
+       4,     5,     6,    11,     7,     8,    64,   122,   121,   123,
+      21,   126,    22,   130,    12,    13,    14,    15,    16,    17,
+     131,   132,    19,     0,     0,     0,     0,    20,     4,     5,
+       0,     0,    42,     8,     0,     0,     0,     0,    21,     0,
+      22,     0,    12,    13,    14,    15,    16,     0,     0,     0,
+      19,     0,     0,     0,     0,    20,     0,    11,    57,    58,
+      59,    60,    61,    62,    63,    64,    54,     0,    22,    55,
+      56,    57,    58,    59,    60,    61,    62,    63,    64,    54,
+       0,     0,    55,    56,    57,    58,    59,    60,    61,    62,
+      63,    64,     0,     0,     0,     0,     0,    54,     0,    85,
+      55,    56,    57,    58,    59,    60,    61,    62,    63,    64,
+       0,     0,     0,    54,     0,    84,    55,    56,    57,    58,
+      59,    60,    61,    62,    63,    64,    54,     0,    65,    55,
+      56,    57,    58,    59,    60,    61,    62,    63,    64,   107,
+      54,     0,     0,    55,    56,    57,    58,    59,    60,    61,
+      62,    63,    64,   108,    54,     0,     0,    55,    56,    57,
+      58,    59,    60,    61,    62,    63,    64,   109,    54,     0,
+       0,    55,    56,    57,    58,    59,    60,    61,    62,    63,
+      64,   110,    54,     0,     0,    55,    56,    57,    58,    59,
+      60,    61,    62,    63,    64,   115,    54,     0,     0,    55,
+      56,    57,    58,    59,    60,    61,    62,    63,    64,   116,
+      54,     0,   112,    55,    56,    57,    58,    59,    60,    61,
+      62,    63,    64,    54,     0,     0,    55,    56,    57,    58,
+      59,    60,    61,    62,    63,    64,    55,    56,    57,    58,
+      59,    60,    61,    62,    63,    64,    59,    60,    61,    62,
+      63,    64
 };
 
-static const yytype_int8 yycheck[] =
+static const yytype_int16 yycheck[] =
 {
-      17,    18,    19,    31,   115,    75,     7,    33,    34,    22,
-     121,   122,    31,    32,    33,    34,    33,    34,    35,    36,
-      37,    34,     5,     7,     7,    37,    96,    12,    13,    94,
-      95,    48,    49,    50,    51,    52,    53,    54,    55,    56,
-      57,    58,    43,    60,    61,    62,   116,    29,    30,    31,
-      32,    33,    34,     7,     0,     7,    34,     3,     4,     5,
-      34,     7,     8,     9,    34,    32,    94,    95,    14,    15,
-      34,    17,    18,    19,    20,    21,     7,    23,    45,    37,
-      47,    37,    28,     3,     4,     5,   103,     7,     8,    37,
-      37,     7,    59,    39,    37,    41,    37,    17,    18,    19,
-      20,    22,    10,    23,    43,    34,     7,    24,    28,     3,
-       4,    38,    16,     7,     8,    15,    44,    35,    37,    39,
-      34,    41,    11,    17,    18,    19,    20,     5,    11,    23,
-      37,    12,    22,    -1,    28,    25,    26,    27,    28,    29,
-      30,    31,    32,    33,    34,    -1,   103,    41,    -1,    -1,
-      22,    -1,    42,    25,    26,    27,    28,    29,    30,    31,
-      32,    33,    34,    -1,    -1,    -1,    22,    -1,    40,    25,
-      26,    27,    28,    29,    30,    31,    32,    33,    34,    22,
-      -1,    37,    25,    26,    27,    28,    29,    30,    31,    32,
-      33,    34,    35,    22,    -1,    -1,    25,    26,    27,    28,
-      29,    30,    31,    32,    33,    34,    35,    22,    -1,    -1,
-      25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
-      35,    22,    -1,    -1,    25,    26,    27,    28,    29,    30,
-      31,    32,    33,    34,    35,    22,    -1,    -1,    25,    26,
-      27,    28,    29,    30,    31,    32,    33,    34,    35,    22,
-      -1,    -1,    25,    26,    27,    28,    29,    30,    31,    32,
-      33,    34,    35,    22,    -1,    24,    25,    26,    27,    28,
-      29,    30,    31,    32,    33,    34,    22,    -1,    -1,    25,
-      26,    27,    28,    29,    30,    31,    32,    33,    34,    25,
-      26,    27,    28,    29,    30,    31,    32,    33,    34,    27,
-      28,    29,    30,    31,    32,    33,    34
+      17,    36,    35,    20,    21,    22,    44,    43,    33,    34,
+      35,    36,    39,    24,     7,     5,    51,     7,    53,     7,
+      37,    38,    39,    40,    41,    36,   125,    44,    35,    36,
+      65,     7,   131,   132,    12,    13,     7,    54,    55,    56,
+      57,    58,    59,    60,    61,    62,    63,    64,    84,    66,
+      67,    68,    45,   103,   104,    39,    36,    36,     0,     1,
+       7,     3,     4,     5,    36,     7,     8,     9,    36,   105,
+     103,   104,    14,    15,   112,    17,    18,    19,    20,    21,
+      22,    23,     7,    25,    39,    39,    39,    39,    30,    39,
+     126,    39,     3,     4,     5,   112,     7,     8,    24,    41,
+       7,    43,    10,    36,    45,    16,    17,    18,    19,    20,
+      21,    22,     7,    26,    25,    16,    40,    46,    46,    30,
+       3,     4,     5,    15,     7,     8,    36,    39,    37,    11,
+      41,     5,    43,    11,    17,    18,    19,    20,    21,    22,
+      39,    12,    25,    -1,    -1,    -1,    -1,    30,     3,     4,
+      -1,    -1,     7,     8,    -1,    -1,    -1,    -1,    41,    -1,
+      43,    -1,    17,    18,    19,    20,    21,    -1,    -1,    -1,
+      25,    -1,    -1,    -1,    -1,    30,    -1,    15,    29,    30,
+      31,    32,    33,    34,    35,    36,    24,    -1,    43,    27,
+      28,    29,    30,    31,    32,    33,    34,    35,    36,    24,
+      -1,    -1,    27,    28,    29,    30,    31,    32,    33,    34,
+      35,    36,    -1,    -1,    -1,    -1,    -1,    24,    -1,    44,
+      27,    28,    29,    30,    31,    32,    33,    34,    35,    36,
+      -1,    -1,    -1,    24,    -1,    42,    27,    28,    29,    30,
+      31,    32,    33,    34,    35,    36,    24,    -1,    39,    27,
+      28,    29,    30,    31,    32,    33,    34,    35,    36,    37,
+      24,    -1,    -1,    27,    28,    29,    30,    31,    32,    33,
+      34,    35,    36,    37,    24,    -1,    -1,    27,    28,    29,
+      30,    31,    32,    33,    34,    35,    36,    37,    24,    -1,
+      -1,    27,    28,    29,    30,    31,    32,    33,    34,    35,
+      36,    37,    24,    -1,    -1,    27,    28,    29,    30,    31,
+      32,    33,    34,    35,    36,    37,    24,    -1,    -1,    27,
+      28,    29,    30,    31,    32,    33,    34,    35,    36,    37,
+      24,    -1,    26,    27,    28,    29,    30,    31,    32,    33,
+      34,    35,    36,    24,    -1,    -1,    27,    28,    29,    30,
+      31,    32,    33,    34,    35,    36,    27,    28,    29,    30,
+      31,    32,    33,    34,    35,    36,    31,    32,    33,    34,
+      35,    36
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
    state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,    46,     0,     3,     4,     5,     7,     8,     9,    14,
-      15,    17,    18,    19,    20,    21,    23,    28,    39,    41,
-      47,    48,    49,    50,    51,    52,    56,     7,     7,    43,
-       7,     7,    37,    34,    34,    34,    34,     7,     7,    56,
-      56,    56,    37,    37,    37,    37,    37,    37,    22,    25,
-      26,    27,    28,    29,    30,    31,    32,    33,    34,    37,
-      22,    34,    22,     7,    10,     7,    50,    53,    51,    56,
-      56,    56,    56,    55,    56,    40,    42,    51,    51,    56,
-      56,    56,    56,    56,    56,    56,    56,    56,    56,    56,
-      51,    56,    56,    56,    34,    24,    38,    16,    35,    35,
-      35,    35,    44,    24,    48,    35,    35,    53,    53,    48,
-      55,    35,    37,    11,    12,    13,     5,    54,    54,    48,
-      11,    37,    12,    54,    54
+       0,    48,     0,     1,     3,     4,     5,     7,     8,     9,
+      14,    15,    17,    18,    19,    20,    21,    22,    23,    25,
+      30,    41,    43,    49,    50,    51,    52,    53,    54,    58,
+      39,     7,     7,    45,     7,     7,    39,    36,    36,    36,
+      36,     7,     7,    58,     7,    58,    58,    58,    39,    39,
+      39,    39,    39,    39,    24,    27,    28,    29,    30,    31,
+      32,    33,    34,    35,    36,    39,    24,    36,    24,     7,
+      10,     7,    52,    55,    16,    53,    58,    58,    58,    58,
+      57,    58,    50,    57,    42,    44,    53,    53,    58,    58,
+      58,    58,    58,    58,    58,    58,    58,    58,    58,    53,
+      58,    58,    58,    36,    26,    40,    16,    37,    37,    37,
+      37,    46,    26,    46,    50,    37,    37,    55,    55,    50,
+      57,    37,    39,    11,    12,    13,     5,    56,    56,    50,
+      11,    39,    12,    56,    56
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    45,    46,    46,    46,    46,    46,    46,    47,    47,
-      47,    47,    48,    49,    50,    50,    50,    50,    50,    51,
-      51,    51,    51,    51,    51,    52,    53,    53,    54,    54,
-      55,    55,    56,    56,    56,    56,    56,    56,    56,    56,
-      56,    56,    56,    56,    56,    56,    56,    56,    56,    56,
-      56,    56,    56,    56,    56
+       0,    47,    48,    48,    48,    48,    48,    48,    48,    49,
+      49,    49,    49,    50,    50,    51,    52,    52,    52,    52,
+      52,    53,    53,    53,    53,    53,    53,    54,    54,    55,
+      55,    56,    56,    57,    57,    57,    58,    58,    58,    58,
+      58,    58,    58,    58,    58,    58,    58,    58,    58,    58,
+      58,    58,    58,    58,    58,    58,    58,    58,    58,    58
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     3,     3,     3,     3,     2,     0,    13,    10,
-      10,     7,     4,     5,     2,     2,     4,     4,     5,     2,
-       2,     2,     3,     3,     3,     4,     1,     3,     3,     4,
-       1,     3,     1,     1,     1,     1,     3,     3,     3,     3,
-       3,     3,     3,     3,     3,     3,     2,     4,     3,     3,
-       4,     4,     4,     4,     4
+       0,     2,     3,     3,     3,     3,     3,     2,     0,    13,
+      10,    10,     7,     4,     3,     5,     2,     2,     4,     4,
+       5,     2,     2,     2,     3,     3,     3,     4,     3,     1,
+       3,     3,     4,     1,     3,     0,     1,     1,     1,     1,
+       3,     3,     3,     3,     3,     3,     3,     3,     3,     3,
+       2,     4,     3,     3,     4,     4,     4,     4,     4,     4
 };
 
 
@@ -1359,251 +1379,310 @@ yyreduce:
   case 2: /* program: program record '\n'  */
                             {
 		std::cout << "HERE RECORD\n";
-		std::cout << "SYNTAX TREE:\n";
-		if (yyvsp[-1].tree) {syntax_tree->add(yyvsp[-1].tree);}
-		syntax_tree->put_tree(syntax_tree->root, 0);
+		if (!error)
+		{
+			std::cout << "SYNTAX TREE:\n";
+			if (yyvsp[-1].tree) {syntax_tree->add(yyvsp[-1].tree);}
+			syntax_tree->put_tree(syntax_tree->root, 0);
+		}
+		else
+		{
+			std::cout << "some errors occured, semantic analysis isn't possible\n";
+		}
 	}
     break;
 
   case 3: /* program: program block '\n'  */
                              {
 		std::cout << "HERE BLOCK\n";
-		std::cout << "SYNTAX TREE:\n";
-		syntax_tree->put_tree(syntax_tree->root, 0);
+		if (!error)
+		{
+			std::cout << "SYNTAX TREE:\n";
+			syntax_tree->put_tree(syntax_tree->root, 0);
+		}
+		else
+		{
+			std::cout << "some errors occured, semantic analysis isn't possible\n";
+		}
 	}
     break;
 
   case 4: /* program: program proc '\n'  */
                             {
 		std::cout << "HERE PROC\n";
-		std::cout << "SYNTAX TREE:\n";
-		if (yyvsp[-1].tree) {syntax_tree->add(yyvsp[-1].tree);}
-		syntax_tree->put_tree(syntax_tree->root, 0);
+		if (!error)
+		{
+			std::cout << "SYNTAX TREE:\n";
+			if (yyvsp[-1].tree) {syntax_tree->add(yyvsp[-1].tree);}
+			syntax_tree->put_tree(syntax_tree->root, 0);
+		}
+		else
+		{
+			std::cout << "some errors occured, semantic analysis isn't possible\n";
+		}
 	}
     break;
 
   case 5: /* program: program sentence '\n'  */
                                 {
 		std::cout << "HERE SENTENCE\n";
-		std::cout << "SYNTAX TREE:\n";
-		if (yyvsp[-1].tree) {syntax_tree->add(yyvsp[-1].tree);}
-		syntax_tree->put_tree(syntax_tree->root, 0);
+		if (!error)
+		{
+			std::cout << "SYNTAX TREE:\n";
+			if (yyvsp[-1].tree) {syntax_tree->add(yyvsp[-1].tree);}
+			syntax_tree->put_tree(syntax_tree->root, 0);
+		}
+		else
+		{
+			std::cout << "some errors occured, semantic analysis isn't possible\n";
+		}
 	}
     break;
 
-  case 6: /* program: program EF  */
+  case 6: /* program: program error '\n'  */
+                             {
+		error = true;
+		std::cout << "Some error in line " << yyvsp[-1].line << "\n";		
+		yyerrok;
+	}
+    break;
+
+  case 7: /* program: program EF  */
                      {printf("Programm finished successfully!\n"); error = false; return 0;}
     break;
 
-  case 7: /* program: %empty  */
+  case 8: /* program: %empty  */
           {
 		syntax_tree = new ast();
 		printf("enter a expression:\n");
 	}
     break;
 
-  case 8: /* record: RECORD SVAL DATA '[' group_comma ']' '\n' CONVERSION FROM conv_proc_set CONVERSION TO conv_proc_set  */
+  case 9: /* record: RECORD SVAL DATA '[' group_comma ']' '\n' CONVERSION FROM conv_proc_set CONVERSION TO conv_proc_set  */
         {
 		yyval.tree = new record_node(std::string(yyvsp[-11].text), yyvsp[-8].tree, yyvsp[-3].tree, yyvsp[0].tree , RECORDN, yyvsp[-12].line);
 	}
     break;
 
-  case 9: /* record: RECORD SVAL DATA '[' group_comma ']' '\n' CONVERSION FROM conv_proc_set  */
+  case 10: /* record: RECORD SVAL DATA '[' group_comma ']' '\n' CONVERSION FROM conv_proc_set  */
         {
 		yyval.tree = new record_node(std::string(yyvsp[-8].text), yyvsp[-5].tree, yyvsp[0].tree, nullptr, RECORDN, yyvsp[-9].line);
 	}
     break;
 
-  case 10: /* record: RECORD SVAL DATA '[' group_comma ']' '\n' CONVERSION TO conv_proc_set  */
+  case 11: /* record: RECORD SVAL DATA '[' group_comma ']' '\n' CONVERSION TO conv_proc_set  */
         {
 		std::cout <<"$2 TEXT: " << yyvsp[-8].text << "\n";
 		yyval.tree = new record_node(std::string(yyvsp[-8].text), yyvsp[-5].tree, nullptr, yyvsp[0].tree , RECORDN, yyvsp[-9].line);
 	}
     break;
 
-  case 11: /* record: RECORD SVAL DATA '[' group_comma ']' '\n'  */
+  case 12: /* record: RECORD SVAL DATA '[' group_comma ']' '\n'  */
         {
 		yyval.tree = new record_node(std::string(yyvsp[-5].text), yyvsp[-2].tree, nullptr, nullptr , RECORDN, yyvsp[-6].line);
 	}
     break;
 
-  case 12: /* block: BLOCK '\n' sentence UNBLOCK  */
+  case 13: /* block: BLOCK '\n' sentence UNBLOCK  */
         {
 		yyval.tree = new block_node(yyvsp[-1].tree, BLOCKN, yyvsp[-1].line);
-		//if ($$.tree) {syntax_tree->add($$.tree);}
 	}
     break;
 
-  case 13: /* proc: PROC SVAL group_comma '&' block  */
+  case 14: /* block: BLOCK '\n' UNBLOCK  */
+        {
+		yyval.tree = new block_node(nullptr, BLOCKN, yyvsp[-2].line);
+	}
+    break;
+
+  case 15: /* proc: PROC SVAL group_comma '&' block  */
         {
 			yyval.tree = new proc_node(std::string(yyvsp[-3].text), yyvsp[-2].tree, yyvsp[0].tree, PROCN, yyvsp[-4].line);
 	}
     break;
 
-  case 14: /* declaration: SVAL SVAL  */
+  case 16: /* declaration: SVAL SVAL  */
                   {yyval.tree = new decl_node(std::string(yyvsp[-1].text), std::string(yyvsp[0].text), nullptr, nullptr, UNDEFVARN, yyvsp[-1].line);
 	syntax_tree->put_tree(yyval.tree, 0);}
     break;
 
-  case 15: /* declaration: TYPE SVAL  */
+  case 17: /* declaration: TYPE SVAL  */
                     {yyval.tree = new decl_node(std::string(yyvsp[-1].text), std::string(yyvsp[0].text), nullptr, nullptr, UNDEFVARN, yyvsp[-1].line);
 	syntax_tree->put_tree(yyval.tree, 0);}
     break;
 
-  case 16: /* declaration: TYPE SVAL '=' expr  */
+  case 18: /* declaration: TYPE SVAL '=' expr  */
                                 {yyval.tree = new decl_node(std::string(yyvsp[-3].text), std::string(yyvsp[-2].text), nullptr, yyvsp[0].tree, VARN, yyvsp[-3].line);  printf("NAME: %s\n", yyvsp[-2].text); printf("TYPE: %s\n", yyvsp[-3].text); syntax_tree->put_tree(yyval.tree, 0);}
     break;
 
-  case 17: /* declaration: SVAL SVAL '=' expr  */
+  case 19: /* declaration: SVAL SVAL '=' expr  */
                                 {yyval.tree = new decl_node(std::string(yyvsp[-3].text), std::string(yyvsp[-2].text), nullptr, yyvsp[0].tree, VARN, yyvsp[-3].line);  printf("NAME: %s\n", yyvsp[-2].text); printf("TYPE: %s\n", yyvsp[-3].text); syntax_tree->put_tree(yyval.tree, 0);}
     break;
 
-  case 18: /* declaration: TYPE SVAL '[' expr ']'  */
+  case 20: /* declaration: TYPE SVAL '[' expr ']'  */
                                  {
 		yyval.tree = new decl_node(std::string(yyvsp[-4].text), std::string(yyvsp[-3].text), yyvsp[-1].tree, nullptr, UNDEFVARN, yyvsp[-4].line); syntax_tree->put_tree(yyval.tree, 0);  
 	}
     break;
 
-  case 19: /* sentence: declaration '\n'  */
+  case 21: /* sentence: declaration '\n'  */
                           {yyval = yyvsp[-1]; }
     break;
 
-  case 20: /* sentence: expr '\n'  */
+  case 22: /* sentence: expr '\n'  */
                     {yyval = yyvsp[-1]; }
     break;
 
-  case 21: /* sentence: cond '\n'  */
+  case 23: /* sentence: cond '\n'  */
                     {yyval = yyvsp[-1];}
     break;
 
-  case 22: /* sentence: declaration '\n' sentence  */
-                                    {yyvsp[0].tree->set_left(yyvsp[-2].tree); yyval = yyvsp[0]; std::cout << "SENTENCE AND GROUP SET\n"; syntax_tree->put_tree(yyval.tree, 0);}
+  case 24: /* sentence: declaration '\n' sentence  */
+                                    {if (yyvsp[-2].tree && yyvsp[0].tree) {yyvsp[0].tree->set_left(yyvsp[-2].tree); yyval = yyvsp[0]; syntax_tree->put_tree(yyval.tree, 0);} std::cout << "SENTENCE AND GROUP SET\n"; }
     break;
 
-  case 23: /* sentence: expr '\n' sentence  */
-                             {yyvsp[0].tree->set_left(yyvsp[-2].tree); yyval = yyvsp[0]; std::cout << "EXPR AND GROUP SET\n"; syntax_tree->put_tree(yyval.tree, 0);}
+  case 25: /* sentence: expr '\n' sentence  */
+                             {if (yyvsp[-2].tree && yyvsp[0].tree) {yyvsp[0].tree->set_left(yyvsp[-2].tree); yyval = yyvsp[0]; syntax_tree->put_tree(yyval.tree, 0);} std::cout << "EXPR AND GROUP SET\n"; }
     break;
 
-  case 24: /* sentence: cond '\n' sentence  */
-                             {yyvsp[0].tree->set_left(yyvsp[-2].tree); yyval = yyvsp[0]; std::cout << "BLOCK AND GROUP SET\n"; syntax_tree->put_tree(yyval.tree, 0);}
+  case 26: /* sentence: cond '\n' sentence  */
+                             {if (yyvsp[-2].tree && yyvsp[0].tree) {yyvsp[0].tree->set_left(yyvsp[-2].tree); yyval = yyvsp[0]; syntax_tree->put_tree(yyval.tree, 0);} std::cout << "BLOCK AND GROUP SET\n";}
     break;
 
-  case 25: /* cond: '{' expr '}' block  */
+  case 27: /* cond: '{' expr '}' block  */
         {
 		yyval.tree = new cond_node(yyvsp[-2].tree, yyvsp[0].tree, CONDN, yyvsp[-3].line);
 	}
     break;
 
-  case 26: /* group_comma: declaration  */
+  case 28: /* cond: WHILE expr block  */
+        {
+		std::cout << "Wrong loop declaration in line " << yyvsp[-1].line << "\n";
+		error = true;
+	}
+    break;
+
+  case 29: /* group_comma: declaration  */
                     {yyval = yyvsp[0];}
     break;
 
-  case 27: /* group_comma: declaration ',' group_comma  */
+  case 30: /* group_comma: declaration ',' group_comma  */
                                       {yyvsp[0].tree->set_left(yyvsp[-2].tree); yyval = yyvsp[0]; std::cout << "DECLARATION GROUP COMMA\n"; syntax_tree->put_tree(yyval.tree, 0);}
     break;
 
-  case 28: /* conv_proc_set: TYPE block '\n'  */
+  case 31: /* conv_proc_set: TYPE block '\n'  */
                         {yyval.tree = new conv_node(std::string(yyvsp[-2].text), yyvsp[-1].tree, CONVPROCN, yyvsp[-2].line);}
     break;
 
-  case 29: /* conv_proc_set: TYPE block '\n' conv_proc_set  */
+  case 32: /* conv_proc_set: TYPE block '\n' conv_proc_set  */
                                         {yyvsp[-1].tree->set_left(yyvsp[-3].tree); yyval = yyvsp[-1]; std::cout << "CONV_PROC AND CONV_PROC SET\n"; syntax_tree->put_tree(yyval.tree, 0);}
     break;
 
-  case 30: /* arg_set: expr  */
+  case 33: /* arg_set: expr  */
              { yyval = yyvsp[0];}
     break;
 
-  case 31: /* arg_set: expr ',' arg_set  */
+  case 34: /* arg_set: expr ',' arg_set  */
                            {yyvsp[0].tree->set_left(yyvsp[-2].tree); yyval = yyvsp[0]; std::cout << "EXPR AND ARG_SET\n"; syntax_tree->put_tree(yyval.tree, 0);}
     break;
 
-  case 32: /* expr: SVAL  */
+  case 35: /* arg_set: %empty  */
+          {yyval.tree = nullptr;}
+    break;
+
+  case 36: /* expr: SVAL  */
              {yyval.tree = new str_node(std::string(yyvsp[0].text), STRN, yyvsp[0].line); printf("SVAL WITH VAL = \"%s\"\n", yyvsp[0].text);}
     break;
 
-  case 33: /* expr: LITERAL  */
+  case 37: /* expr: LITERAL  */
                   {yyval.tree = new str_node(std::string(yyvsp[0].text), LITERALN, yyvsp[0].line);  printf("LITERAL WITH VAL = \"%s\"\n", yyvsp[0].text);}
     break;
 
-  case 34: /* expr: INTNUM  */
-                 {yyval.tree = new int_node(atoi(yyvsp[0].text), INTN, yyvsp[0].line); printf("INTNUM %d\n", atoi(yyvsp[0].text));}
+  case 38: /* expr: INTNUM  */
+                 {yyval.tree = new int_node(atoi(yyvsp[0].text), INTN, yyvsp[0].line); printf("INTNUM WITH LINE: %d\n", yyvsp[0].line); printf("INTNUM %d\n", atoi(yyvsp[0].text));}
     break;
 
-  case 35: /* expr: BOOLNUM  */
+  case 39: /* expr: BOOLNUM  */
                   {bool buf; if (strcmp(yyvsp[0].text, "TRUE") == 0) {buf = true;} else {buf = false;} yyval.tree = new bool_node(buf,
 	 BOOLN, yyvsp[0].line); printf("BOOLNUM %d\n", buf);}
     break;
 
-  case 36: /* expr: '(' expr ')'  */
+  case 40: /* expr: '(' expr ')'  */
                        {yyval.tree = yyvsp[-1].tree;}
     break;
 
-  case 37: /* expr: expr '<' expr  */
+  case 41: /* expr: expr '<' expr  */
                         {yyval.tree = new operation_node(yyvsp[-2].tree, yyvsp[0].tree, LESSN, yyvsp[-2].line); }
     break;
 
-  case 38: /* expr: expr '>' expr  */
+  case 42: /* expr: expr '>' expr  */
                         {yyval.tree = new operation_node(yyvsp[-2].tree, yyvsp[0].tree, GREATERN, yyvsp[-2].line); }
     break;
 
-  case 39: /* expr: expr '+' expr  */
+  case 43: /* expr: expr '+' expr  */
                         {yyval.tree = new operation_node(yyvsp[-2].tree, yyvsp[0].tree, PLUSN, yyvsp[-2].line); }
     break;
 
-  case 40: /* expr: expr '-' expr  */
+  case 44: /* expr: expr '-' expr  */
                         {yyval.tree = new operation_node(yyvsp[-2].tree, yyvsp[0].tree, NEGN, yyvsp[-2].line); }
     break;
 
-  case 41: /* expr: expr '?' expr  */
+  case 45: /* expr: expr '?' expr  */
                         {yyval.tree = new operation_node(yyvsp[-2].tree, yyvsp[0].tree, EQUN, yyvsp[-2].line); }
     break;
 
-  case 42: /* expr: expr '!' expr  */
+  case 46: /* expr: expr '!' expr  */
                         {yyval.tree = new operation_node(yyvsp[-2].tree, yyvsp[0].tree, NOTEQUN, yyvsp[-2].line); }
     break;
 
-  case 43: /* expr: expr '*' expr  */
+  case 47: /* expr: expr '*' expr  */
                         {yyval.tree = new operation_node(yyvsp[-2].tree, yyvsp[0].tree, MULN, yyvsp[-2].line); }
     break;
 
-  case 44: /* expr: expr '/' expr  */
+  case 48: /* expr: expr '/' expr  */
                         {yyval.tree = new operation_node(yyvsp[-2].tree, yyvsp[0].tree, DIVN, yyvsp[-2].line); }
     break;
 
-  case 45: /* expr: expr '^' expr  */
+  case 49: /* expr: expr '^' expr  */
                         {yyval.tree = new operation_node(yyvsp[-2].tree, yyvsp[0].tree, EXPN, yyvsp[-2].line); }
     break;
 
-  case 46: /* expr: '-' expr  */
+  case 50: /* expr: '-' expr  */
                                 {yyval.tree = new unary_node(yyvsp[-1].tree, UMINN, yyvsp[-1].line);}
     break;
 
-  case 47: /* expr: expr '[' expr ']'  */
+  case 51: /* expr: expr '[' expr ']'  */
                             {
 		yyval.tree = new arr_node(yyvsp[-3].tree, yyvsp[-1].tree, ARRASSIGNN, yyvsp[-3].line);
 	}
     break;
 
-  case 48: /* expr: expr '=' expr  */
+  case 52: /* expr: expr '=' expr  */
                         {
             yyval.tree = new assign_node(yyvsp[-2].tree, yyvsp[0].tree, ASSIGNN, yyvsp[-2].line);
              syntax_tree->put_tree(yyval.tree, 0); 
 	}
     break;
 
-  case 49: /* expr: SVAL '.' SVAL  */
+  case 53: /* expr: SVAL '.' SVAL  */
                         {yyval.tree = new struct_ref_node(std::string(yyvsp[-2].text), std::string (yyvsp[0].text), STRUCTREFN, yyvsp[-2].line);}
     break;
 
-  case 50: /* expr: '@' SVAL arg_set '|'  */
+  case 54: /* expr: '@' SVAL arg_set '|'  */
         {
 	    		std::cout << "CALL HERE!\n";
 	            yyval.tree = new proc_node(std::string(yyvsp[-2].text), yyvsp[-1].tree, nullptr, CALLN, yyvsp[-3].line);
 	}
     break;
 
-  case 51: /* expr: MOVE '[' expr ']'  */
+  case 55: /* expr: CALL SVAL arg_set '|'  */
+        {
+		std::cout << "Wrong calling of function in line " << yyvsp[-3].line << "\n";
+		error = true;
+	}
+    break;
+
+  case 56: /* expr: MOVE '[' expr ']'  */
         {
 		int op;
 		if (strcmp(yyvsp[-3].text, "MOVERIGHT") == 0)
@@ -1626,7 +1705,7 @@ yyreduce:
 	}
     break;
 
-  case 52: /* expr: PING '[' expr ']'  */
+  case 57: /* expr: PING '[' expr ']'  */
         {
                 int op;
                 if (strcmp(yyvsp[-3].text, "PINGRIGHT") == 0)
@@ -1649,13 +1728,13 @@ yyreduce:
 	}
     break;
 
-  case 53: /* expr: VISION '[' expr ']'  */
+  case 58: /* expr: VISION '[' expr ']'  */
         {
                 yyval.tree = new vision_node(yyvsp[-1].tree, VISIONN, yyvsp[-3].line);
 	}
     break;
 
-  case 54: /* expr: VOICE '[' expr ']'  */
+  case 59: /* expr: VOICE '[' expr ']'  */
     {
             yyval.tree = new voice_node(yyvsp[-1].tree, VOICEN, yyvsp[-3].line);
     }

@@ -8,6 +8,7 @@
         char *text;
 		bool one = true;
 		int line;
+		int err_type;
 		node *tree;
     };
     #define YYSTYPE val
@@ -27,6 +28,8 @@
 	yylval.text = new char[strlen(yytext) + 1];
 	strcpy(yylval.text, yytext);
 	yylval.line = yylineno;
+	std::cout << "INTNUM FLEX LINE " << yylineno << "\n";
+	yylval.err_type = -1;
 	return INTNUM;
 }
 
@@ -118,20 +121,39 @@ MOVEUP|MOVEDOWN|MOVERIGHT|MOVELEFT {
 }
 
 PINGUP|PINGDOWN|PINGLEFT|PINGRIGHT {
-	yylval.text = yytext;
-	yylval.line = yylineno;
+    yylval.text = (char*)malloc(strlen(yytext) + 1);
+    strcpy(yylval.text, yytext);
+    yylval.line = yylineno;
 	return PING;
 }
 
+CALL {
+    yylval.text = (char*)malloc(strlen(yytext) + 1);
+  	strcpy(yylval.text, yytext);
+    yylval.line = yylineno;
+    yylval.err_type = CALLN;
+	return CALL;
+}
+
+WHILE {
+    yylval.text = (char*)malloc(strlen(yytext) + 1);
+  	strcpy(yylval.text, yytext);
+    yylval.line = yylineno;
+    yylval.err_type = CONDN;
+	return WHILE;
+}
+
 UNDEF {
-	yylval.text = yytext;
-	yylval.line = yylineno;
+    yylval.text = (char*)malloc(strlen(yytext) + 1);
+    strcpy(yylval.text, yytext);
+    yylval.line = yylineno;
 	return UNDEF;
 }
 
 [-&+*/^?!<>\n\"()=\[\],.{}@|] {
 	std::cout << "SYMBOL CAPTURED " << yytext << "\n";
 	yylval.line = yylineno;
+	yylval.err_type = -1;
     return *yytext;
 }
 
@@ -140,6 +162,7 @@ UNDEF {
 	strcpy(yylval.text, yytext);
 	printf("SVAL CAPTURED: %s\n", yytext);
 	yylval.line = yylineno;
+	yylval.err_type = -1;
 	return SVAL;
 }
 \"[a-zA-Z]([a-zA-Z0-9])*\" {
@@ -153,6 +176,7 @@ UNDEF {
 	printf("%d\n", i);
     printf("LITERAL CAPTURED: %s\n", yytext);
     yylval.line = yylineno;
+    yylval.err_type = -1;
     return LITERAL;
 }
 
@@ -169,8 +193,7 @@ UNDEF {
 
 void yyerror(const char *s)
 {
-	std::cout << "Error in line " << yylineno << "\n";
-	fprintf(stderr, "%s\n", s);
+	//fprintf(stderr, "%s\n", s);
 }
 
 int yywrap(void)

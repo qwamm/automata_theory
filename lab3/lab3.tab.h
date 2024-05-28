@@ -72,8 +72,10 @@ extern int yydebug;
     PING = 273,                    /* PING  */
     VISION = 274,                  /* VISION  */
     VOICE = 275,                   /* VOICE  */
-    EF = 276,                      /* EF  */
-    UMINUS = 277                   /* UMINUS  */
+    CALL = 276,                    /* CALL  */
+    WHILE = 277,                   /* WHILE  */
+    EF = 278,                      /* EF  */
+    UMINUS = 279                   /* UMINUS  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif

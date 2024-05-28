@@ -6,8 +6,11 @@ CONVERSION TO NUMERIC BLOCK
         to = from.x
 UNBLOCK 
 
-2 = 1 + 2
-
+dhasodfiuh qafuosh qaihf
+WHILE z ? 5 BLOCK
+UNBLOCK
+CALL f |
+dhasodfiuh qafuosh qaihf
 NUMERIC x = 2
 Point t = 3
 NUMERIC z = t*15 + 4

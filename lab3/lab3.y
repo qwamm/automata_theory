@@ -10,12 +10,13 @@
 	struct val
 	{
 		char *text;
-		int line;
 		bool one = true;
+		int line;
+		int err_type;
 		node *tree;
 	};
 	ast *syntax_tree;
-	bool error = true;
+	bool error = false;
 	#include <iostream>
 	#include <string>
 	#include <fstream>
@@ -45,6 +46,8 @@
 %token PING
 %token VISION
 %token VOICE
+%token CALL
+%token WHILE
 %token EF
 %left '='
 %left '@'
@@ -63,26 +66,59 @@
 program:
 	program record '\n' {
 		std::cout << "HERE RECORD\n";
-		std::cout << "SYNTAX TREE:\n";
-		if ($2.tree) {syntax_tree->add($2.tree);}
-		syntax_tree->put_tree(syntax_tree->root, 0);
+		if (!error)
+		{
+			std::cout << "SYNTAX TREE:\n";
+			if ($2.tree) {syntax_tree->add($2.tree);}
+			syntax_tree->put_tree(syntax_tree->root, 0);
+		}
+		else
+		{
+			std::cout << "some errors occured, semantic analysis isn't possible\n";
+		}
 	}
 	| program block '\n' {
 		std::cout << "HERE BLOCK\n";
-		std::cout << "SYNTAX TREE:\n";
-		syntax_tree->put_tree(syntax_tree->root, 0);
+		if (!error)
+		{
+			std::cout << "SYNTAX TREE:\n";
+			syntax_tree->put_tree(syntax_tree->root, 0);
+		}
+		else
+		{
+			std::cout << "some errors occured, semantic analysis isn't possible\n";
+		}
 	}
 	| program proc '\n' {
 		std::cout << "HERE PROC\n";
-		std::cout << "SYNTAX TREE:\n";
-		if ($2.tree) {syntax_tree->add($2.tree);}
-		syntax_tree->put_tree(syntax_tree->root, 0);
+		if (!error)
+		{
+			std::cout << "SYNTAX TREE:\n";
+			if ($2.tree) {syntax_tree->add($2.tree);}
+			syntax_tree->put_tree(syntax_tree->root, 0);
+		}
+		else
+		{
+			std::cout << "some errors occured, semantic analysis isn't possible\n";
+		}
 	}
 	| program sentence '\n' {
 		std::cout << "HERE SENTENCE\n";
-		std::cout << "SYNTAX TREE:\n";
-		if ($2.tree) {syntax_tree->add($2.tree);}
-		syntax_tree->put_tree(syntax_tree->root, 0);
+		if (!error)
+		{
+			std::cout << "SYNTAX TREE:\n";
+			if ($2.tree) {syntax_tree->add($2.tree);}
+			syntax_tree->put_tree(syntax_tree->root, 0);
+		}
+		else
+		{
+			std::cout << "some errors occured, semantic analysis isn't possible\n";
+		}
+	}
+	| program error '\n' {
+		error = true;
+		std::cout << "Some error in line " << $2.line << "\n";		
+		yyerrok;
 	}
 	| program EF {printf("Programm finished successfully!\n"); error = false; return 0;}
 	| {
@@ -113,7 +149,10 @@ block:
 	BLOCK '\n' sentence UNBLOCK
 	{
 		$$.tree = new block_node($3.tree, BLOCKN, $3.line);
-		//if ($$.tree) {syntax_tree->add($$.tree);}
+	}
+	| BLOCK '\n' UNBLOCK
+	{
+		$$.tree = new block_node(nullptr, BLOCKN, $1.line);
 	}
 	;
 
@@ -140,15 +179,20 @@ sentence:
 	declaration '\n'  {$$ = $1; }
 	| expr '\n' {$$ = $1; }
 	| cond '\n' {$$ = $1;}
-	| declaration '\n' sentence {$3.tree->set_left($1.tree); $$ = $3; std::cout << "SENTENCE AND GROUP SET\n"; syntax_tree->put_tree($$.tree, 0);}
-	| expr '\n' sentence {$3.tree->set_left($1.tree); $$ = $3; std::cout << "EXPR AND GROUP SET\n"; syntax_tree->put_tree($$.tree, 0);}
-	| cond '\n' sentence {$3.tree->set_left($1.tree); $$ = $3; std::cout << "BLOCK AND GROUP SET\n"; syntax_tree->put_tree($$.tree, 0);}
+	| declaration '\n' sentence {if ($1.tree && $3.tree) {$3.tree->set_left($1.tree); $$ = $3; syntax_tree->put_tree($$.tree, 0);} std::cout << "SENTENCE AND GROUP SET\n"; }
+	| expr '\n' sentence {if ($1.tree && $3.tree) {$3.tree->set_left($1.tree); $$ = $3; syntax_tree->put_tree($$.tree, 0);} std::cout << "EXPR AND GROUP SET\n"; }
+	| cond '\n' sentence {if ($1.tree && $3.tree) {$3.tree->set_left($1.tree); $$ = $3; syntax_tree->put_tree($$.tree, 0);} std::cout << "BLOCK AND GROUP SET\n";}
 	;
 
 cond:
 	'{' expr '}' block
 	{
 		$$.tree = new cond_node($2.tree, $4.tree, CONDN, $1.line);
+	}
+	| WHILE expr block
+	{
+		std::cout << "Wrong loop declaration in line " << $2.line << "\n";
+		error = true;
 	}
 	;
 
@@ -165,12 +209,13 @@ conv_proc_set:
 arg_set:
 	expr { $$ = $1;}
 	| expr ',' arg_set {$3.tree->set_left($1.tree); $$ = $3; std::cout << "EXPR AND ARG_SET\n"; syntax_tree->put_tree($$.tree, 0);}
+	| {$$.tree = nullptr;}
 	;
 
 expr:
 	SVAL {$$.tree = new str_node(std::string($1.text), STRN, $1.line); printf("SVAL WITH VAL = \"%s\"\n", $1.text);}
 	| LITERAL {$$.tree = new str_node(std::string($1.text), LITERALN, $1.line);  printf("LITERAL WITH VAL = \"%s\"\n", $1.text);}
-	| INTNUM {$$.tree = new int_node(atoi($1.text), INTN, $1.line); printf("INT WITH NUM:\n") printf("INTNUM %d\n", atoi($1.text));}
+	| INTNUM {$$.tree = new int_node(atoi($1.text), INTN, $1.line); printf("INTNUM WITH LINE: %d\n", $1.line); printf("INTNUM %d\n", atoi($1.text));}
 	| BOOLNUM {bool buf; if (strcmp($1.text, "TRUE") == 0) {buf = true;} else {buf = false;} $$.tree = new bool_node(buf,
 	 BOOLN, $1.line); printf("BOOLNUM %d\n", buf);}
 	| '(' expr ')' {$$.tree = $2.tree;}
@@ -196,6 +241,11 @@ expr:
 	{
 	    		std::cout << "CALL HERE!\n";
 	            $$.tree = new proc_node(std::string($2.text), $3.tree, nullptr, CALLN, $1.line);
+	}
+	| CALL SVAL arg_set '|'
+	{
+		std::cout << "Wrong calling of function in line " << $1.line << "\n";
+		error = true;
 	}
 	| MOVE '[' expr ']'
 	{
