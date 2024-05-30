@@ -67,7 +67,8 @@ void tree_parser::parse(node *ptr, symbol_table& stab, robot *rob)
 			                     throw(std::runtime_error(errs));
 				            }
 				            std::string r_type;
-				            if (temp->child->operation == INTN || (temp->operation >= 4 && temp->operation <= 13))
+				            std::cout << "TEMP->CHILD OPERATION: " << temp->child->operation << "\n";
+				            if (temp->child->operation == INTN || (temp->child->operation >= 4 && temp->child->operation <= 13))
 				            {
 				            	r_type = "NUMERIC";
 				            }
@@ -81,12 +82,12 @@ void tree_parser::parse(node *ptr, symbol_table& stab, robot *rob)
 				            }
 					        std::string s = "CONVERT_" + stab.storval[var_name]->type + "_FROM_" + r_type;
 							std::cout << s << "\n";
-							std::cout << "ISRGIOJHSU\n";
 							std::cout << temp->child->operation << "\n";
 							if (functions.storval.contains(s))
 							{
 								if (r_type == "NUMERIC")
 								{
+
 									proc_node *func = dynamic_cast<proc_node*>(functions.storval[s]);
 									decl_node *ut;
 									int_node *x = new int_node(parse_int(temp->child, stab, rob), INTN, 0); 

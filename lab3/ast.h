@@ -39,15 +39,13 @@ class node
 	public:
 		int operation;
                 int line;
-		node *left, *right;
-                bool inside;
+		node *left = nullptr;
+                node *right = nullptr;
+                bool inside = false;
 		node(int operation, int line)
 		{
                         this->line = line;
 			this->operation = operation;
-			left = nullptr;
-			right = nullptr;
-                        inside = false;
 		}
                 void set_left (node *ptr)
                 {

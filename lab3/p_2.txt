@@ -1,8 +1,3 @@
-12 abc
-34 def
-WHILE x < 2 BLOCK
-	NUMERIC y = 0
-UNBLOCK
-CALL f 2 |
-u = 8
+NUMERIC x = 7 + 2*8*(9+1)
+z = 2
 

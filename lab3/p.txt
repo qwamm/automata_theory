@@ -1,17 +1,13 @@
-RECORD Point DATA [NUMERIC x, NUMERIC y]
-CONVERSION FROM NUMERIC BLOCK
-        to.x = from
+PROC g NUMERIC u & BLOCK
 UNBLOCK
-CONVERSION TO NUMERIC BLOCK
-        to = from.x
-UNBLOCK 
 
 dhasodfiuh qafuosh qaihf
 WHILE z ? 5 BLOCK
 UNBLOCK
 CALL f |
-dhasodfiuh qafuosh qaihf
+dhasodfiuh 1 2 qaihf 88
+NUMERIC func STRING t & BLOCK
+UNBLOCK
 NUMERIC x = 2
-Point t = 3
-NUMERIC z = t*15 + 4
+NUMERIC z = 5*15 + 4
 

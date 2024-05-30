@@ -161,6 +161,16 @@ proc:
 	{
 			$$.tree = new proc_node(std::string($2.text), $3.tree, $5.tree, PROCN, $1.line);
 	}
+	| SVAL SVAL group_comma '&' block
+	{
+			std::cout << "Wrong definition of procedure in line " << $1.line << ". Procedures aren't able to return any value in this programming language\n";
+			error = true;
+	}
+	| TYPE SVAL group_comma '&' block
+	{
+			std::cout << "Wrong definition of procedure in line " << $1.line << ". Procedures aren't able to return any value in this programming language\n";
+			error = true;
+	}
 	;
 
 declaration:
@@ -239,7 +249,7 @@ expr:
 	| SVAL '.' SVAL {$$.tree = new struct_ref_node(std::string($1.text), std::string ($3.text), STRUCTREFN, $1.line);}
 	| '@' SVAL arg_set '|'
 	{
-	    		std::cout << "CALL HERE!\n";
+		    std::cout << "CALL HERE!\n";
 	            $$.tree = new proc_node(std::string($2.text), $3.tree, nullptr, CALLN, $1.line);
 	}
 	| CALL SVAL arg_set '|'
